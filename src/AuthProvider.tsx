@@ -39,7 +39,7 @@ export default function AuthProvider({ children }: React.PropsWithChildren) {
       setUser(user);
     });
     // console.log(user);
-  }, [session]);
+  }, []);
   async function signUpUser(email: string, password: string, name: string) {
     const { data, error } = await supabase.auth.signUp({
       email: email,

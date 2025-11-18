@@ -1,8 +1,20 @@
 import DisplayCard from '@/Components/DisplayCards';
 import DashboardHeader from '../Components/DashboardHeader';
 import { Link } from 'react-router';
+import { userBlogs, type blogType } from '@/backendProvider';
+import { useEffect, useState } from 'react';
+import { useAuth } from '@/AuthProvider';
 
 function Blogs() {
+  const { user } = useAuth();
+  const [data, setData] = useState<blogType[]>([]);
+
+  useEffect(() => {
+    const rawData = userBlogs(user?.email).then((data) => {
+      setData(data);
+    });
+  }, [user]);
+  console.log(data);
   return (
     <div className='flex flex-col h-full'>
       <DashboardHeader />
@@ -37,16 +49,7 @@ function Blogs() {
                     <thead className='text-xs text-gray-200 uppercase bg-rose-500'>
                       <tr>
                         <th scope='col' className='px-6 py-3'>
-                          Product name
-                        </th>
-                        <th scope='col' className='px-6 py-3'>
-                          Color
-                        </th>
-                        <th scope='col' className='px-6 py-3'>
-                          Category
-                        </th>
-                        <th scope='col' className='px-6 py-3'>
-                          Price
+                          Blog Title
                         </th>
                         <th scope='col' className='px-6 py-3'>
                           <span className='sr-only'>View</span>
@@ -60,41 +63,41 @@ function Blogs() {
                       </tr>
                     </thead>
                     <tbody>
-                      <tr className='bg-white border-b border-gray-200 hover:bg-gray-50 '>
-                        <th
-                          scope='row'
-                          className='px-6 py-4 font-medium text-gray-900 whitespace-nowrap'
-                        >
-                          Apple MacBook Pro 17"
-                        </th>
-                        <td className='px-6 py-4'>Silver</td>
-                        <td className='px-6 py-4'>Laptop</td>
-                        <td className='px-6 py-4'>$2999</td>
-                        <td className='px-6 py-4 text-right'>
-                          <a
-                            href='#'
-                            className='font-medium text-rose-600 hover:underline'
+                      {data.map((blog: blogType, index: number) => (
+                        <tr className='bg-white border-b border-gray-200 hover:bg-gray-50 '>
+                          <th
+                            scope='row'
+                            className='px-6 py-4 font-medium text-gray-900 whitespace-nowrap'
                           >
-                            Visit
-                          </a>
-                        </td>
-                        <td className='px-6 py-4 text-right'>
-                          <a
-                            href='#'
-                            className='font-medium text-red-600 hover:underline'
-                          >
-                            Delete
-                          </a>
-                        </td>
-                        <td className='px-6 py-4 text-right'>
-                          <a
-                            href='#'
-                            className='font-medium text-rose-600 hover:underline'
-                          >
-                            Edit
-                          </a>
-                        </td>
-                      </tr>
+                            {blog.title}
+                          </th>
+
+                          <td className='px-6 py-4 text-right'>
+                            <a
+                              href='#'
+                              className='font-medium text-rose-600 hover:underline'
+                            >
+                              Visit
+                            </a>
+                          </td>
+                          <td className='px-6 py-4 text-right'>
+                            <a
+                              href='#'
+                              className='font-medium text-red-600 hover:underline'
+                            >
+                              Delete
+                            </a>
+                          </td>
+                          <td className='px-6 py-4 text-right'>
+                            <a
+                              href='#'
+                              className='font-medium text-rose-600 hover:underline'
+                            >
+                              Edit
+                            </a>
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
@@ -113,15 +116,3 @@ function Blogs() {
 }
 
 export default Blogs;
-[
-  'Understanding React Hooks',
-  'A Guide to Modern Web Development',
-  'Top 10 JavaScript Frameworks in 2024',
-  'The Power of Node.js',
-  'The Future of Web Development',
-  'Building RESTful APIs with Express.js',
-  'CSS Grid vs. Flexbox: When to Use Which',
-  'State Management in React: Redux vs. Context API',
-  'Optimizing Web Performance: Tips and Tricks',
-  'Getting Started with TypeScript',
-];

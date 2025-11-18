@@ -1,10 +1,8 @@
 import DashboardHeader from '@/Components/DashboardHeader';
 import DisplayCard from '@/Components/DisplayCards';
-import { Link, useParams } from 'react-router';
+import { Link } from 'react-router';
 
-export default function Inbox() {
-  const { id } = useParams();
-  console.log(id);
+export default function Inboxes() {
   return (
     <div className='flex flex-col h-full'>
       <DashboardHeader />
@@ -24,10 +22,10 @@ export default function Inbox() {
           <DisplayCard className='min-h-screen my-5'>
             <div className='h-full flex flex-col'>
               <div className='pt-5 pb-2 mb-3 border-b-2 border-rose-600 flex items-center justify-between'>
-                <h3 className='font-bold ubuntu-font text-2xl'>inbox</h3>
+                <h3 className='font-bold ubuntu-font text-2xl'>Inboxes</h3>
                 {/* <Link to='/dashboard/Blogs/new'> */}
                 <button className='bg-rose-600 cursor-pointer text-white px-5 py-1 rounded-2xl text-xs hover:bg-rose-700 transition'>
-                  Inbox
+                  New Inbox
                 </button>
                 {/* </Link> */}
               </div>
@@ -37,7 +35,7 @@ export default function Inbox() {
                     <thead className='text-xs text-gray-200 uppercase bg-rose-500'>
                       <tr>
                         <th scope='col' className='px-6 py-3'>
-                          Messages
+                          Inbox Titles
                         </th>
                         <th scope='col' className='px-6 py-3'>
                           <span className='sr-only'>View</span>
@@ -54,12 +52,12 @@ export default function Inbox() {
                         </th>
 
                         <td className='px-6 py-4 text-right'>
-                          <a
-                            href='#'
+                          <Link
+                            to='/dashboard/inboxes/1'
                             className='font-medium text-rose-600 hover:underline'
                           >
                             Visit
-                          </a>
+                          </Link>
                         </td>
                       </tr>
                     </tbody>

@@ -43,8 +43,8 @@ const data = {
       disabled: false,
     },
     {
-      title: 'Inbox',
-      url: '/Dashboard/Inbox',
+      title: 'inboxes',
+      url: '/Dashboard/inboxes',
       icon: Inbox,
       disabled: false,
     },

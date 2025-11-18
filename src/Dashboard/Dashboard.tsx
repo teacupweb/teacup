@@ -22,11 +22,11 @@ function Dashboard() {
             className='col-span-1 bg-rose-500 text-white '
             key={index}
           >
-            <DynamicIcon
+            {/* <DynamicIcon
               // @ts-ignore
               name={item.icon}
               size={48}
-            />
+            /> */}
             <h3 className='font-extrabold ubuntu-font text-2xl my-2'>
               {item.title}
             </h3>
@@ -55,7 +55,7 @@ function Dashboard() {
                       </th>
 
                       <th scope='col' className='px-6 py-3'>
-                        Inbox
+                        inboxes
                       </th>
                       <th scope='col' className='px-6 py-3'>
                         Date

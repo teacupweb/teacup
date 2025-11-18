@@ -19,10 +19,10 @@
       "description": "Total number of pages in the website."
     },
     {
-      "icon": "inbox",
-      "title": "Inbox",
+      "icon": "inboxes",
+      "title": "inboxes",
       "data": ["Support", "Sales", "General"],
-      "description": "Total number of inbox categories."
+      "description": "Total number of inboxes categories."
     },
     {
       "icon": "rectangle-ellipsis",

@@ -4,10 +4,11 @@ import Layout from './Dashboard/Layout';
 import Dashboard from './Dashboard/Dashboard';
 import Blogs from './Dashboard/Blogs';
 import Settings from './Dashboard/Settings';
-import Inbox from './Dashboard/Inbox';
+import Inboxes from './Dashboard/Inboxes';
 import Naviq from './Dashboard/Naviq';
 import NewBlog from './Dashboard/NewBlog';
 import AuthPage from './Dashboard/Auth';
+import Inbox from './Dashboard/Inbox';
 
 function Router() {
   return (
@@ -17,7 +18,9 @@ function Router() {
       <Route path='/signup' element={<AuthPage isLogin={false} />} />
       <Route path='/Dashboard' element={<Layout />}>
         <Route path='/Dashboard' element={<Dashboard />} />
-        <Route path='/Dashboard/Inbox' element={<Inbox />} />
+        <Route path='/Dashboard/inboxes' element={<Inboxes />}>
+          <Route path='/Dashboard/inboxes/:id' element={<Inbox />} />
+        </Route>
         <Route path='/Dashboard/Blogs' element={<Blogs />} />
         <Route path='/Dashboard/Blogs/new' element={<NewBlog />} />
         <Route path='/Dashboard/Naviq' element={<Naviq />} />
