@@ -1,7 +1,11 @@
 import Navbar from './Components/Navbar';
 import Footer from './Components/Footer';
+// import { useContext } from 'react';
+// import { authContext } from './AuthProvider';
 
 function App() {
+  // const { login } = useContext(authContext);
+  // login();
   return (
     <>
       <div>

@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import { Eye, EyeOff, Mail, Lock, User, ArrowRight } from 'lucide-react';
+import { useAuth } from '@/AuthProvider';
+import { useNavigate } from 'react-router';
 
-export default function AuthPage({ isLogin: initialIsLogin = true }) {
-  const [isLogin, setIsLogin] = useState(initialIsLogin);
+export default function AuthPage({ isLogin }) {
+  const { signUpUser, loginUser } = useAuth();
+  // const [isLogin, setIsLogin] = useState(initialIsLogin);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -10,9 +13,16 @@ export default function AuthPage({ isLogin: initialIsLogin = true }) {
     password: '',
     confirmPassword: '',
   });
+  const navigate = useNavigate();
 
   const handleSubmit = () => {
-    console.log('Form submitted:', formData);
+    // console.log('Form submitted:', formData);
+    if (!isLogin) {
+      signUpUser(formData.email, formData.password, formData.name);
+    } else {
+      loginUser(formData.email, formData.password);
+    }
+
     // Handle authentication logic here
   };
 
@@ -191,7 +201,7 @@ export default function AuthPage({ isLogin: initialIsLogin = true }) {
                 : 'Already have an account? '}
               <button
                 type='button'
-                onClick={() => setIsLogin(!isLogin)}
+                onClick={() => navigate(isLogin ? '/signup' : '/login')}
                 className='text-rose-500 hover:text-rose-600 font-semibold'
               >
                 {isLogin ? 'Sign up' : 'Sign in'}
