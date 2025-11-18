@@ -3,7 +3,7 @@ import { Eye, EyeOff, Mail, Lock, User, ArrowRight } from 'lucide-react';
 import { useAuth } from '@/AuthProvider';
 import { useNavigate } from 'react-router';
 
-export default function AuthPage({ isLogin }) {
+export default function AuthPage({ isLogin }: { isLogin: boolean }) {
   const { signUpUser, loginUser } = useAuth();
   // const [isLogin, setIsLogin] = useState(initialIsLogin);
   const [showPassword, setShowPassword] = useState(false);

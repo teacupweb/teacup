@@ -1,20 +1,15 @@
 import './index.css';
 import React, { useState, useEffect, useContext, use } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import supabase from './supabaseClient';
 // import { Auth } from '@supabase/auth-ui-react';
 // import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { createContext } from 'react';
-
-const supabase = createClient(
-  `${import.meta.env.VITE_DB_URL}`,
-  `${import.meta.env.VITE_DB_ANON}`
-);
 
 interface valueType {
   session: any;
   signUpUser: (email: string, password: string, name: string) => void;
   loginUser: (email: string, password: string) => void;
-  signOutUser: () => void;
+  logout: () => void;
 }
 
 export const authContext = createContext({} as valueType);
@@ -74,14 +69,14 @@ export default function AuthProvider({ children }: React.PropsWithChildren) {
     localStorage.setItem('token', JSON.stringify(data.session?.access_token));
     console.error(error);
   }
-  function signOutUser() {
+  function logout() {
     supabase.auth.signOut();
   }
   const value: valueType = {
     session,
     signUpUser,
     loginUser,
-    signOutUser,
+    logout,
   };
 
   return <authContext.Provider value={value}>{children}</authContext.Provider>;

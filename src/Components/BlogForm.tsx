@@ -5,7 +5,6 @@ const BlogForm = () => {
   const [formData, setFormData] = useState({
     title: '',
     content: '',
-    tags: '',
   });
   const editor = useRef(null);
 
@@ -50,7 +49,7 @@ const BlogForm = () => {
   };
 
   return (
-    <div className='max-w-4xl mx-auto p-8 bg-gradient-to-br from-white to-blue-50 rounded-2xl shadow-xl border border-blue-100'>
+    <div className='max-w-4xl mx-auto p-8  rounded-2xl shadow-xl border border-rose-100'>
       <div className='mb-8 text-center'>
         <h1 className='text-3xl font-bold text-rose-600 mb-2 ubuntu-font'>
           Create New Article
@@ -74,26 +73,6 @@ const BlogForm = () => {
             placeholder='Enter a compelling title...'
             required
           />
-        </div>
-
-        {/* Tags */}
-        <div className='group'>
-          <label className='block text-sm font-semibold text-gray-700 mb-3 transition-all duration-200 group-focus-within:text-rose-600'>
-            Tags *
-          </label>
-          <input
-            type='text'
-            value={formData.tags}
-            onChange={(e) =>
-              setFormData((prev) => ({ ...prev, tags: e.target.value }))
-            }
-            className='w-full px-4 py-3 border bg-white border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all duration-200 hover:border-rose-300'
-            placeholder='technology, web-development, react, javascript'
-            required
-          />
-          <p className='text-xs text-gray-500 mt-2'>
-            Separate tags with commas
-          </p>
         </div>
 
         {/* Jodit Editor */}
