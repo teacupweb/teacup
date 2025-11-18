@@ -7,7 +7,8 @@ export function blogs(email: string) {
 }
 export type blogType = {
   title: string;
-  data: object;
+  image: string;
+  data: string;
   created_by: string;
 };
 export function postBlog(data: blogType) {

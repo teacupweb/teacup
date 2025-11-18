@@ -7,6 +7,7 @@ import { createContext } from 'react';
 
 interface valueType {
   session: any;
+  user: any;
   signUpUser: (email: string, password: string, name: string) => void;
   loginUser: (email: string, password: string) => void;
   logout: () => void;
@@ -22,14 +23,14 @@ export default function AuthProvider({ children }: React.PropsWithChildren) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
     });
-    console.log(session);
+    // console.log(session);
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
     });
-    console.log(session);
+    // console.log(session);
     return () => subscription.unsubscribe();
   }, []);
   // console.log(user);
@@ -37,7 +38,7 @@ export default function AuthProvider({ children }: React.PropsWithChildren) {
     supabase.auth.getUser().then(({ data: { user } }) => {
       setUser(user);
     });
-    console.log(user);
+    // console.log(user);
   }, [session]);
   async function signUpUser(email: string, password: string, name: string) {
     const { data, error } = await supabase.auth.signUp({
@@ -74,6 +75,7 @@ export default function AuthProvider({ children }: React.PropsWithChildren) {
   }
   const value: valueType = {
     session,
+    user,
     signUpUser,
     loginUser,
     logout,

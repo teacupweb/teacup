@@ -1,11 +1,17 @@
 import { useState, useRef } from 'react';
 import JoditEditor from 'jodit-react';
+import { postBlog, type blogType } from '@/backendProvider';
+import { useAuth } from '@/AuthProvider';
 
 const BlogForm = () => {
+  const { user } = useAuth();
+  // console.log(user);
   const [formData, setFormData] = useState({
     title: '',
-    content: '',
-  });
+    image: '',
+    data: '',
+    created_by: user?.email,
+  } as blogType);
   const editor = useRef(null);
 
   const config = {
@@ -46,6 +52,7 @@ const BlogForm = () => {
   const handleSubmit = (e: any) => {
     e.preventDefault();
     console.log('Form Data:', formData);
+    postBlog(formData);
   };
 
   return (
@@ -74,7 +81,21 @@ const BlogForm = () => {
             required
           />
         </div>
-
+        <div className='group'>
+          <label className='block text-sm font-semibold text-gray-700 mb-3 transition-all duration-200 group-focus-within:text-rose-600'>
+            Image URL *
+          </label>
+          <input
+            type='text'
+            value={formData.image}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, image: e.target.value }))
+            }
+            className='w-full px-4 py-3 border bg-white border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all duration-200 hover:border-rose-300 text-lg font-medium'
+            placeholder='Enter a compelling title...'
+            required
+          />
+        </div>
         {/* Jodit Editor */}
         <div className='group'>
           <label className='block text-sm font-semibold text-gray-700 mb-3 transition-all duration-200 group-focus-within:text-rose-600'>
@@ -83,10 +104,10 @@ const BlogForm = () => {
           <div className='border border-gray-300 rounded-xl overflow-hidden shadow-sm transition-all duration-200 hover:shadow-md group-focus-within:border-rose-500 group-focus-within:ring-2 group-focus-within:ring-rose-500 group-focus-within:ring-opacity-20'>
             <JoditEditor
               ref={editor}
-              value={formData.content}
+              value={formData.data}
               config={config}
               onBlur={(newContent) =>
-                setFormData((prev) => ({ ...prev, content: newContent }))
+                setFormData((prev) => ({ ...prev, data: newContent }))
               }
             />
           </div>
