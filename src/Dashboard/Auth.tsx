@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Eye, EyeOff, Mail, Lock, User, ArrowRight } from 'lucide-react';
 import { useAuth } from '@/AuthProvider';
 import { useNavigate } from 'react-router';
 
 export default function AuthPage({ isLogin }: { isLogin: boolean }) {
-  const { signUpUser, loginUser } = useAuth();
+  const { signUpUser, loginUser, user } = useAuth();
   // const [isLogin, setIsLogin] = useState(initialIsLogin);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -13,7 +13,15 @@ export default function AuthPage({ isLogin }: { isLogin: boolean }) {
     password: '',
     confirmPassword: '',
   });
+  // const { user } = useAuth();
   const navigate = useNavigate();
+  useEffect(() => {
+    setTimeout(() => {
+      if (user) {
+        navigate('/Dashboard');
+      }
+    }, 1000);
+  });
 
   const handleSubmit = () => {
     // console.log('Form submitted:', formData);

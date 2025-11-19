@@ -14,10 +14,10 @@ function App() {
           <div className='min-h-[70vh] flex flex-col items-center justify-center'>
             <div className='flex flex-col gap-6 max-w-4xl text-center px-4'>
               <span className='bg-rose-100 rounded-3xl'>
-                Try Naviqate for free for the first time.
+                Try Teacupnet for free for the first time.
               </span>
               <h1 className='text-6xl ubuntu-font '>
-                Easy use Tech with Naviqate
+                Easy use Tech with Teacupnet
               </h1>
               <p className='text-xl text-gray-600'>
                 Lorem ipsum dolor sit amet consectetur, adipisicing elit. Maxime
