@@ -7,13 +7,13 @@ import {
   type blogType,
 } from '@/backendProvider';
 import { useAuth } from '@/AuthProvider';
-import { useLocation, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import Swal from 'sweetalert2';
 
 const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
   // const [blogData, setBlogData] = useState<blogType | null>(null);
   const { id } = useParams();
-  console.log(id);
+  // console.log(id);
   // const isEditMode =
   const { user } = useAuth();
   // console.log(user);

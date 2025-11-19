@@ -1,9 +1,9 @@
 import DashboardHeader from '@/Components/DashboardHeader';
 import DisplayCard from '@/Components/DisplayCards';
-import { useParams } from 'react-router';
+// import { useParams } from 'react-router';
 
 export default function Inbox() {
-  const { id } = useParams();
+  // const { id } = useParams();
   // console.log(id);
   return (
     <div className='flex flex-col h-full'>
