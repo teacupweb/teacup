@@ -4,7 +4,7 @@ import { useParams } from 'react-router';
 
 export default function Inbox() {
   const { id } = useParams();
-  console.log(id);
+  // console.log(id);
   return (
     <div className='flex flex-col h-full'>
       <DashboardHeader />

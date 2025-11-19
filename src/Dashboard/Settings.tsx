@@ -1,9 +1,11 @@
 import { useAuth } from '@/AuthProvider';
 import { useNavigate } from 'react-router';
+import Swal from 'sweetalert2';
 
 function Settings() {
   const { logout } = useAuth();
   const navigate = useNavigate();
+
   function Card({ className }: { className?: string }) {
     return (
       <div
@@ -19,10 +21,33 @@ function Settings() {
       </div>
     );
   }
+
+  const handleLogout = () => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, logout!',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        logout();
+        Swal.fire({
+          title: 'Logged out!',
+          text: 'You have been successfully logged out.',
+          icon: 'success',
+        }).then(() => {
+          navigate('/login');
+        });
+      }
+    });
+  };
+
   return (
     <>
       <div className='flex flex-col mx-auto shadow-lg w-full h-full m-5 rounded-2xl lg:w-9/12 px-5'>
-        {/* <DashboardHeader /> */}
         <div>
           <h2 className='font-bold mb-2 ubuntu-font text-3xl my-5 border-b border-rose-200'>
             Settings
@@ -34,11 +59,7 @@ function Settings() {
           ))}
           <span
             className='text-rose-500 ubuntu-font text-2xl cursor-pointer font-bold mx-3'
-            onClick={() => {
-              logout();
-              navigate('/');
-              // window.location.reload();
-            }}
+            onClick={handleLogout}
           >
             Logout
           </span>

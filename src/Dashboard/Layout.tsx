@@ -11,7 +11,7 @@ export default function Layout() {
   useEffect(() => {
     if (user === 'userNotFound') {
       navigate('/login');
-      console.log('from layout');
+      // console.log('from layout');
     }
   });
   return (

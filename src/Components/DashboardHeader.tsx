@@ -13,9 +13,9 @@ function DashboardHeader() {
           </span>
           !
         </h2>
-        <button className='bg-rose-600 cursor-pointer text-white px-5 py-1 rounded-2xl text-lg hover:bg-rose-700 transition'>
+        {/* <button className='bg-rose-600 cursor-pointer text-white px-5 py-1 rounded-2xl text-lg hover:bg-rose-700 transition'>
           New Project
-        </button>
+        </button> */}
       </div>
     </>
   );

@@ -19,6 +19,7 @@ export async function userBlogs(email: string) {
 export function postBlog(data: blogType) {
   //   console.log(blog);
   insertBlog(data);
+  return data;
 }
 export function getUserBlogById(id: number) {
   const data = getBlogById(id);

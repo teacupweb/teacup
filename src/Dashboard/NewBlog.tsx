@@ -8,6 +8,7 @@ import {
 } from '@/backendProvider';
 import { useAuth } from '@/AuthProvider';
 import { useLocation, useParams } from 'react-router';
+import Swal from 'sweetalert2';
 
 const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
   // const [blogData, setBlogData] = useState<blogType | null>(null);
@@ -72,13 +73,39 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
   const handleSubmit = (e: any) => {
     e.preventDefault();
     // console.log('Form Data:', formData);
-    if (isEditMode && id) {
-      // Update existing blog logic here
-      updateUserBlog(Number(id), formData);
-    } else {
-      // Create new blog logic here
-      postBlog(formData);
-    }
+    Swal.fire({
+      title: isEditMode ? 'Update Article?' : 'Publish Article?',
+      text: isEditMode
+        ? 'Do you want to update this article?'
+        : 'Do you want to publish this article?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: isEditMode ? 'Yes, update it!' : 'Yes, publish it!',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        if (isEditMode) {
+          updateUserBlog(Number(id), formData).then(() => {
+            Swal.fire('Updated!', 'Your article has been updated.', 'success');
+          });
+        } else {
+          postBlog(formData).then(() => {
+            Swal.fire(
+              'Published!',
+              'Your article has been published.',
+              'success'
+            );
+            setFormData({
+              title: '',
+              image: '',
+              data: '',
+              created_by: user && typeof user === 'object' && user?.email,
+            } as blogType);
+          });
+        }
+      }
+    });
   };
 
   return (
