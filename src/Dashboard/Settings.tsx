@@ -1,7 +1,9 @@
 import { useAuth } from '@/AuthProvider';
+import { useNavigate } from 'react-router';
 
 function Settings() {
   const { logout } = useAuth();
+  const navigate = useNavigate();
   function Card({ className }: { className?: string }) {
     return (
       <div
@@ -32,7 +34,11 @@ function Settings() {
           ))}
           <span
             className='text-rose-500 ubuntu-font text-2xl cursor-pointer font-bold mx-3'
-            onClick={logout}
+            onClick={() => {
+              logout();
+              navigate('/');
+              // window.location.reload();
+            }}
           >
             Logout
           </span>

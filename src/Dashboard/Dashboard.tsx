@@ -10,8 +10,20 @@ import {
   CartesianGrid,
   ResponsiveContainer,
 } from 'recharts';
+import { useNavigate } from 'react-router';
+import { useEffect } from 'react';
+import { useAuth } from '@/AuthProvider';
 
 function Dashboard() {
+  // const { user } = useAuth();
+  // const navigate = useNavigate();
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     if (user) {
+  //       navigate('/Dashboard');
+  //     }
+  //   }, 300);
+  // });
   return (
     <div className='flex flex-col'>
       <DashboardHeader />

@@ -11,7 +11,7 @@ import supabase from './supabaseClient';
 
 interface valueType {
   session: Session | null;
-  user: User | null;
+  user: User | null | 'userNotFound';
   signUpUser: (
     email: string,
     password: string,
@@ -25,7 +25,7 @@ export const authContext = createContext({} as valueType);
 export const useAuth = () => useContext(authContext);
 export default function AuthProvider({ children }: React.PropsWithChildren) {
   const [session, setSession] = useState<Session | null>(null);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null | 'userNotFound'>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -44,7 +44,12 @@ export default function AuthProvider({ children }: React.PropsWithChildren) {
   // console.log(user);
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user);
+      // setUser(user);
+      if (user) {
+        setUser(user);
+      } else {
+        setUser('userNotFound');
+      }
     });
     // console.log(user);
   }, []);
@@ -68,6 +73,9 @@ export default function AuthProvider({ children }: React.PropsWithChildren) {
     localStorage.setItem('token', JSON.stringify(data.session?.access_token));
 
     console.error(error);
+    setTimeout(() => {
+      window.location.reload();
+    }, 200);
     return updatedUser;
   }
   async function loginUser(email: string, password: string) {
@@ -78,9 +86,17 @@ export default function AuthProvider({ children }: React.PropsWithChildren) {
     // console.log(data);
     localStorage.setItem('token', JSON.stringify(data.session?.access_token));
     console.error(error);
+    setTimeout(() => {
+      window.location.reload();
+    }, 200);
   }
   function logout() {
-    supabase.auth.signOut();
+    const data = supabase.auth.signOut();
+    setUser('userNotFound');
+    setTimeout(() => {
+      window.location.reload();
+    }, 200);
+    console.log(data);
   }
   const value: valueType = {
     session,

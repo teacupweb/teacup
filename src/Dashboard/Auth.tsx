@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Eye, EyeOff, Mail, Lock, User, ArrowRight } from 'lucide-react';
 import { useAuth } from '@/AuthProvider';
-import { useNavigate } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 
 export default function AuthPage({ isLogin }: { isLogin: boolean }) {
   const { signUpUser, loginUser, user } = useAuth();
@@ -17,18 +17,20 @@ export default function AuthPage({ isLogin }: { isLogin: boolean }) {
   const navigate = useNavigate();
   useEffect(() => {
     setTimeout(() => {
-      if (user) {
-        navigate('/Dashboard');
+      if (user !== 'userNotFound') {
+        navigate('/');
       }
-    }, 1000);
+    });
   });
 
   const handleSubmit = () => {
     // console.log('Form submitted:', formData);
     if (!isLogin) {
       signUpUser(formData.email, formData.password, formData.name);
+      navigate('/');
     } else {
       loginUser(formData.email, formData.password);
+      navigate('/');
     }
 
     // Handle authentication logic here
@@ -57,7 +59,11 @@ export default function AuthPage({ isLogin }: { isLogin: boolean }) {
             <p className='text-rose-100'>
               {isLogin
                 ? 'Sign in to continue your journey'
-                : 'Join us and get started today'}
+                : 'Join us and get started today'}{' '}
+              or{' '}
+              <span className='font-bold hover:underline'>
+                <Link to='/'>Go back</Link>
+              </span>
             </p>
           </div>
 

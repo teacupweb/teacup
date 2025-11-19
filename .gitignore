@@ -25,3 +25,5 @@ dist-ssr
 .env
 src/app
 src/supabaseClient.ts
+# Local Netlify folder
+.netlify

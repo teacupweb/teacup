@@ -1,7 +1,9 @@
 import { Link } from 'react-router';
 import Logo from '@/Components/logo';
+import { useAuth } from '@/AuthProvider';
 
 function Navbar() {
+  const { user } = useAuth();
   return (
     <div>
       <div className='mx-auto my-5 py-4 px-5 container items-center justify-between bg-rose-50 border border-rose-200 rounded-2xl w-full flex'>
@@ -16,12 +18,21 @@ function Navbar() {
             <li>Contact</li>
             <li>Blogs</li>
             <li>
-              <Link
-                to='/Dashboard'
-                className='p-2 px-5 rounded-2xl text-white bg-rose-600'
-              >
-                Dashboard
-              </Link>
+              {user !== 'userNotFound' ? (
+                <Link
+                  to='/dashboard'
+                  className='bg-rose-600 text-white px-4 py-2 rounded-lg hover:bg-rose-700 transition'
+                >
+                  Dashboard
+                </Link>
+              ) : (
+                <Link
+                  to='/login'
+                  className='bg-rose-600 text-white px-4 py-2 rounded-lg hover:bg-rose-700 transition'
+                >
+                  Login
+                </Link>
+              )}
             </li>
           </ul>
         </div>
