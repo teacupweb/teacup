@@ -1,23 +1,31 @@
 import './index.css';
-import React, { useState, useEffect, useContext, use } from 'react';
+import React, { useState, useEffect, useContext, createContext } from 'react';
+import {
+  type Session,
+  type User,
+  type UserResponse,
+} from '@supabase/supabase-js';
 import supabase from './supabaseClient';
 // import { Auth } from '@supabase/auth-ui-react';
 // import { ThemeSupa } from '@supabase/auth-ui-shared';
-import { createContext } from 'react';
 
 interface valueType {
-  session: any;
-  user: any;
-  signUpUser: (email: string, password: string, name: string) => void;
-  loginUser: (email: string, password: string) => void;
-  logout: () => void;
+  session: Session | null;
+  user: User | null;
+  signUpUser: (
+    email: string,
+    password: string,
+    name: string
+  ) => Promise<UserResponse>;
+  loginUser: (email: string, password: string) => Promise<void>;
+  logout: () => Promise<void> | void;
 }
 
 export const authContext = createContext({} as valueType);
 export const useAuth = () => useContext(authContext);
 export default function AuthProvider({ children }: React.PropsWithChildren) {
-  const [session, setSession] = useState(null);
-  const [user, setUser] = useState(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -60,6 +68,7 @@ export default function AuthProvider({ children }: React.PropsWithChildren) {
     localStorage.setItem('token', JSON.stringify(data.session?.access_token));
 
     console.error(error);
+    return updatedUser;
   }
   async function loginUser(email: string, password: string) {
     const { data, error } = await supabase.auth.signInWithPassword({

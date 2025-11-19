@@ -10,10 +10,18 @@ function Blogs() {
   const [data, setData] = useState<blogType[]>([]);
 
   useEffect(() => {
-    const rawData = userBlogs(user?.email).then((data) => {
-      setData(data);
+    if (!user?.email) {
+      setData([]);
+      return;
+    }
+    userBlogs(user.email).then((data) => {
+      if (!data) {
+        setData([]);
+      } else {
+        setData(data as blogType[]);
+      }
     });
-  }, [user]);
+  }, [user?.email]);
   console.log(data);
   return (
     <div className='flex flex-col h-full'>
@@ -63,7 +71,7 @@ function Blogs() {
                       </tr>
                     </thead>
                     <tbody>
-                      {data.map((blog: blogType, index: number) => (
+                      {data.map((blog: blogType) => (
                         <tr className='bg-white border-b border-gray-200 hover:bg-gray-50 '>
                           <th
                             scope='row'

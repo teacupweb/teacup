@@ -1,8 +1,8 @@
 // import supabase from './supabaseClient';
 // import { Database } from './database.types';
-import { useEffect, useState } from 'react';
+
 import { getBlogs, insertBlog } from './app/Blogs';
-import { useAuth } from './AuthProvider';
+
 export type blogType = {
   title: string;
   image: string;

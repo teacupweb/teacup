@@ -1,7 +1,7 @@
 import DisplayCard from '@/Components/DisplayCards';
 import DashboardHeader from '../Components/DashboardHeader';
 import websiteData from '@/assets/websiteData.json';
-import { DynamicIcon } from 'lucide-react/dynamic';
+// import { DynamicIcon } from 'lucide-react/dynamic';
 import {
   Bar,
   Tooltip,
