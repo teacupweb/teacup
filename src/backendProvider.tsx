@@ -1,7 +1,7 @@
 // import supabase from './supabaseClient';
 // import { Database } from './database.types';
 
-import { getBlogs, insertBlog, getBlogById } from './app/Blogs';
+import { getBlogs, insertBlog, getBlogById, updateBlog } from './app/Blogs';
 
 export type blogType = {
   id?: number;
@@ -22,5 +22,9 @@ export function postBlog(data: blogType) {
 }
 export function getUserBlogById(id: number) {
   const data = getBlogById(id);
+  return data;
+}
+export function updateUserBlog(id: number, blog: blogType) {
+  const data = updateBlog(id, blog);
   return data;
 }

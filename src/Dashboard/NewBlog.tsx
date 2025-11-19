@@ -1,6 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 import JoditEditor from 'jodit-react';
-import { getUserBlogById, postBlog, type blogType } from '@/backendProvider';
+import {
+  getUserBlogById,
+  postBlog,
+  updateUserBlog,
+  type blogType,
+} from '@/backendProvider';
 import { useAuth } from '@/AuthProvider';
 import { useLocation, useParams } from 'react-router';
 
@@ -66,8 +71,14 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    console.log('Form Data:', formData);
-    postBlog(formData);
+    // console.log('Form Data:', formData);
+    if (isEditMode && id) {
+      // Update existing blog logic here
+      updateUserBlog(Number(id), formData);
+    } else {
+      // Create new blog logic here
+      postBlog(formData);
+    }
   };
 
   return (
