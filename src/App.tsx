@@ -1,5 +1,6 @@
 import Navbar from './Components/Navbar';
 import Footer from './Components/Footer';
+import { Link } from 'react-router';
 // import { useContext } from 'react';
 // import { authContext } from './AuthProvider';
 
@@ -20,18 +21,22 @@ function App() {
                 Easy use Tech with Teacupnet
               </h1>
               <p className='text-xl text-gray-600'>
-                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Maxime
-                aut sint commodi labore, dolorum eligendi nulla quam, animi
-                molestiae recusandae cum asperiores odio quisquam. Illum dolorum
-                harum nemo accusantium itaque.
+                Teacupnet is a 100% no-code SaaS for retail, ecommerce, and
+                service businesses who want a powerful website without technical
+                headaches. Launch a fast, professional site that boosts customer
+                acquisition automatically, while you focus on growing your
+                business. No coding, no staff, no stress – just results.
               </p>
               <div className='flex gap-2 items-center justify-center'>
-                <button className='bg-rose-600 cursor-pointer text-white px-6 py-3 rounded-2xl text-lg hover:bg-rose-700 transition'>
-                  Get Started
-                </button>
-                <button className='border-rose-600 border-3 cursor-pointer text-rose-600 px-6 py-3 rounded-2xl text-lg hover:bg-gray-200 transition'>
+                <Link to='/login'>
+                  <button className='bg-rose-600 cursor-pointer text-white px-6 py-3 rounded-2xl text-lg hover:bg-rose-700 transition'>
+                    Get Started
+                  </button>
+                </Link>
+
+                {/* <button className='border-rose-600 border-3 cursor-pointer text-rose-600 px-6 py-3 rounded-2xl text-lg hover:bg-gray-200 transition'>
                   Demo
-                </button>
+                </button> */}
               </div>
             </div>
           </div>
