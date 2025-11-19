@@ -10,7 +10,7 @@ function Blogs() {
   const [data, setData] = useState<blogType[]>([]);
 
   useEffect(() => {
-    if (!user?.email) {
+    if (user === 'userNotFound' || !user?.email) {
       setData([]);
       return;
     }
@@ -21,7 +21,7 @@ function Blogs() {
         setData(data as blogType[]);
       }
     });
-  }, [user?.email]);
+  }, [user]);
   console.log(data);
   return (
     <div className='flex flex-col h-full'>
@@ -59,9 +59,7 @@ function Blogs() {
                         <th scope='col' className='px-6 py-3'>
                           Blog Title
                         </th>
-                        <th scope='col' className='px-6 py-3'>
-                          <span className='sr-only'>View</span>
-                        </th>
+
                         <th scope='col' className='px-6 py-3'>
                           <span className='sr-only'>Delete</span>
                         </th>
@@ -83,26 +81,18 @@ function Blogs() {
                           <td className='px-6 py-4 text-right'>
                             <a
                               href='#'
-                              className='font-medium text-rose-600 hover:underline'
-                            >
-                              Visit
-                            </a>
-                          </td>
-                          <td className='px-6 py-4 text-right'>
-                            <a
-                              href='#'
                               className='font-medium text-red-600 hover:underline'
                             >
                               Delete
                             </a>
                           </td>
                           <td className='px-6 py-4 text-right'>
-                            <a
-                              href='#'
+                            <Link
+                              to={`/dashboard/Blogs/edit/${blog.id}`}
                               className='font-medium text-rose-600 hover:underline'
                             >
                               Edit
-                            </a>
+                            </Link>
                           </td>
                         </tr>
                       ))}

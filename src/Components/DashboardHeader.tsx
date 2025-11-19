@@ -9,7 +9,7 @@ function DashboardHeader() {
         <h2>
           👋 Welcome back,{' '}
           <span className='font-bold uppercase'>
-            {user && user?.user_metadata?.name}
+            {typeof user === 'object' && user && user.user_metadata?.name}
           </span>
           !
         </h2>

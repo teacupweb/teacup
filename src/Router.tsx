@@ -18,11 +18,19 @@ function Router() {
       <Route path='/signup' element={<AuthPage isLogin={false} />} />
       <Route path='/Dashboard' element={<Layout />}>
         <Route path='/Dashboard' element={<Dashboard />} />
-        <Route path='/Dashboard/inboxes' element={<Inboxes />}>
+        <Route path='/Dashboard/inboxes'>
+          <Route path='/Dashboard/inboxes' element={<Inboxes />} />
           <Route path='/Dashboard/inboxes/:id' element={<Inbox />} />
         </Route>
-        <Route path='/Dashboard/Blogs' element={<Blogs />} />
-        <Route path='/Dashboard/Blogs/new' element={<NewBlog />} />
+        <Route path='/Dashboard/Blogs'>
+          <Route path='/Dashboard/Blogs' element={<Blogs />} />
+          <Route
+            path='/Dashboard/Blogs/edit/:id'
+            element={<NewBlog isEditMode />}
+          />
+          <Route path='/Dashboard/Blogs/new' element={<NewBlog />} />
+        </Route>
+
         <Route path='/Dashboard/Naviq' element={<Naviq />} />
         <Route path='/Dashboard/Settings' element={<Settings />} />
       </Route>

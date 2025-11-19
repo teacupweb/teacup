@@ -10,9 +10,9 @@ import {
   CartesianGrid,
   ResponsiveContainer,
 } from 'recharts';
-import { useNavigate } from 'react-router';
-import { useEffect } from 'react';
-import { useAuth } from '@/AuthProvider';
+// import { useNavigate } from 'react-router';
+// import { useEffect } from 'react';
+// import { useAuth } from '@/AuthProvider';
 
 function Dashboard() {
   // const { user } = useAuth();

@@ -1,9 +1,10 @@
 // import supabase from './supabaseClient';
 // import { Database } from './database.types';
 
-import { getBlogs, insertBlog } from './app/Blogs';
+import { getBlogs, insertBlog, getBlogById } from './app/Blogs';
 
 export type blogType = {
+  id?: number;
   title: string;
   image: string;
   data: string;
@@ -18,4 +19,8 @@ export async function userBlogs(email: string) {
 export function postBlog(data: blogType) {
   //   console.log(blog);
   insertBlog(data);
+}
+export function getUserBlogById(id: number) {
+  const data = getBlogById(id);
+  return data;
 }
