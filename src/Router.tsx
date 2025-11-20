@@ -16,6 +16,7 @@ function Router() {
       <Route path='/' element={<App />} />
       <Route path='/login' element={<AuthPage isLogin />} />
       <Route path='/signup' element={<AuthPage isLogin={false} />} />
+      <Route path='*' element={<App />} />
       <Route path='/Dashboard' element={<Layout />}>
         <Route path='/Dashboard' element={<Dashboard />} />
         <Route path='/Dashboard/inboxes'>

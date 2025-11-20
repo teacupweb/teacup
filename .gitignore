@@ -23,7 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 .env
-src/app
-src/supabaseClient.ts
+# src/app
+# src/supabaseClient.ts
 # Local Netlify folder
 .netlify

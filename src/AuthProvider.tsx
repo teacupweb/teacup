@@ -1,21 +1,21 @@
-import './index.css';
-import React, { useState, useEffect, useContext, createContext } from 'react';
+import "./index.css";
+import React, { useState, useEffect, useContext, createContext } from "react";
 import {
   type Session,
   type User,
   type UserResponse,
-} from '@supabase/supabase-js';
-import supabase from './supabaseClient';
+} from "@supabase/supabase-js";
+import supabase from "./supabaseClient";
 // import { Auth } from '@supabase/auth-ui-react';
 // import { ThemeSupa } from '@supabase/auth-ui-shared';
 
 interface valueType {
   session: Session | null;
-  user: User | null | 'userNotFound';
+  user: User | null | "userNotFound";
   signUpUser: (
     email: string,
     password: string,
-    name: string
+    name: string,
   ) => Promise<UserResponse>;
   loginUser: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void> | void;
@@ -25,7 +25,7 @@ export const authContext = createContext({} as valueType);
 export const useAuth = () => useContext(authContext);
 export default function AuthProvider({ children }: React.PropsWithChildren) {
   const [session, setSession] = useState<Session | null>(null);
-  const [user, setUser] = useState<User | null | 'userNotFound'>(null);
+  const [user, setUser] = useState<User | null | "userNotFound">(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -48,7 +48,7 @@ export default function AuthProvider({ children }: React.PropsWithChildren) {
       if (user) {
         setUser(user);
       } else {
-        setUser('userNotFound');
+        setUser("userNotFound");
       }
     });
     // console.log(user);
@@ -70,7 +70,7 @@ export default function AuthProvider({ children }: React.PropsWithChildren) {
     // return updatedUser;
     // console.log(data);
     // console.log(data.session?.access_token);
-    localStorage.setItem('token', JSON.stringify(data.session?.access_token));
+    localStorage.setItem("token", JSON.stringify(data.session?.access_token));
 
     console.error(error);
     setTimeout(() => {
@@ -84,7 +84,7 @@ export default function AuthProvider({ children }: React.PropsWithChildren) {
       password: password,
     });
     // console.log(data);
-    localStorage.setItem('token', JSON.stringify(data.session?.access_token));
+    localStorage.setItem("token", JSON.stringify(data.session?.access_token));
     console.error(error);
     setTimeout(() => {
       window.location.reload();
@@ -92,7 +92,7 @@ export default function AuthProvider({ children }: React.PropsWithChildren) {
   }
   function logout() {
     const data = supabase.auth.signOut();
-    setUser('userNotFound');
+    setUser("userNotFound");
     setTimeout(() => {
       window.location.reload();
     }, 200);
