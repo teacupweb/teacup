@@ -87,47 +87,66 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
     }
 
     setSelectedFile(file);
-
-    // Clear the URL input when a file is selected
-    setFormData((prev) => ({ ...prev, image: "" }));
   };
 
   const uploadImageToServer = async (file: File): Promise<string> => {
-    const uploadFormData = new FormData();
-    uploadFormData.append("upload_preset", "teacupnet");
-    uploadFormData.append("cloud_name", "dmbbkvlky");
-    uploadFormData.append("file", file);
-    const response = await fetch(
-      `https://api.cloudinary.com/v1_1/dmbbkvlky/image/upload`,
-      {
-        method: "POST",
-        body: uploadFormData,
-      },
-    );
-    console.log(response);
-    if (!response.ok) {
-      throw new Error("Upload failed");
+    try {
+      const uploadFormData = new FormData();
+      uploadFormData.append("upload_preset", "teacupnet");
+      uploadFormData.append("cloud_name", "dmbbkvlky");
+      uploadFormData.append("file", file);
+
+      console.log("Uploading to Cloudinary...", file.name);
+
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/dmbbkvlky/image/upload`,
+        {
+          method: "POST",
+          body: uploadFormData,
+        },
+      );
+
+      console.log("Cloudinary response status:", response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Cloudinary error response:", errorText);
+        throw new Error(`Upload failed: ${response.status} ${errorText}`);
+      }
+
+      const result = await response.json();
+      console.log("Cloudinary success response:", result);
+
+      const imageUrl = result.secure_url || result.url;
+
+      if (!imageUrl) {
+        console.error("No image URL in response:", result);
+        throw new Error("No image URL returned from Cloudinary");
+      }
+
+      return imageUrl;
+    } catch (error) {
+      console.error("Upload error details:", error);
+      throw error;
     }
-
-    const result = await response.json();
-    const imageUrl = result.url;
-
-    if (!imageUrl) {
-      throw new Error("No image URL returned from server");
-    }
-
-    return imageUrl;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Check if we have either a file or an existing image URL
     if (!formData.image && !selectedFile) {
       Swal.fire(
         "Error",
-        "Please provide an image URL or upload an image",
+        "Please provide an image by uploading a file",
         "error",
       );
+      return;
+    }
+
+    // Basic form validation
+    if (!formData.title.trim() || !formData.data.trim()) {
+      Swal.fire("Error", "Please fill in all required fields", "error");
       return;
     }
 
@@ -145,6 +164,8 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
         ...formData,
         image: finalImageUrl,
       };
+
+      console.log("Submitting data:", submitData);
 
       const result = await Swal.fire({
         title: isEditMode ? "Update Article?" : "Publish Article?",
@@ -169,6 +190,7 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
             "Your article has been published.",
             "success",
           );
+          // Reset form
           setFormData({
             title: "",
             image: "",
@@ -182,10 +204,10 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
         }
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Submission error:", error);
       Swal.fire(
         "Error",
-        "Failed to process your request. Please try again.",
+        `Failed to process your request: ${error instanceof Error ? error.message : "Unknown error"}`,
         "error",
       );
     } finally {
@@ -236,9 +258,9 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
 
             {/* File Upload Option */}
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              {/*<label className="block text-sm font-medium text-gray-700 mb-2">
                 Upload Image
-              </label>
+              </label>*/}
               <div className="flex items-center gap-4">
                 <input
                   ref={fileInputRef}
@@ -247,6 +269,7 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
                   onChange={handleFileSelect}
                   className="hidden"
                   id="image-upload"
+                  required={!formData.image} // Only require if no existing image
                 />
                 <label
                   htmlFor="image-upload"
@@ -268,33 +291,15 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
                     </button>
                   </div>
                 )}
+                {formData.image && !selectedFile && (
+                  <span className="text-sm text-blue-600">
+                    ✓ Using existing image
+                  </span>
+                )}
               </div>
               <p className="text-xs text-gray-500 mt-1">
                 Supported formats: JPEG, PNG, GIF. Max size: 5MB
               </p>
-            </div>
-
-            {/* Manual URL Input */}
-            <div className="group">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Or enter Image URL
-              </label>
-              <input
-                type="text"
-                value={formData.image}
-                onChange={(e) => {
-                  setFormData((prev) => ({ ...prev, image: e.target.value }));
-                  // Clear file selection when URL is entered
-                  if (selectedFile) {
-                    setSelectedFile(null);
-                    if (fileInputRef.current) {
-                      fileInputRef.current.value = "";
-                    }
-                  }
-                }}
-                className="w-full px-4 py-3 border bg-white border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all duration-200 hover:border-rose-300"
-                placeholder="https://example.com/image.jpg"
-              />
             </div>
           </div>
 

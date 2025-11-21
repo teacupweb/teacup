@@ -7,8 +7,10 @@ import {
   getBlogById,
   updateBlog,
   deleteBlog,
-} from './app/Blogs';
+} from "./app/Blogs";
+import { createInbox, getInboxes } from "./app/inbox";
 
+// Blog part --
 export type blogType = {
   id?: number;
   title: string;
@@ -38,5 +40,21 @@ export function updateUserBlog(id: number, blog: blogType) {
 export async function deleteUserBlog(id: number) {
   //   console.log(blog);
   const data = await deleteBlog(id);
+  return data;
+}
+
+// blog part end
+// inbox part --
+export function getUserInboxes(email: string) {
+  const data = getInboxes(email);
+  return data;
+}
+export type inboxType = {
+  id?: number;
+  created_by: string;
+  name: string;
+};
+export async function createUserInbox(inbox: inboxType) {
+  const data = await createInbox(inbox);
   return data;
 }
