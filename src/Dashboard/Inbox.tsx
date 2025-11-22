@@ -1,14 +1,33 @@
-import DashboardHeader from '@/Components/DashboardHeader';
-import DisplayCard from '@/Components/DisplayCards';
-// import { useParams } from 'react-router';
+import { useAuth } from "@/AuthProvider";
+import { userInboxData } from "@/backendProvider";
+import DashboardHeader from "@/Components/DashboardHeader";
+import DisplayCard from "@/Components/DisplayCards";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router";
 
 export default function Inbox() {
-  // const { id } = useParams();
-  // console.log(id);
+  const { id } = useParams();
+  const [data, setData] = useState([]);
+  const { user } = useAuth();
+  console.log(id);
+  useEffect(() => {
+    if (user === "userNotFound" || !user?.email) {
+      setData([]);
+      return;
+    }
+    userInboxData(String(id)).then((data) => {
+      if (!data) {
+        setData([]);
+      } else {
+        setData(data);
+      }
+    });
+  }, [id]);
+  console.log(data);
   return (
-    <div className='flex flex-col h-full'>
+    <div className="flex flex-col h-full">
       <DashboardHeader />
-      <div className=''>
+      <div className="">
         {/* {Array.from({ length: 4 }).map((_, index) => (
           <DisplayCard className='col-span-1' key={index} />
         ))} */}
@@ -20,48 +39,53 @@ export default function Inbox() {
             </div>
           </div>
         </DisplayCard> */}
-        <div className='flex flex-col gap-5 col-span-1'>
-          <DisplayCard className='min-h-screen my-5'>
-            <div className='h-full flex flex-col'>
-              <div className='pt-5 pb-2 mb-3 border-b-2 border-rose-600 flex items-center justify-between'>
-                <h3 className='font-bold ubuntu-font text-2xl'>inbox</h3>
+        <div className="flex flex-col gap-5 col-span-1">
+          <DisplayCard className="min-h-screen my-5">
+            <div className="h-full flex flex-col">
+              <div className="pt-5 pb-2 mb-3 border-b-2 border-rose-600 flex items-center justify-between">
+                <h3 className="font-bold ubuntu-font text-2xl">inbox</h3>
                 {/* <Link to='/dashboard/Blogs/new'> */}
-                <button className='bg-rose-600 cursor-pointer text-white px-5 py-1 rounded-2xl text-xs hover:bg-rose-700 transition'>
+                <button className="bg-rose-600 cursor-pointer text-white px-5 py-1 rounded-2xl text-xs hover:bg-rose-700 transition">
                   Inbox
                 </button>
                 {/* </Link> */}
               </div>
               <div>
-                <div className='relative overflow-x-auto shadow-md sm:rounded-lg'>
-                  <table className='w-full text-sm text-left rtl:text-right text-gray-500 '>
-                    <thead className='text-xs text-gray-200 uppercase bg-rose-500'>
+                <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+                  <table className="w-full text-sm text-left rtl:text-right text-gray-500 ">
+                    <thead className="text-xs text-gray-200 uppercase bg-rose-500">
                       <tr>
-                        <th scope='col' className='px-6 py-3'>
+                        <th scope="col" className="px-6 py-3">
                           Messages
                         </th>
-                        <th scope='col' className='px-6 py-3'>
-                          <span className='sr-only'>View</span>
+                        <th scope="col" className="px-6 py-3">
+                          <span className="sr-only">View</span>
                         </th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr className='bg-white border-b border-gray-200 hover:bg-gray-50 '>
-                        <th
-                          scope='row'
-                          className='px-6 py-4 font-medium text-gray-900 whitespace-nowrap'
+                      {data.map((data) => (
+                        <tr
+                          key={data.id}
+                          className="bg-white border-b border-gray-200 hover:bg-gray-50 "
                         >
-                          Contact Info
-                        </th>
-
-                        <td className='px-6 py-4 text-right'>
-                          <a
-                            href='#'
-                            className='font-medium text-rose-600 hover:underline'
+                          <th
+                            scope="row"
+                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           >
-                            Visit
-                          </a>
-                        </td>
-                      </tr>
+                            {data.id}
+                          </th>
+
+                          <td className="px-6 py-4 text-right">
+                            <a
+                              href="#"
+                              className="font-medium text-rose-600 hover:underline"
+                            >
+                              View
+                            </a>
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>

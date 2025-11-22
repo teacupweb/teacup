@@ -8,7 +8,7 @@ import {
   updateBlog,
   deleteBlog,
 } from "./app/Blogs";
-import { createInbox, getInboxes } from "./app/inbox";
+import { createInbox, getInboxData, getInboxes } from "./app/inbox";
 
 // Blog part --
 export type blogType = {
@@ -56,5 +56,10 @@ export type inboxType = {
 };
 export async function createUserInbox(inbox: inboxType) {
   const data = await createInbox(inbox);
+  return data;
+}
+//Inbox Data
+export async function userInboxData(id: string) {
+  const data = await getInboxData(id);
   return data;
 }
