@@ -36,5 +36,27 @@
       "data": 67,
       "description": "Total number of completed tasks."
     }
+  ],
+  "sharing": [
+    {
+      "name": "Sarah Johnson",
+      "email": "sarah.johnson@example.com",
+      "status": "Member"
+    },
+    {
+      "name": "John Doe",
+      "email": "john.doe@example.com",
+      "status": "Member"
+    },
+    {
+      "name": "Jane Smith",
+      "email": "jane.smith@example.com",
+      "status": "Member"
+    },
+    {
+      "name": "Jane Doe",
+      "email": "jane.doe@example.com",
+      "status": "Pending"
+    }
   ]
 }

@@ -144,3 +144,8 @@ export async function deleteUserInboxData(id: string) {
   const data = await deleteInboxData(id);
   return data;
 }
+
+export async function deleteUserInbox(id: string) {
+  const data = await deleteInbox(id);
+  return data;
+}

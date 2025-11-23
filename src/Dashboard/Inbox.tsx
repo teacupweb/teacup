@@ -1,14 +1,15 @@
-import { useInboxData, deleteUserInboxData } from "@/backendProvider";
+import { useInboxData, deleteUserInboxData, deleteUserInbox } from "@/backendProvider";
 import DashboardHeader from "@/Components/DashboardHeader";
 import DisplayCard from "@/Components/DisplayCards";
 import { useState } from "react";
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
 import Modal, { openModal } from "@/Components/Modal";
 import Spinner from "@/Components/Spinner";
 import Swal from "sweetalert2";
 
 export default function Inbox() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [modalData, setModalData] = useState<any>(null);
   const { inboxData: data, loading, refetch } = useInboxData(id);
   
@@ -52,6 +53,40 @@ export default function Inbox() {
     });
   };
 
+  const handleDeleteInbox = async () => {
+    Swal.fire({
+      title: 'Delete this Inbox?',
+      text: "You won't be able to revert this! All messages will be lost.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#e11d48',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Yes, delete it!'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          if (id) {
+            await deleteUserInbox(id);
+            Swal.fire(
+              'Deleted!',
+              'The inbox has been deleted.',
+              'success'
+            ).then(() => {
+              navigate('/dashboard/Inboxes');
+            });
+          }
+        } catch (error) {
+          console.error("Error deleting inbox:", error);
+          Swal.fire(
+            'Error!',
+            'Failed to delete inbox.',
+            'error'
+          );
+        }
+      }
+    });
+  };
+
   return (
     <div className="flex flex-col h-full">
       <DashboardHeader />
@@ -61,8 +96,11 @@ export default function Inbox() {
             <div className="h-full flex flex-col">
               <div className="pt-5 pb-2 mb-3 border-b-2 border-rose-600 flex items-center justify-between">
                 <h3 className="font-bold ubuntu-font text-2xl">inbox</h3>
-                <button className="bg-rose-600 cursor-pointer text-white px-5 py-1 rounded-2xl text-xs hover:bg-rose-700 transition">
-                  Delete
+                <button 
+                  onClick={handleDeleteInbox}
+                  className="bg-rose-600 cursor-pointer text-white px-5 py-1 rounded-2xl text-xs hover:bg-rose-700 transition"
+                >
+                  Delete Inbox
                 </button>
               </div>
               <div>
