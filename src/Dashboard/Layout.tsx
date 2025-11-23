@@ -17,7 +17,7 @@ export default function Layout() {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main className='px-10 w-full'>
+      <main className='px-10 w-full bg-slate-50/50 min-h-screen bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:20px_20px]'>
         <div className='block lg:hidden'>
           <SidebarTrigger />
         </div>

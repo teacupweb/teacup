@@ -31,7 +31,7 @@ function Dashboard() {
         {websiteData.info.map((item, index) => (
           <DisplayCard
             resetClass
-            className='col-span-1 bg-rose-500 text-white '
+            className='col-span-1 bg-gradient-to-br from-white to-rose-50/50 border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 group'
             key={index}
           >
             {/* <DynamicIcon
@@ -39,28 +39,28 @@ function Dashboard() {
               name={item.icon}
               size={48}
             /> */}
-            <h3 className='font-extrabold ubuntu-font text-2xl my-2'>
+            <h3 className='font-bold ubuntu-font text-lg text-slate-500 mb-1'>
               {item.title}
             </h3>
-            <span className='text-xl text-gray-100 mb-5'>
+            <span className='text-sm text-slate-400 mb-4 block'>
               {item.description}
             </span>
-            <span className='font-bold text-7xl ubuntu-font block'>
+            <span className='font-bold text-5xl ubuntu-font block text-slate-800 group-hover:text-rose-600 transition-colors'>
               {Array.isArray(item.data) ? item.data.length : item.data}
             </span>
           </DisplayCard>
         ))}
         <DisplayCard className='col-span-2 row-span-2'>
           <div className='h-full flex flex-col'>
-            <div className='pt-5 pb-2 mb-3 border-b-2 border-rose-600'>
-              <h3 className='font-bold mb-2 ubuntu-font text-2xl'>
+            <div className='pt-5 pb-4 mb-3 border-b border-slate-100'>
+              <h3 className='font-bold mb-1 ubuntu-font text-xl text-slate-800'>
                 New Messages
               </h3>
             </div>
             <div>
-              <div className='relative overflow-x-auto shadow-md sm:rounded-lg'>
-                <table className='w-full text-sm text-left rtl:text-right text-gray-500'>
-                  <thead className='text-xs text-gray-200 uppercase bg-rose-500'>
+              <div className='relative overflow-x-auto sm:rounded-lg'>
+                <table className='w-full text-sm text-left rtl:text-right text-slate-500'>
+                  <thead className='text-xs text-slate-700 uppercase bg-slate-50'>
                     <tr>
                       <th scope='col' className='px-6 py-3'>
                         Name
@@ -78,7 +78,7 @@ function Dashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr className='bg-white border-b border-gray-200 hover:bg-gray-50'>
+                    <tr className='bg-white border-b border-slate-100 hover:bg-slate-50 transition-colors'>
                       <th
                         scope='row'
                         className='px-6 py-4 font-medium text-gray-900 whitespace-nowrap'
@@ -88,6 +88,63 @@ function Dashboard() {
 
                       <td className='px-6 py-4'>Inquiry</td>
                       <td className='px-6 py-4'>11-9-2025</td>
+                      <td className='px-6 py-4 text-right'>
+                        <a
+                          href='#'
+                          className='font-medium text-rose-600 hover:underline'
+                        >
+                          Edit
+                        </a>
+                      </td>
+                    </tr>
+                    <tr className='bg-white border-b border-slate-100 hover:bg-slate-50 transition-colors'>
+                      <th
+                        scope='row'
+                        className='px-6 py-4 font-medium text-gray-900 whitespace-nowrap'
+                      >
+                        Jane Smith
+                      </th>
+
+                      <td className='px-6 py-4'>Support</td>
+                      <td className='px-6 py-4'>12-9-2025</td>
+                      <td className='px-6 py-4 text-right'>
+                        <a
+                          href='#'
+                          className='font-medium text-rose-600 hover:underline'
+                        >
+                          Edit
+                        </a>
+                      </td>
+                    </tr>
+                    <tr className='bg-white border-b border-slate-100 hover:bg-slate-50 transition-colors'>
+                      <th
+                        scope='row'
+                        className='px-6 py-4 font-medium text-gray-900 whitespace-nowrap'
+                      >
+                        Alice Johnson
+                      </th>
+
+                      <td className='px-6 py-4'>Sales</td>
+                      <td className='px-6 py-4'>13-9-2025</td>
+                      <td className='px-6 py-4 text-right'>
+                        <a
+                          href='#'
+                          className='font-medium text-rose-600 hover:underline'
+                        >
+                          Edit
+                        </a>
+                      </td>
+                    </tr>
+                    <tr className='bg-white border-b border-slate-100 hover:bg-slate-50 transition-colors'>
+                      <th
+                        scope='row'
+                        className='px-6 py-4 font-medium text-gray-900 whitespace-nowrap'
+                      >
+                        Bob Brown
+                      </th>
+
+                      <td className='px-6 py-4'>General</td>
+                      <td className='px-6 py-4'>14-9-2025</td>
                       <td className='px-6 py-4 text-right'>
                         <a
                           href='#'
@@ -107,7 +164,7 @@ function Dashboard() {
           </div>
         </DisplayCard>
         <div className='flex flex-col gap-5 col-span-2'>
-          <DisplayCard className='col-span-2 row-span-2 p-4 sm:p-6 from-slate-50 to-blue-50/30 border border-slate-200/60 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300'>
+          <DisplayCard className='col-span-2 row-span-2 p-4 sm:p-6 bg-white border border-slate-100 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300'>
             <div className='h-full flex flex-col'>
               {/* Header Section */}
               <div className='flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 sm:mb-6 gap-3 sm:gap-0'>
@@ -303,6 +360,73 @@ function Dashboard() {
             </div>
           </DisplayCard> */}
         </div>
+        <DisplayCard className='col-span-1'>
+          <div className='h-full flex flex-col'>
+            <div className='pt-5 pb-4 mb-3 border-b border-slate-100'>
+              <h3 className='font-bold mb-1 ubuntu-font text-xl text-slate-800'>
+                Team Members
+              </h3>
+            </div>
+            <div className='flex flex-col gap-4'>
+              {[
+                { name: 'Alex M.', role: 'Admin', color: 'bg-blue-100 text-blue-600' },
+                { name: 'Sarah K.', role: 'Editor', color: 'bg-green-100 text-green-600' },
+                { name: 'Mike R.', role: 'Viewer', color: 'bg-purple-100 text-purple-600' },
+              ].map((member, i) => (
+                <div key={i} className='flex items-center justify-between'>
+                  <div className='flex items-center gap-3'>
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm ${member.color}`}>
+                      {member.name.split(' ')[0][0]}{member.name.split(' ')[1][0]}
+                    </div>
+                    <div>
+                      <p className='text-sm font-semibold text-slate-700'>{member.name}</p>
+                      <p className='text-xs text-slate-500'>{member.role}</p>
+                    </div>
+                  </div>
+                  <div className='w-2 h-2 rounded-full bg-green-500'></div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </DisplayCard>
+        <DisplayCard className='col-span-1'>
+          <div className='h-full flex flex-col'>
+            <div className='pt-5 pb-4 mb-3 border-b border-slate-100 flex justify-between items-center'>
+              <h3 className='font-bold mb-1 ubuntu-font text-xl text-slate-800'>
+                Current Plan
+              </h3>
+              <span className='bg-rose-100 text-rose-600 text-xs font-bold px-2 py-1 rounded-full uppercase'>
+                Pro
+              </span>
+            </div>
+            <div className='flex flex-col gap-6 mt-2'>
+              <div className='space-y-4'>
+                <div>
+                   <div className='flex justify-between text-xs mb-1'>
+                      <span className='text-slate-600 font-medium'>Projects Created</span>
+                      <span className='text-slate-400'>8 / 10</span>
+                   </div>
+                   <div className='w-full bg-slate-100 rounded-full h-2'>
+                      <div className='bg-gradient-to-r from-rose-500 to-rose-400 h-2 rounded-full' style={{ width: '80%' }}></div>
+                   </div>
+                </div>
+                <div>
+                   <div className='flex justify-between text-xs mb-1'>
+                      <span className='text-slate-600 font-medium'>API Usage</span>
+                      <span className='text-slate-400'>8.5k / 10k</span>
+                   </div>
+                   <div className='w-full bg-slate-100 rounded-full h-2'>
+                      <div className='bg-gradient-to-r from-blue-500 to-blue-400 h-2 rounded-full' style={{ width: '85%' }}></div>
+                   </div>
+                </div>
+              </div>
+              
+              <button className='w-full py-2 rounded-xl border border-slate-200 text-slate-600 font-medium text-sm hover:bg-slate-50 transition-colors'>
+                Manage Subscription
+              </button>
+            </div>
+          </div>
+        </DisplayCard>
       </div>
     </div>
   );

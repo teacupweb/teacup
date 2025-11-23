@@ -21,8 +21,9 @@ function DisplayCard({
 }) {
   return (
     <div
-      className={`${className} p-5 min-h-[250px] rounded-2xl ${
-        !resetClass && 'border-rose-200 border bg-rose-50'
+      className={`${className} p-5 min-h-[250px] rounded-2xl transition-all duration-300 ${
+        !resetClass &&
+        'bg-white border border-slate-100 shadow-sm hover:shadow-md'
       }`}
     >
       {children}
