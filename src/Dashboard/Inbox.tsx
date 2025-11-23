@@ -4,12 +4,14 @@ import DashboardHeader from "@/Components/DashboardHeader";
 import DisplayCard from "@/Components/DisplayCards";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
+import Modal, { openModal } from "@/Components/Modal";
 
 export default function Inbox() {
   const { id } = useParams();
   const [data, setData] = useState([]);
+  const [modalData, setModalData] = useState(null);
   const { user } = useAuth();
-  console.log(id);
+  // console.log(id);
   useEffect(() => {
     if (user === "userNotFound" || !user?.email) {
       setData([]);
@@ -23,7 +25,7 @@ export default function Inbox() {
       }
     });
   }, [id]);
-  console.log(data);
+  // console.log(data);
   return (
     <div className="flex flex-col h-full">
       <DashboardHeader />
@@ -73,16 +75,19 @@ export default function Inbox() {
                             scope="row"
                             className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                           >
-                            {data.id}
+                            {data.data.name || data.title || "Unknown"}
                           </th>
 
-                          <td className="px-6 py-4 text-right">
-                            <a
-                              href="#"
+                          <td className="px-6 py-4 text-right ">
+                            <button
+                              onClick={() => {
+                                openModal("inbox-data-modal");
+                                setModalData(data?.data);
+                              }}
                               className="font-medium text-rose-600 hover:underline"
                             >
                               View
-                            </a>
+                            </button>
                           </td>
                         </tr>
                       ))}
@@ -96,6 +101,33 @@ export default function Inbox() {
           {/* <DisplayCard className='col-span-2' /> */}
         </div>
       </div>
+      <Modal id="inbox-data-modal">
+        <div className="p-6 bg-white">
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">Details</h2>
+          <div className="space-y-4">
+            {modalData &&
+              Object.keys(modalData).map((key) => (
+                <div
+                  key={key}
+                  className="flex border-b border-rose-100 pb-3 last:border-b-0"
+                >
+                  <div className="w-1/3 text-sm font-bold text-rose-500 capitalize">
+                    {key.replace(/([A-Z])/g, " $1").trim()}
+                  </div>
+                  <div className="w-2/3 text-gray-900">{modalData[key]}</div>
+                </div>
+              ))}
+          </div>
+          <div className="flex justify-end mt-6">
+            <button
+              // onClick={() => closeModal("inbox-data-modal")}
+              className="px-4 py-2 text-sm font-medium text-white bg-rose-600 rounded hover:bg-rose-700"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
