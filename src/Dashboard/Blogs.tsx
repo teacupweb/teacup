@@ -1,29 +1,15 @@
 import DisplayCard from '@/Components/DisplayCards';
 import DashboardHeader from '../Components/DashboardHeader';
 import { Link } from 'react-router';
-import { deleteUserBlog, userBlogs, type blogType } from '@/backendProvider';
-import { useEffect, useState } from 'react';
+import { deleteUserBlog, useUserBlogs, type blogType } from '@/backendProvider';
 import { useAuth } from '@/AuthProvider';
 import Swal from 'sweetalert2';
+import Spinner from '@/Components/Spinner';
 
 function Blogs() {
   const { user } = useAuth();
-  const [data, setData] = useState<blogType[]>([]);
+  const { blogs: data, loading, refetch } = useUserBlogs(user === 'userNotFound' ? null : user?.email);
 
-  useEffect(() => {
-    if (user === 'userNotFound' || !user?.email) {
-      setData([]);
-      return;
-    }
-    userBlogs(user.email).then((data) => {
-      if (!data) {
-        setData([]);
-      } else {
-        setData(data as blogType[]);
-      }
-    });
-  }, [user]);
-  // console.log(data);
   const handleDeleteBlog = (id: number | undefined) => async () => {
     Swal.fire({
       title: 'Are you sure?',
@@ -38,8 +24,7 @@ function Blogs() {
         if (id !== undefined) {
           deleteUserBlog(id).then(() => {
             Swal.fire('Deleted!', 'Your blog has been deleted.', 'success');
-            // Update the local state to remove the deleted blog
-            setData((prevData) => prevData.filter((blog) => blog.id !== id));
+            refetch();
           });
         }
       }
@@ -90,34 +75,43 @@ function Blogs() {
                         </th>
                       </tr>
                     </thead>
-                    <tbody>
-                      {data.map((blog: blogType) => (
-                        <tr className='bg-white border-b border-gray-200 hover:bg-gray-50 '>
-                          <th
-                            scope='row'
-                            className='px-6 py-4 font-medium text-gray-900 whitespace-nowrap'
-                          >
-                            {blog.title}
-                          </th>
 
-                          <td className='px-6 py-4 text-right'>
-                            <button
-                              onClick={handleDeleteBlog(blog.id)}
-                              className='font-medium text-red-600 hover:underline'
-                            >
-                              Delete
-                            </button>
-                          </td>
-                          <td className='px-6 py-4 text-right'>
-                            <Link
-                              to={`/dashboard/Blogs/edit/${blog.id}`}
-                              className='font-medium text-rose-600 hover:underline'
-                            >
-                              Edit
-                            </Link>
+                    <tbody>
+                      {loading ? (
+                        <tr>
+                          <td colSpan={3} className="py-8">
+                            <Spinner className="mx-auto" />
                           </td>
                         </tr>
-                      ))}
+                      ) : (
+                        data.map((blog: blogType) => (
+                          <tr className='bg-white border-b border-gray-200 hover:bg-gray-50 ' key={blog.id}>
+                            <th
+                              scope='row'
+                              className='px-6 py-4 font-medium text-gray-900 whitespace-nowrap'
+                            >
+                              {blog.title}
+                            </th>
+
+                            <td className='px-6 py-4 text-right'>
+                              <button
+                                onClick={handleDeleteBlog(blog.id)}
+                                className='font-medium text-red-600 hover:underline'
+                              >
+                                Delete
+                              </button>
+                            </td>
+                            <td className='px-6 py-4 text-right'>
+                              <Link
+                                to={`/dashboard/Blogs/edit/${blog.id}`}
+                                className='font-medium text-rose-600 hover:underline'
+                              >
+                                Edit
+                              </Link>
+                            </td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
                 </div>

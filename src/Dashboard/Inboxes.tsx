@@ -1,39 +1,26 @@
 import { useAuth } from "@/AuthProvider";
 import {
   createUserInbox,
-  getUserInboxes,
+  useUserInboxes,
   type inboxType,
 } from "@/backendProvider";
 import DashboardHeader from "@/Components/DashboardHeader";
 import DisplayCard from "@/Components/DisplayCards";
 import Modal, { openModal } from "@/Components/Modal";
-import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import Swal from "sweetalert2";
+import Spinner from "@/Components/Spinner";
 
 export default function Inboxes() {
   const { user } = useAuth();
-  const [data, setData] = useState<inboxType[]>([]);
-
-  useEffect(() => {
-    if (user === "userNotFound" || !user?.email) {
-      setData([]);
-      return;
-    }
-    getUserInboxes(user.email).then((data) => {
-      if (!data) {
-        setData([]);
-      } else {
-        setData(data as inboxType[]);
-      }
-    });
-  }, [user]);
+  const { inboxes: data, loading, refetch } = useUserInboxes(user === 'userNotFound' ? null : user?.email);
 
   const handleCreateInbox = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const form = e.currentTarget;
-    const name = form.name.value.trim();
+    // @ts-ignore
+    const name = form.elements.namedItem('name')?.value.trim();
 
     if (!name) {
       Swal.fire({
@@ -48,7 +35,7 @@ export default function Inboxes() {
     try {
       const inboxData: inboxType = {
         name: name,
-        created_by: user?.email,
+        created_by: (user !== 'userNotFound' && user?.email) ? user.email : '',
       };
 
       // Show loading state
@@ -79,15 +66,7 @@ export default function Inboxes() {
         }
 
         // Refresh the inbox list
-        if (user?.email) {
-          getUserInboxes(user.email).then((data) => {
-            if (!data) {
-              setData([]);
-            } else {
-              setData(data as inboxType[]);
-            }
-          });
-        }
+        refetch();
 
         // Reset the form
         form.reset();
@@ -135,28 +114,36 @@ export default function Inboxes() {
                       </tr>
                     </thead>
                     <tbody>
-                      {data.map((inbox) => (
-                        <tr
-                          key={inbox.id}
-                          className="bg-white border-b border-gray-200 hover:bg-gray-50 "
-                        >
-                          <th
-                            scope="row"
-                            className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
-                          >
-                            {inbox.name}
-                          </th>
-
-                          <td className="px-6 py-4 text-right">
-                            <Link
-                              to={`/dashboard/inboxes/${inbox.id}`}
-                              className="font-medium text-rose-600 hover:underline"
-                            >
-                              Visit
-                            </Link>
+                      {loading ? (
+                        <tr>
+                          <td colSpan={2} className="py-8">
+                            <Spinner className="mx-auto" />
                           </td>
                         </tr>
-                      ))}
+                      ) : (
+                        data.map((inbox) => (
+                          <tr
+                            key={inbox.id}
+                            className="bg-white border-b border-gray-200 hover:bg-gray-50 "
+                          >
+                            <th
+                              scope="row"
+                              className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                            >
+                              {inbox.name}
+                            </th>
+
+                            <td className="px-6 py-4 text-right">
+                              <Link
+                                to={`/dashboard/inboxes/${inbox.id}`}
+                                className="font-medium text-rose-600 hover:underline"
+                              >
+                                Visit
+                              </Link>
+                            </td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
                 </div>

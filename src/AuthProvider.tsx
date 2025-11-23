@@ -6,8 +6,7 @@ import {
   type UserResponse,
 } from "@supabase/supabase-js";
 import supabase from "./supabaseClient";
-// import { Auth } from '@supabase/auth-ui-react';
-// import { ThemeSupa } from '@supabase/auth-ui-shared';
+import Spinner from "@/Components/Spinner";
 
 interface valueType {
   session: Session | null;
@@ -26,33 +25,36 @@ export const useAuth = () => useContext(authContext);
 export default function AuthProvider({ children }: React.PropsWithChildren) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null | "userNotFound">(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    const getSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
       setSession(session);
-    });
-    // console.log(session);
+      setUser(session?.user ?? 'userNotFound');
+      setLoading(false);
+    };
+
+    getSession();
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
+      setUser(session?.user ?? 'userNotFound');
+      setLoading(false);
     });
-    // console.log(session);
+
     return () => subscription.unsubscribe();
   }, []);
-  // console.log(user);
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      // setUser(user);
-      if (user) {
-        setUser(user);
-      } else {
-        setUser("userNotFound");
-      }
-    });
-    // console.log(user);
-  }, []);
+
+  if (loading) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-slate-50">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
   async function signUpUser(email: string, password: string, name: string) {
     const { data, error } = await supabase.auth.signUp({
       email: email,

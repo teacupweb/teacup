@@ -23,3 +23,15 @@ export async function getInboxData(id: string) {
   if (error) throw error;
   return data;
 }
+
+export async function deleteInboxData(id: string) {
+  const { error } = await supabase.from("Inbox_data").delete().eq("id", id);
+  if (error) throw error;
+  return true;
+}
+
+export async function deleteInbox(id: string) {
+  const { error } = await supabase.from("Inboxes").delete().eq("id", id);
+  if (error) throw error;
+  return true;
+}

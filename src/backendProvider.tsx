@@ -1,6 +1,4 @@
-// import supabase from './supabaseClient';
-// import { Database } from './database.types';
-
+import { useState, useEffect, useCallback } from 'react';
 import {
   getBlogs,
   insertBlog,
@@ -8,7 +6,7 @@ import {
   updateBlog,
   deleteBlog,
 } from "./app/Blogs";
-import { createInbox, getInboxData, getInboxes } from "./app/inbox";
+import { createInbox, getInboxData, getInboxes, deleteInboxData, deleteInbox } from "./app/inbox";
 
 // Blog part --
 export type blogType = {
@@ -18,10 +16,35 @@ export type blogType = {
   data: string;
   created_by: string;
 };
-export async function userBlogs(email: string) {
-  //   const { user } = useAuth();
-  const data = await getBlogs(email);
-  return data;
+
+export function useUserBlogs(email: string | undefined | null) {
+  const [blogs, setBlogs] = useState<blogType[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<any>(null);
+
+  const fetchBlogs = useCallback(async () => {
+    if (!email) {
+      setBlogs([]);
+      return;
+    }
+    setLoading(true);
+    try {
+      const data = await getBlogs(email);
+      setBlogs((data as blogType[]) || []);
+      setError(null);
+    } catch (err) {
+      setError(err);
+      console.error("Error fetching blogs:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [email]);
+
+  useEffect(() => {
+    fetchBlogs();
+  }, [fetchBlogs]);
+
+  return { blogs, loading, error, refetch: fetchBlogs };
 }
 
 export function postBlog(data: blogType) {
@@ -45,10 +68,37 @@ export async function deleteUserBlog(id: number) {
 
 // blog part end
 // inbox part --
-export function getUserInboxes(email: string) {
-  const data = getInboxes(email);
-  return data;
+
+export function useUserInboxes(email: string | undefined | null) {
+  const [inboxes, setInboxes] = useState<inboxType[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<any>(null);
+
+  const fetchInboxes = useCallback(async () => {
+    if (!email) {
+      setInboxes([]);
+      return;
+    }
+    setLoading(true);
+    try {
+      const data = await getInboxes(email);
+      setInboxes((data as inboxType[]) || []);
+      setError(null);
+    } catch (err) {
+      setError(err);
+      console.error("Error fetching inboxes:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [email]);
+
+  useEffect(() => {
+    fetchInboxes();
+  }, [fetchInboxes]);
+
+  return { inboxes, loading, error, refetch: fetchInboxes };
 }
+
 export type inboxType = {
   id?: number;
   created_by: string;
@@ -59,7 +109,38 @@ export async function createUserInbox(inbox: inboxType) {
   return data;
 }
 //Inbox Data
-export async function userInboxData(id: string) {
-  const data = await getInboxData(id);
+
+export function useInboxData(id: string | undefined) {
+  const [inboxData, setInboxData] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<any>(null);
+
+  const fetchInboxData = useCallback(async () => {
+    if (!id) {
+      setInboxData(null);
+      return;
+    }
+    setLoading(true);
+    try {
+      const data = await getInboxData(id);
+      setInboxData(data);
+      setError(null);
+    } catch (err) {
+      setError(err);
+      console.error("Error fetching inbox data:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    fetchInboxData();
+  }, [fetchInboxData]);
+
+  return { inboxData, loading, error, refetch: fetchInboxData };
+}
+
+export async function deleteUserInboxData(id: string) {
+  const data = await deleteInboxData(id);
   return data;
 }
