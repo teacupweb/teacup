@@ -1,10 +1,10 @@
 // Modal.tsx
-import React, { useEffect, useState, ReactNode } from "react";
+import React, { useEffect, useState } from "react";
 
 // Types
 interface ModalProps {
   id?: string;
-  children: ReactNode;
+  children: any;
   isOpen?: boolean;
   onClose?: () => void;
   closeOnBackdrop?: boolean;
