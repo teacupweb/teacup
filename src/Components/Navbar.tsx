@@ -13,9 +13,21 @@ function Navbar() {
         </div>
         <div>
           <ul className='flex gap-5 items-center'>
-            <li>Home</li>
-            <li>About</li>
-            <li>Contact</li>
+            <li>
+              <Link to='/' className='hover:text-rose-600 transition'>
+                Home
+              </Link>
+            </li>
+            <li>
+              <Link to='/about' className='hover:text-rose-600 transition'>
+                About
+              </Link>
+            </li>
+            <li>
+              <Link to='/contact' className='hover:text-rose-600 transition'>
+                Contact
+              </Link>
+            </li>
             <li>Blogs</li>
             <li>
               {user !== 'userNotFound' ? (

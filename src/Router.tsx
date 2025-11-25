@@ -9,11 +9,19 @@ import Naviq from './Dashboard/Naviq';
 import NewBlog from './Dashboard/NewBlog';
 import AuthPage from './Dashboard/Auth';
 import Inbox from './Dashboard/Inbox';
+import About from './Pages/About';
+import Contact from './Pages/Contact';
+import PublicBlogs from './Pages/Blogs';
+import BlogPost from './Pages/BlogPost';
 
 function Router() {
   return (
     <Routes>
       <Route path='/' element={<App />} />
+      <Route path='/about' element={<About />} />
+      <Route path='/contact' element={<Contact />} />
+      <Route path='/blogs' element={<PublicBlogs />} />
+      <Route path='/blogs/:id' element={<BlogPost />} />
       <Route path='/login' element={<AuthPage isLogin />} />
       <Route path='/signup' element={<AuthPage isLogin={false} />} />
       <Route path='*' element={<App />} />
