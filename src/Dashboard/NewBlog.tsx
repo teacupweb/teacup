@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
+import Quill from "quill";
 import "quill/dist/quill.snow.css";
-import { useQuill } from "react-quilljs";
 import {
   getUserBlogById,
   postBlog,
@@ -12,37 +12,15 @@ import { useParams, useNavigate } from "react-router";
 import Swal from "sweetalert2";
 
 const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
-  const theme = "snow";
   const navigate = useNavigate();
-  
-  const modules = {
-    toolbar: [
-      ["bold", "italic", "underline", "strike"],
-      [{ list: "ordered" }, { list: "bullet" }],
-      [{ header: [1, 2, 3, 4, 5, 6, false] }],
-      ["link", "image", "video"],
-      [{ color: [] }, { background: [] }],
-      ["clean"],
-    ],
-  };
-  
-  const placeholder = "Write your article content here...";
-  const formats = [
-    "bold", "italic", "underline", "strike",
-    "list", "bullet", "header",
-    "link", "image", "video",
-    "color", "background"
-  ];
-
-  const { quill, quillRef } = useQuill({
-    theme,
-    modules,
-    formats,
-    placeholder,
-  });
-
   const { id } = useParams();
   const { user } = useAuth();
+
+  // Refs for Quill
+  const editorContainerRef = useRef<HTMLDivElement>(null);
+  const quillInstanceRef = useRef<Quill | null>(null);
+  const isQuillInitialized = useRef(false);
+
   const [formData, setFormData] = useState({
     title: "",
     image: "",
@@ -54,23 +32,44 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isDataLoaded, setIsDataLoaded] = useState(false);
 
-  // Handle Quill Editor Data Sync
+  // Initialize Quill
   useEffect(() => {
-    if (quill) {
-      // Update state when text changes
-      quill.on('text-change', () => {
+    if (editorContainerRef.current && !isQuillInitialized.current) {
+      const modules = {
+        toolbar: [
+          ["bold", "italic", "underline", "strike"],
+          [{ list: "ordered" }, { list: "bullet" }],
+          [{ header: [1, 2, 3, 4, 5, 6, false] }],
+          ["link", "image", "video"],
+          [{ color: [] }, { background: [] }],
+          ["clean"],
+        ],
+      };
+
+      const quill = new Quill(editorContainerRef.current, {
+        theme: "snow",
+        modules,
+        placeholder: "Write your article content here...",
+      });
+
+      quillInstanceRef.current = quill;
+      isQuillInitialized.current = true;
+
+      // Handle text change
+      quill.on("text-change", () => {
         setFormData((prev) => ({ ...prev, data: quill.root.innerHTML }));
       });
 
-      // Initial load for Edit Mode
-      if (isEditMode && formData.data && !isDataLoaded) {
-        quill.clipboard.dangerouslyPasteHTML(formData.data);
-        setIsDataLoaded(true);
+      // If we have initial data (e.g. from a re-render or if data loaded fast), set it
+      if (formData.data && formData.data !== "<p><br></p>") {
+        // Check if content is different to avoid cursor jumps or loops
+        if (quill.root.innerHTML !== formData.data) {
+          quill.clipboard.dangerouslyPasteHTML(formData.data);
+        }
       }
     }
-  }, [quill, isEditMode, formData.data, isDataLoaded]);
+  }, []); // Run once on mount
 
   // Fetch Blog Data for Edit Mode
   useEffect(() => {
@@ -80,6 +79,11 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
           setFormData(data);
           if (data.image) {
             setPreviewUrl(data.image);
+          }
+
+          // Update Quill content if initialized
+          if (quillInstanceRef.current && data.data) {
+            quillInstanceRef.current.clipboard.dangerouslyPasteHTML(data.data);
           }
         }
       });
@@ -103,7 +107,7 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
     }
 
     setSelectedFile(file);
-    
+
     // Create preview URL
     const objectUrl = URL.createObjectURL(file);
     setPreviewUrl(objectUrl);
@@ -112,12 +116,18 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
   const uploadImageToServer = async (file: File): Promise<string> => {
     try {
       const uploadFormData = new FormData();
-      uploadFormData.append("upload_preset", "teacupnet");
-      uploadFormData.append("cloud_name", "dmbbkvlky");
+      uploadFormData.append(
+        "upload_preset",
+        import.meta.env.VITE_CLOUDINARY_NAME,
+      );
+      uploadFormData.append(
+        "cloud_name",
+        import.meta.env.VITE_CLOUDINARY_PRESET,
+      );
       uploadFormData.append("file", file);
 
       const response = await fetch(
-        `https://api.cloudinary.com/v1_1/dmbbkvlky/image/upload`,
+        `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_NAME}/image/upload`,
         {
           method: "POST",
           body: uploadFormData,
@@ -157,7 +167,11 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
     }
 
     // Basic form validation
-    if (!formData.title.trim() || !formData.data.trim() || formData.data === '<p><br></p>') {
+    if (
+      !formData.title.trim() ||
+      !formData.data.trim() ||
+      formData.data === "<p><br></p>"
+    ) {
       Swal.fire("Error", "Please fill in all required fields", "error");
       return;
     }
@@ -176,7 +190,9 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
         ...formData,
         image: finalImageUrl,
         // Ensure created_by is set if it wasn't already
-        created_by: formData.created_by || (user && typeof user === "object" ? user.email : ""),
+        created_by:
+          formData.created_by ||
+          (user && typeof user === "object" ? user.email : ""),
       };
 
       const result = await Swal.fire({
@@ -193,17 +209,21 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
 
       if (result.isConfirmed) {
         if (isEditMode) {
-          await updateUserBlog(Number(id), submitData);
-          await Swal.fire("Updated!", "Your article has been updated.", "success");
+          await updateUserBlog(Number(id), submitData as blogType);
+          await Swal.fire(
+            "Updated!",
+            "Your article has been updated.",
+            "success",
+          );
         } else {
-          await postBlog(submitData);
+          await postBlog(submitData as blogType);
           await Swal.fire(
             "Published!",
             "Your article has been published.",
             "success",
           );
         }
-        navigate('/dashboard/Blogs');
+        navigate("/dashboard/Blogs");
       }
     } catch (error) {
       console.error("Submission error:", error);
@@ -226,7 +246,7 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
   };
 
   const handleCancel = () => {
-    navigate('/dashboard/Blogs');
+    navigate("/dashboard/Blogs");
   };
 
   return (
@@ -243,8 +263,19 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
             onClick={handleCancel}
             className="text-gray-400 hover:text-gray-600 transition-colors"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -282,16 +313,18 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                 id="image-upload"
               />
-              
+
               {previewUrl ? (
                 <div className="relative inline-block max-h-64 rounded-lg overflow-hidden shadow-md">
-                  <img 
-                    src={previewUrl} 
-                    alt="Preview" 
+                  <img
+                    src={previewUrl}
+                    alt="Preview"
                     className="max-h-64 w-auto object-cover"
                   />
                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <p className="text-white font-medium">Click to change image</p>
+                    <p className="text-white font-medium">
+                      Click to change image
+                    </p>
                   </div>
                   <button
                     type="button"
@@ -302,20 +335,43 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
                     className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 z-20"
                     title="Remove image"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                   </button>
                 </div>
               ) : (
                 <div className="py-8">
                   <div className="mx-auto h-12 w-12 text-gray-400 mb-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
                     </svg>
                   </div>
-                  <p className="text-gray-600 font-medium">Click to upload or drag and drop</p>
-                  <p className="text-sm text-gray-400 mt-1">SVG, PNG, JPG or GIF (max. 5MB)</p>
+                  <p className="text-gray-600 font-medium">
+                    Click to upload or drag and drop
+                  </p>
+                  <p className="text-sm text-gray-400 mt-1">
+                    SVG, PNG, JPG or GIF (max. 5MB)
+                  </p>
                 </div>
               )}
             </div>
@@ -327,7 +383,10 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
               Content <span className="text-rose-500">*</span>
             </label>
             <div className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-200 transition-all duration-200 hover:shadow-md focus-within:ring-2 focus-within:ring-rose-500/20 focus-within:border-rose-500">
-              <div ref={quillRef} style={{ minHeight: '400px', height: '500px', border: 'none' }}></div>
+              <div
+                ref={editorContainerRef}
+                style={{ minHeight: "400px", height: "500px", border: "none" }}
+              ></div>
             </div>
           </div>
 
@@ -340,7 +399,7 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
             >
               Cancel
             </button>
-            
+
             <button
               type="submit"
               disabled={isUploading}
@@ -368,7 +427,9 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
                       d="M13 10V3L4 14h7v7l9-11h-7z"
                     />
                   </svg>
-                  <span>{isEditMode ? "Update Article" : "Publish Article"}</span>
+                  <span>
+                    {isEditMode ? "Update Article" : "Publish Article"}
+                  </span>
                 </>
               )}
             </button>
