@@ -5,7 +5,6 @@ import Dashboard from './Dashboard/Dashboard';
 import Blogs from './Dashboard/Blogs';
 import Settings from './Dashboard/Settings';
 import Inboxes from './Dashboard/Inboxes';
-import Naviq from './Dashboard/Naviq';
 import NewBlog from './Dashboard/NewBlog';
 import AuthPage from './Dashboard/Auth';
 import Inbox from './Dashboard/Inbox';
@@ -40,7 +39,6 @@ function Router() {
           <Route path='/Dashboard/Blogs/new' element={<NewBlog />} />
         </Route>
 
-        <Route path='/Dashboard/Naviq' element={<Naviq />} />
         <Route path='/Dashboard/Settings' element={<Settings />} />
       </Route>
     </Routes>
