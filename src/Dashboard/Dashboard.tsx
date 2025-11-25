@@ -4,7 +4,8 @@ import { BsFillCupHotFill } from 'react-icons/bs';
 import { useState } from 'react';
 import websiteData from '@/assets/websiteData.json';
 
-import MagicTeaCard from '../Components/MagicTeaCard';
+import Modal, { openModal } from '@/Components/Modal';
+
 import {
   Bar,
   Tooltip,
@@ -34,7 +35,10 @@ function Dashboard() {
     { name: 'Alice Johnson', inbox: 'Sales', date: '13-9-2025' },
     { name: 'Bob Brown', inbox: 'General', date: '14-9-2025' },
   ];
-
+  function handleClick() {
+    // console.log('Button clicked!');
+    openModal('magic-tea-modal');
+  }
   return (
     <div className='flex flex-col w-full h-full'>
       <DashboardHeader />
@@ -313,10 +317,56 @@ function Dashboard() {
 
           {/* EPIC MAGIC CTA BANNER - People will click this repeatedly! */}
           <div className='col-span-2'>
-            <MagicTeaCard />
+            <div className='w-full rounded-2xl bg-gradient-to-br from-rose-600 to-rose-900  p-8 text-white shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-[1.02]'>
+              <div className='flex items-center justify-between'>
+                <div className='flex items-center gap-6'>
+                  <div className='p-4 text-5xl bg-white/20 rounded-2xl backdrop-blur-sm'>
+                    <BsFillCupHotFill className='text-4xl text-white' />
+                  </div>
+                  <div className='max-w-md'>
+                    <h3 className='text-3xl font-bold mb-3 bg-gradient-to-r ubuntu-font from-white to-rose-100 bg-clip-text text-transparent'>
+                      Hold My Tea
+                    </h3>
+                    <p className='text-lg text-white/90 mb-6 leading-relaxed'>
+                      Experience the magic of seamless workflow. Just try it and
+                      it will be worth it we promise.
+                    </p>
+                    <button
+                      onClick={handleClick}
+                      className='px-8 py-3 cursor-pointer bg-white text-rose-600 rounded-xl font-bold hover:bg-rose-50 transition-all duration-300 transform hover:scale-105 shadow-lg'
+                    >
+                      Just Do It!
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+      <Modal id='magic-tea-modal'>
+        <div className='p-6'>
+          <h2 className='text-2xl font-bold mb-4'>Hold My Tea</h2>
+          <p className='mb-4'>Just try a promt and see the magic happen.</p>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+            }}
+          >
+            <input
+              type='text'
+              placeholder='Enter a prompt'
+              className='w-full px-4 py-2 text-lg text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-600 focus:border-transparent'
+            />
+            <button
+              type='submit'
+              className='w-full px-4 py-2 mt-4 text-lg text-white bg-rose-600 rounded-md hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-600 focus:ring-opacity-50'
+            >
+              Try It
+            </button>
+          </form>
+        </div>
+      </Modal>
     </div>
   );
 }
