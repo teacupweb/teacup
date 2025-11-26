@@ -13,28 +13,28 @@
   ],
   "info": [
     {
-      "icon": "layers",
-      "title": "Pages",
-      "data": ["Home", "About", "Services", "Contact"],
-      "description": "Total number of pages in the website."
+      "icon": "globe",
+      "title": "Active Sites",
+      "data": 3,
+      "description": "Total number of websites you're managing."
     },
     {
-      "icon": "inboxes",
-      "title": "inboxes",
-      "data": ["Support", "Sales", "General"],
-      "description": "Total number of inboxes categories."
+      "icon": "mail",
+      "title": "Form Submissions",
+      "data": 127,
+      "description": "Total form submissions this month."
     },
     {
-      "icon": "rectangle-ellipsis",
-      "title": "Pending",
-      "data": 12,
-      "description": "Total number of pending tasks."
+      "icon": "users",
+      "title": "Team Members",
+      "data": 4,
+      "description": "Active collaborators in your workspace."
     },
     {
-      "icon": "check-check",
-      "title": "Total",
-      "data": 67,
-      "description": "Total number of completed tasks."
+      "icon": "file-text",
+      "title": "Total Pages",
+      "data": 24,
+      "description": "Pages created across all your websites."
     }
   ],
   "sharing": [

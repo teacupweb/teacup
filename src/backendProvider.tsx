@@ -5,10 +5,15 @@ import {
   getBlogById,
   updateBlog,
   deleteBlog,
-} from "./app/Blogs";
-import { createInbox, getInboxData, getInboxes, deleteInboxData, deleteInbox } from "./app/inbox";
-import { getCompanyById, createCompany, updateCompany } from "./app/company";
-
+} from './app/Blogs';
+import {
+  createInbox,
+  getInboxData,
+  getInboxes,
+  deleteInboxData,
+  deleteInbox,
+} from './app/inbox';
+import { getCompanyById, createCompany, updateCompany } from './app/company';
 
 // Blog part --
 export type blogType = {
@@ -36,7 +41,7 @@ export function useUserBlogs(email: string | undefined | null) {
       setError(null);
     } catch (err) {
       setError(err);
-      console.error("Error fetching blogs:", err);
+      console.error('Error fetching blogs:', err);
     } finally {
       setLoading(false);
     }
@@ -88,7 +93,7 @@ export function useUserInboxes(email: string | undefined | null) {
       setError(null);
     } catch (err) {
       setError(err);
-      console.error("Error fetching inboxes:", err);
+      console.error('Error fetching inboxes:', err);
     } finally {
       setLoading(false);
     }
@@ -129,7 +134,7 @@ export function useInboxData(id: string | undefined) {
       setError(null);
     } catch (err) {
       setError(err);
-      console.error("Error fetching inbox data:", err);
+      console.error('Error fetching inbox data:', err);
     } finally {
       setLoading(false);
     }
@@ -151,6 +156,38 @@ export async function deleteUserInbox(id: string) {
   const data = await deleteInbox(id);
   return data;
 }
+
+export function useLatestMessages(email: string | undefined | null, limit: number = 4) {
+  const [messages, setMessages] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<any>(null);
+
+  const fetchMessages = useCallback(async () => {
+    if (!email) {
+      setMessages([]);
+      return;
+    }
+    setLoading(true);
+    try {
+      const { getLatestMessages } = await import('./app/inbox');
+      const data = await getLatestMessages(email, limit);
+      setMessages(data || []);
+      setError(null);
+    } catch (err) {
+      setError(err);
+      console.error('Error fetching latest messages:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [email, limit]);
+
+  useEffect(() => {
+    fetchMessages();
+  }, [fetchMessages]);
+
+  return { messages, loading, error, refetch: fetchMessages };
+}
+
 
 // Company part --
 
@@ -177,7 +214,7 @@ export type CompanyType = {
   name: string;
   owner: string;
   domain: string;
-  activityData?: ActivityDataType[];
+  activity_data?: ActivityDataType[];
   info?: InfoItemType[];
   sharing?: SharingMemberType[];
 };
@@ -195,11 +232,11 @@ export function useCompany(companyId: string | undefined | null) {
     setLoading(true);
     try {
       const data = await getCompanyById(companyId);
-      setCompany((data && data as CompanyType) || null);
+      setCompany((data && (data as CompanyType)) || null);
       setError(null);
     } catch (err) {
       setError(err);
-      console.error("Error fetching company:", err);
+      console.error('Error fetching company:', err);
     } finally {
       setLoading(false);
     }
@@ -221,4 +258,3 @@ export async function updateUserCompany(id: string, company: CompanyType) {
   const data = await updateCompany(id, company);
   return data;
 }
-

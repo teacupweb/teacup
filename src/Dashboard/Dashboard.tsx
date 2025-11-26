@@ -2,7 +2,11 @@ import DisplayCard from '@/Components/DisplayCards';
 import DashboardHeader from '../Components/DashboardHeader';
 import { BsFillCupHotFill } from 'react-icons/bs';
 import { useState } from 'react';
+import { useCompany, useLatestMessages } from '@/backendProvider';
+import { useAuth } from '@/AuthProvider';
+import Spinner from '@/Components/Spinner';
 import websiteData from '@/assets/websiteData.json';
+import { Globe, Mail, Users, FileText } from 'lucide-react';
 
 import Modal, { openModal, closeModal } from '@/Components/Modal';
 import AILoadingSpinner from '@/Components/AILoadingSpinner';
@@ -19,27 +23,21 @@ import {
 interface WebsiteInfo {
   title: string;
   description: string;
-  data: any[] | number;
+  data: any[] | number | string;
   icon?: string;
 }
 
-interface Message {
-  name: string;
-  inbox: string;
-  date: string;
-}
-
 function Dashboard() {
+  const { user } = useAuth();
+  const companyId =
+    user && typeof user !== 'string' ? user.user_metadata?.company_id : null;
+  const { company, loading } = useCompany(companyId);
+  const userEmail = user && typeof user !== 'string' ? user.email : null;
+  const { messages: latestMessages, loading: messagesLoading } = useLatestMessages(userEmail, 4);
+
   const [isAILoading, setIsAILoading] = useState(false);
   const [prompt, setPrompt] = useState('');
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-
-  const messages: Message[] = [
-    { name: 'John Doe', inbox: 'Inquiry', date: '11-9-2025' },
-    { name: 'Jane Smith', inbox: 'Support', date: '12-9-2025' },
-    { name: 'Alice Johnson', inbox: 'Sales', date: '13-9-2025' },
-    { name: 'Bob Brown', inbox: 'General', date: '14-9-2025' },
-  ];
 
   function handleClick() {
     openModal('magic-tea-modal');
@@ -60,6 +58,32 @@ function Dashboard() {
       setShowSuccessModal(true);
     }, 3500);
   }
+
+  // Show loading state while fetching company data
+  if (loading || !company) {
+    return (
+      <div className='flex flex-col w-full h-full'>
+        <DashboardHeader />
+        <div className='flex-1 flex items-center justify-center'>
+          <Spinner size='lg' />
+        </div>
+      </div>
+    );
+  }
+
+  // Icon mapping for info cards
+  const iconMap: { [key: string]: any } = {
+    globe: Globe,
+    mail: Mail,
+    users: Users,
+    'file-text': FileText,
+  };
+
+  const getIcon = (iconName?: string) => {
+    if (!iconName) return null;
+    const IconComponent = iconMap[iconName];
+    return IconComponent ? <IconComponent className='w-6 h-6' /> : null;
+  };
 
   return (
     <div className='flex flex-col w-full h-full'>
@@ -82,8 +106,10 @@ function Dashboard() {
                   {/* Animated background gradient */}
                   <div className='absolute inset-0 bg-gradient-to-br from-white to-rose-50/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500' />
 
-                  {/* Floating accent */}
-                  <div className='absolute top-3 right-3 w-6 h-6 bg-rose-100 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 delay-200 transform group-hover:scale-110' />
+                  {/* Icon in top right */}
+                  <div className='absolute top-4 right-4 p-2 bg-gradient-to-br from-rose-500 to-rose-600 rounded-xl text-white opacity-90 group-hover:opacity-100 transition-all duration-300 group-hover:scale-110'>
+                    {getIcon(item.icon)}
+                  </div>
 
                   <div className='relative z-10'>
                     <h3 className='font-semibold text-slate-700 mb-2 sm:mb-3 text-base sm:text-lg tracking-tight'>
@@ -93,7 +119,7 @@ function Dashboard() {
                       {item.description}
                     </span>
                     <span className='font-bold text-3xl sm:text-4xl block text-slate-900 group-hover:text-rose-600 transition-colors duration-300 tracking-tight'>
-                      {Array.isArray(item.data) ? item.data.length : item.data}
+                      {typeof item.data === 'string' ? item.data : item.data}
                     </span>
                   </div>
 
@@ -113,7 +139,7 @@ function Dashboard() {
                 <h3 className='font-semibold text-lg sm:text-xl text-slate-900 flex flex-wrap items-center gap-2 sm:gap-3'>
                   New Messages
                   <span className='bg-rose-500 text-white text-xs px-3 py-1.5 rounded-full font-medium shadow-sm'>
-                    {messages.length} new
+                    {latestMessages.length} new
                   </span>
                 </h3>
                 <p className='text-slate-500 text-sm mt-2'>
@@ -141,39 +167,67 @@ function Dashboard() {
                       </tr>
                     </thead>
                     <tbody className='divide-y divide-slate-100/80'>
-                      {messages.map((person: Message, i: number) => (
-                        <tr
-                          key={i}
-                          className='hover:bg-slate-50/50 transition-all duration-300 group/row'
-                        >
-                          <td className='py-4'>
-                            <div className='flex items-center gap-3'>
-                              <div className='w-2 h-2 bg-rose-400 rounded-full opacity-0 group-hover/row:opacity-100 transition-opacity duration-300' />
-                              <span className='font-medium text-slate-900 group-hover/row:text-slate-800 transition-colors'>
-                                {person.name}
-                              </span>
-                            </div>
-                          </td>
-                          <td className='py-4 hidden sm:table-cell'>
-                            <span className='text-slate-600 group-hover/row:text-slate-700 transition-colors'>
-                              {person.inbox}
-                            </span>
-                          </td>
-                          <td className='py-4 hidden md:table-cell'>
-                            <span className='text-slate-500 text-xs font-medium bg-slate-100 px-2 py-1 rounded'>
-                              {person.date}
-                            </span>
-                          </td>
-                          <td className='py-4 text-right'>
-                            <button className='text-rose-600 hover:text-rose-700 font-medium text-sm hover:scale-110 transition-transform duration-200 inline-flex items-center gap-1 group/btn'>
-                              View
-                              <span className='group-hover/btn:translate-x-0.5 transition-transform'>
-                                →
-                              </span>
-                            </button>
+                      {messagesLoading ? (
+                        <tr>
+                          <td colSpan={4} className='py-8 text-center'>
+                            <Spinner size='sm' />
                           </td>
                         </tr>
-                      ))}
+                      ) : latestMessages.length > 0 ? (
+                        latestMessages.map((message: any, i: number) => (
+                          <tr
+                            key={message.id || i}
+                            className='hover:bg-slate-50/50 transition-all duration-300 group/row'
+                          >
+                            <td className='py-4'>
+                              <div className='flex items-center gap-3'>
+                                <div className='w-2 h-2 bg-rose-400 rounded-full opacity-0 group-hover/row:opacity-100 transition-opacity duration-300' />
+                                <span className='font-medium text-slate-900 group-hover/row:text-slate-800 transition-colors'>
+                                  {message.name || 'Unknown'}
+                                </span>
+                              </div>
+                            </td>
+                            <td className='py-4 hidden sm:table-cell'>
+                              <span className='text-slate-600 group-hover/row:text-slate-700 transition-colors'>
+                                {message.inbox?.name || message.inbox || 'General'}
+                              </span>
+                            </td>
+                            <td className='py-4 hidden md:table-cell'>
+                              <span className='text-slate-500 text-xs font-medium bg-slate-100 px-2 py-1 rounded'>
+                                {message.created_at
+                                  ? new Date(message.created_at).toLocaleDateString()
+                                  : message.date || 'N/A'}
+                              </span>
+                            </td>
+                            <td className='py-4 text-right'>
+                              <button className='text-rose-600 hover:text-rose-700 font-medium text-sm hover:scale-110 transition-transform duration-200 inline-flex items-center gap-1 group/btn'>
+                                View
+                                <span className='group-hover/btn:translate-x-0.5 transition-transform'>
+                                  →
+                                </span>
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={4} className='py-12 text-center'>
+                            <div className='flex flex-col items-center gap-3'>
+                              <div className='w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center'>
+                                <Mail className='w-8 h-8 text-slate-400' />
+                              </div>
+                              <div>
+                                <p className='text-slate-600 font-medium mb-1'>
+                                  No messages yet
+                                </p>
+                                <p className='text-slate-400 text-sm'>
+                                  New customer inquiries will appear here
+                                </p>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -212,7 +266,7 @@ function Dashboard() {
                     </div>
                     <div className='h-4 w-px bg-slate-300' />
                     <div className='text-sm text-slate-800 font-semibold'>
-                      {websiteData.activityData
+                      {(company.activity_data || [])
                         .reduce((sum: number, day: any) => sum + day.visits, 0)
                         .toLocaleString()}{' '}
                       total
@@ -223,7 +277,7 @@ function Dashboard() {
                 <div className='flex-1 -mx-2 -mb-2 min-h-[250px] w-full'>
                   <ResponsiveContainer width='100%' height='100%'>
                     <ComposedChart
-                      data={websiteData.activityData}
+                      data={company.activity_data || []}
                       margin={{ top: 10, right: 10, left: 10, bottom: 10 }}
                     >
                       <defs>
@@ -318,7 +372,9 @@ function Dashboard() {
                     <div className='text-slate-700'>
                       <span className='font-semibold text-rose-600'>
                         {Math.max(
-                          ...websiteData.activityData.map((d: any) => d.visits)
+                          ...(company.activity_data || [{ visits: 0 }]).map(
+                            (d: any) => d.visits
+                          )
                         ).toLocaleString()}
                       </span>{' '}
                       peak visits
@@ -326,10 +382,10 @@ function Dashboard() {
                     <div className='text-slate-700'>
                       <span className='font-semibold text-rose-600'>
                         {Math.round(
-                          websiteData.activityData.reduce(
+                          (company.activity_data || []).reduce(
                             (sum: number, day: any) => sum + day.visits,
                             0
-                          ) / websiteData.activityData.length
+                          ) / (company.activity_data?.length || 1)
                         ).toLocaleString()}
                       </span>{' '}
                       avg daily

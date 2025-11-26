@@ -1,7 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/AuthProvider';
 import { useNavigate, useSearchParams } from 'react-router';
-import { Building2, Globe, Mail, ArrowRight, Sparkles, LogOut, Users } from 'lucide-react';
+import {
+  Building2,
+  Globe,
+  Mail,
+  ArrowRight,
+  Sparkles,
+  LogOut,
+  Users,
+} from 'lucide-react';
 import { createUserCompany, type CompanyType } from '@/backendProvider';
 import Spinner from '@/Components/Spinner';
 import supabase from '@/supabaseClient';
@@ -43,7 +51,7 @@ export default function Welcome() {
         // User needs to create a company
         setLoading(false);
         // Pre-fill owner email with user's email
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
           owner: user.email || '',
         }));
@@ -64,7 +72,8 @@ export default function Welcome() {
         name: formData.name,
         domain: formData.domain,
         owner: formData.owner,
-        activityData: [
+        // Default activity data - all zeros for new company
+        activity_data: [
           { day: 'Mon', visits: 0 },
           { day: 'Tue', visits: 0 },
           { day: 'Wed', visits: 0 },
@@ -73,8 +82,41 @@ export default function Welcome() {
           { day: 'Sat', visits: 0 },
           { day: 'Sun', visits: 0 },
         ],
-        info: [],
-        sharing: [],
+        // Default info cards - starting metrics for new company
+        info: [
+          {
+            icon: 'globe',
+            title: 'Active Sites',
+            data: 0,
+            description: "Total number of websites you're managing.",
+          },
+          {
+            icon: 'mail',
+            title: 'Form Submissions',
+            data: 0,
+            description: 'Total form submissions this month.',
+          },
+          {
+            icon: 'users',
+            title: 'Team Members',
+            data: 1, // Owner is the first member
+            description: 'Active collaborators in your workspace.',
+          },
+          {
+            icon: 'file-text',
+            title: 'Total Pages',
+            data: 0,
+            description: 'Pages created across all your websites.',
+          },
+        ],
+        // Default sharing - owner is the first member
+        sharing: [
+          {
+            name: user && typeof user !== 'string' ? user.user_metadata?.name || 'Owner' : 'Owner',
+            email: formData.owner,
+            status: 'Owner',
+          },
+        ],
       };
 
       // TODO: This will call the commented Supabase logic
@@ -126,7 +168,9 @@ export default function Welcome() {
         <div className='text-center mb-8 animate-fade-in'>
           <div className='inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full shadow-lg mb-6'>
             <Sparkles className='w-5 h-5 text-rose-500' />
-            <span className='text-rose-600 font-semibold'>Welcome to Teacupnet</span>
+            <span className='text-rose-600 font-semibold'>
+              Welcome to Teacupnet
+            </span>
           </div>
           <h1 className='text-5xl font-bold text-gray-800 mb-4 ubuntu-font'>
             Let's Create Your Company
