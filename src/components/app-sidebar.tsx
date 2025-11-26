@@ -1,19 +1,16 @@
 import {
   Calendar,
   Inbox,
-  Search,
   Settings,
   BarChart3,
   LayoutDashboard,
   Folder,
-  HelpCircle,
   List,
   Users,
 } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -28,11 +25,11 @@ import { NavSecondary } from '@/components/nav-secondary';
 
 // Combined menu items - keeping the original structure but adding new sections
 const data = {
-  user: {
-    name: 'shadcn',
-    email: 'm@example.com',
-    avatar: '/avatars/shadcn.jpg',
-  },
+  // user: {
+  //   name: 'shadcn',
+  //   email: 'm@example.com',
+  //   avatar: '/avatars/shadcn.jpg',
+  // },
 
   // Original main navigation items
   navMain: [
@@ -54,30 +51,30 @@ const data = {
       icon: Calendar,
       disabled: false,
     },
-    {
-      title: 'Lifecycle',
-      url: '/Dashboard/Lifecycle',
-      icon: List,
-      disabled: true,
-    },
-    {
-      title: 'Analytics',
-      url: '/Dashboard/Analytics',
-      icon: BarChart3,
-      disabled: true,
-    },
-    {
-      title: 'Projects',
-      url: '/Dashboard/Projects',
-      icon: Folder,
-      disabled: true,
-    },
-    {
-      title: 'Team',
-      url: '/Dashboard/Team',
-      icon: Users,
-      disabled: true,
-    },
+    // {
+    //   title: 'Lifecycle',
+    //   url: '/Dashboard/Lifecycle',
+    //   icon: List,
+    //   disabled: true,
+    // },
+    // {
+    //   title: 'Analytics',
+    //   url: '/Dashboard/Analytics',
+    //   icon: BarChart3,
+    //   disabled: true,
+    // },
+    // {
+    //   title: 'Projects',
+    //   url: '/Dashboard/Projects',
+    //   icon: Folder,
+    //   disabled: true,
+    // },
+    // {
+    //   title: 'Team',
+    //   url: '/Dashboard/Team',
+    //   icon: Users,
+    //   disabled: true,
+    // },
   ],
 
   // Secondary navigation (moved to footer area)
@@ -86,16 +83,6 @@ const data = {
       title: 'Settings',
       url: '/Dashboard/Settings',
       icon: Settings,
-    },
-    {
-      title: 'Get Help',
-      url: '/Dashboard/Help',
-      icon: HelpCircle,
-    },
-    {
-      title: 'Search',
-      url: '/Dashboard/Search',
-      icon: Search,
     },
   ],
 };
@@ -128,13 +115,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* Documents Section */}
-        {/* <SidebarGroup>
-    
-          <NavDocuments items={data.documents} />
-        </SidebarGroup> */}
-
-        {/* Secondary Navigation - moved to auto margin top */}
         <SidebarGroup className='mt-auto'>
           <SidebarGroupContent>
             <NavSecondary
@@ -145,39 +125,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-
-      <SidebarFooter>
-        {/* <SidebarMenu>
-          <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton>
-                  <User2 />
-                  {data.user.name}
-                  <ChevronUp className='ml-auto' />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                side='top'
-                className='w-[--radix-popper-anchor-width]'
-              >
-                <DropdownMenuItem>
-                  <span>Account</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <span>Settings</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <span>Billing</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <span>Sign out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
-        </SidebarMenu> */}
-      </SidebarFooter>
     </Sidebar>
   );
 }

@@ -1,20 +1,20 @@
-import "./index.css";
-import React, { useState, useEffect, useContext, createContext } from "react";
+import './index.css';
+import React, { useState, useEffect, useContext, createContext } from 'react';
 import {
   type Session,
   type User,
   type UserResponse,
-} from "@supabase/supabase-js";
-import supabase from "./supabaseClient";
-import Spinner from "@/Components/Spinner";
+} from '@supabase/supabase-js';
+import supabase from './supabaseClient';
+import Spinner from '@/Components/Spinner';
 
 interface valueType {
   session: Session | null;
-  user: User | null | "userNotFound";
+  user: User | null | 'userNotFound';
   signUpUser: (
     email: string,
     password: string,
-    name: string,
+    name: string
   ) => Promise<UserResponse>;
   loginUser: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void> | void;
@@ -24,12 +24,14 @@ export const authContext = createContext({} as valueType);
 export const useAuth = () => useContext(authContext);
 export default function AuthProvider({ children }: React.PropsWithChildren) {
   const [session, setSession] = useState<Session | null>(null);
-  const [user, setUser] = useState<User | null | "userNotFound">(null);
+  const [user, setUser] = useState<User | null | 'userNotFound'>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const getSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       setSession(session);
       setUser(session?.user ?? 'userNotFound');
       setLoading(false);
@@ -50,8 +52,8 @@ export default function AuthProvider({ children }: React.PropsWithChildren) {
 
   if (loading) {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-slate-50">
-        <Spinner size="lg" />
+      <div className='h-screen w-full flex items-center justify-center bg-slate-50'>
+        <Spinner size='lg' />
       </div>
     );
   }
@@ -72,7 +74,7 @@ export default function AuthProvider({ children }: React.PropsWithChildren) {
     // return updatedUser;
     // console.log(data);
     // console.log(data.session?.access_token);
-    localStorage.setItem("token", JSON.stringify(data.session?.access_token));
+    localStorage.setItem('token', JSON.stringify(data.session?.access_token));
 
     console.error(error);
     setTimeout(() => {
@@ -86,7 +88,7 @@ export default function AuthProvider({ children }: React.PropsWithChildren) {
       password: password,
     });
     // console.log(data);
-    localStorage.setItem("token", JSON.stringify(data.session?.access_token));
+    localStorage.setItem('token', JSON.stringify(data.session?.access_token));
     console.error(error);
     setTimeout(() => {
       window.location.reload();
@@ -94,10 +96,11 @@ export default function AuthProvider({ children }: React.PropsWithChildren) {
   }
   function logout() {
     const data = supabase.auth.signOut();
-    setUser("userNotFound");
-    setTimeout(() => {
-      window.location.reload();
-    }, 200);
+    setUser('userNotFound');
+    localStorage.clear();
+    // setTimeout(() => {
+    //   window.location.reload();
+    // }, 500);
     console.log(data);
   }
   const value: valueType = {
