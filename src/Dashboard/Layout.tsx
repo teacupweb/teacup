@@ -12,6 +12,13 @@ export default function Layout() {
     if (user === 'userNotFound') {
       navigate('/login');
       // console.log('from layout');
+    } else if (user && typeof user !== 'string') {
+      // Check if user has company_id in metadata
+      const companyId = user.user_metadata?.company_id;
+      if (!companyId) {
+        // User doesn't have a company, redirect to welcome page
+        navigate('/welcome');
+      }
     }
   });
   return (

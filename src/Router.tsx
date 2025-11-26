@@ -12,6 +12,8 @@ import About from './Pages/About';
 import Contact from './Pages/Contact';
 import PublicBlogs from './Pages/Blogs';
 import BlogPost from './Pages/BlogPost';
+import Welcome from './Dashboard/Welcome';
+
 
 function Router() {
   return (
@@ -23,6 +25,7 @@ function Router() {
       <Route path='/blogs/:id' element={<BlogPost />} />
       <Route path='/login' element={<AuthPage isLogin />} />
       <Route path='/signup' element={<AuthPage isLogin={false} />} />
+      <Route path='/welcome' element={<Welcome />} />
       <Route path='*' element={<App />} />
       <Route path='/Dashboard' element={<Layout />}>
         <Route path='/Dashboard' element={<Dashboard />} />

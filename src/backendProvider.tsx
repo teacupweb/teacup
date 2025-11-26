@@ -7,6 +7,8 @@ import {
   deleteBlog,
 } from "./app/Blogs";
 import { createInbox, getInboxData, getInboxes, deleteInboxData, deleteInbox } from "./app/inbox";
+import { getCompanyById, createCompany, updateCompany } from "./app/company";
+
 
 // Blog part --
 export type blogType = {
@@ -149,3 +151,74 @@ export async function deleteUserInbox(id: string) {
   const data = await deleteInbox(id);
   return data;
 }
+
+// Company part --
+
+export type ActivityDataType = {
+  day: string;
+  visits: number;
+};
+
+export type InfoItemType = {
+  icon: string;
+  title: string;
+  data: string[] | number;
+  description: string;
+};
+
+export type SharingMemberType = {
+  name: string;
+  email: string;
+  status: string;
+};
+
+export type CompanyType = {
+  id?: string;
+  name: string;
+  owner: string;
+  domain: string;
+  activityData?: ActivityDataType[];
+  info?: InfoItemType[];
+  sharing?: SharingMemberType[];
+};
+
+export function useCompany(companyId: string | undefined | null) {
+  const [company, setCompany] = useState<CompanyType | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<any>(null);
+
+  const fetchCompany = useCallback(async () => {
+    if (!companyId) {
+      setCompany(null);
+      return;
+    }
+    setLoading(true);
+    try {
+      const data = await getCompanyById(companyId);
+      setCompany((data && data as CompanyType) || null);
+      setError(null);
+    } catch (err) {
+      setError(err);
+      console.error("Error fetching company:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [companyId]);
+
+  useEffect(() => {
+    fetchCompany();
+  }, [fetchCompany]);
+
+  return { company, loading, error, refetch: fetchCompany };
+}
+
+export async function createUserCompany(company: CompanyType) {
+  const data = await createCompany(company);
+  return data;
+}
+
+export async function updateUserCompany(id: string, company: CompanyType) {
+  const data = await updateCompany(id, company);
+  return data;
+}
+

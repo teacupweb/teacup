@@ -78,7 +78,7 @@ export default function AuthProvider({ children }: React.PropsWithChildren) {
 
     console.error(error);
     setTimeout(() => {
-      window.location.reload();
+      window.location.href = '/welcome';
     }, 200);
     return updatedUser;
   }
@@ -91,7 +91,7 @@ export default function AuthProvider({ children }: React.PropsWithChildren) {
     localStorage.setItem('token', JSON.stringify(data.session?.access_token));
     console.error(error);
     setTimeout(() => {
-      window.location.reload();
+      window.location.href = '/welcome';
     }, 200);
   }
   function logout() {
