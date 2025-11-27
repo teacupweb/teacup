@@ -3,9 +3,9 @@ import Quill from 'quill';
 import 'quill/dist/quill.snow.css';
 import envData from '@/envData';
 import {
-  getUserBlogById,
-  postBlog,
-  updateUserBlog,
+  useBlog,
+  useCreateBlog,
+  useUpdateBlog,
   type blogType,
 } from '@/backendProvider';
 import { useAuth } from '@/AuthProvider';
@@ -17,6 +17,14 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
   const navigate = useNavigate();
   const { id } = useParams();
   const { user } = useAuth();
+  const userEmail = user !== 'userNotFound' && user ? user.email : null;
+
+  // Mutations
+  const createBlogMutation = useCreateBlog();
+  const updateBlogMutation = useUpdateBlog();
+
+  // Fetch Blog Data for Edit Mode
+  const { data: blogData } = useBlog(userEmail, id);
 
   // Refs for Quill
   const editorContainerRef = useRef<HTMLDivElement>(null);
@@ -27,7 +35,7 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
     title: '',
     image: '',
     data: '',
-    created_by: user && typeof user === 'object' && user?.email,
+    created_by: userEmail || '',
   } as blogType);
 
   const [isUploading, setIsUploading] = useState(false);
@@ -73,24 +81,20 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
     }
   }, []); // Run once on mount
 
-  // Fetch Blog Data for Edit Mode
+  // Update form data when blogData is fetched
   useEffect(() => {
-    if (isEditMode && id) {
-      getUserBlogById(Number(id)).then((data) => {
-        if (data) {
-          setFormData(data);
-          if (data.image) {
-            setPreviewUrl(data.image);
-          }
+    if (isEditMode && blogData) {
+      setFormData(blogData);
+      if (blogData.image) {
+        setPreviewUrl(blogData.image);
+      }
 
-          // Update Quill content if initialized
-          if (quillInstanceRef.current && data.data) {
-            quillInstanceRef.current.clipboard.dangerouslyPasteHTML(data.data);
-          }
-        }
-      });
+      // Update Quill content if initialized
+      if (quillInstanceRef.current && blogData.data) {
+        quillInstanceRef.current.clipboard.dangerouslyPasteHTML(blogData.data);
+      }
     }
-  }, [isEditMode, id]);
+  }, [isEditMode, blogData]);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -188,7 +192,7 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
         // Ensure created_by is set if it wasn't already
         created_by:
           formData.created_by ||
-          (user && typeof user === 'object' ? user.email : ''),
+          (userEmail || ''),
       };
 
       const result = await Swal.fire({
@@ -205,14 +209,14 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
 
       if (result.isConfirmed) {
         if (isEditMode) {
-          await updateUserBlog(Number(id), submitData as blogType);
+          await updateBlogMutation.mutateAsync({ id: Number(id), blog: submitData as blogType });
           await Swal.fire(
             'Updated!',
             'Your article has been updated.',
             'success'
           );
         } else {
-          await postBlog(submitData as blogType);
+          await createBlogMutation.mutateAsync(submitData as blogType);
           await Swal.fire(
             'Published!',
             'Your article has been published.',

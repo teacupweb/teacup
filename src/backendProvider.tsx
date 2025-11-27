@@ -1,21 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
-import {
-  getBlogs,
-  insertBlog,
-  getBlogById,
-  updateBlog,
-  deleteBlog,
-} from './app/Blogs';
-import {
-  createInbox,
-  getInboxData,
-  getInboxes,
-  deleteInboxData,
-  deleteInbox,
-} from './app/inbox';
-import { getCompanyById, createCompany, updateCompany } from './app/company';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
-// Blog part --
+const API_URL = import.meta.env.VITE_BACKEND;
+
+// Types
 export type blogType = {
   id?: number;
   title: string;
@@ -24,190 +11,11 @@ export type blogType = {
   created_by: string;
 };
 
-export function useUserBlogs(email: string | undefined | null) {
-  const [blogs, setBlogs] = useState<blogType[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<any>(null);
-
-  const fetchBlogs = useCallback(async () => {
-    if (!email) {
-      setBlogs([]);
-      return;
-    }
-    setLoading(true);
-    try {
-      const data = await getBlogs(email);
-      setBlogs((data as blogType[]) || []);
-      setError(null);
-    } catch (err) {
-      setError(err);
-      console.error('Error fetching blogs:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, [email]);
-
-  useEffect(() => {
-    fetchBlogs();
-    
-    // Refetch when window regains focus (user comes back to tab)
-    const handleFocus = () => fetchBlogs();
-    window.addEventListener('focus', handleFocus);
-    
-    return () => window.removeEventListener('focus', handleFocus);
-  }, [fetchBlogs]);
-
-  return { blogs, loading, error, refetch: fetchBlogs };
-}
-
-export function postBlog(data: blogType) {
-  //   console.log(blog);
-  const newData = insertBlog(data);
-  return newData;
-}
-export function getUserBlogById(id: number) {
-  const data = getBlogById(id);
-  return data;
-}
-export function updateUserBlog(id: number, blog: blogType) {
-  const data = updateBlog(id, blog);
-  return data;
-}
-export async function deleteUserBlog(id: number) {
-  //   console.log(blog);
-  const data = await deleteBlog(id);
-  return data;
-}
-
-// blog part end
-// inbox part --
-
-export function useUserInboxes(email: string | undefined | null) {
-  const [inboxes, setInboxes] = useState<inboxType[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<any>(null);
-
-  const fetchInboxes = useCallback(async () => {
-    if (!email) {
-      setInboxes([]);
-      return;
-    }
-    setLoading(true);
-    try {
-      const data = await getInboxes(email);
-      setInboxes((data as inboxType[]) || []);
-      setError(null);
-    } catch (err) {
-      setError(err);
-      console.error('Error fetching inboxes:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, [email]);
-
-  useEffect(() => {
-    fetchInboxes();
-    
-    // Refetch when window regains focus
-    const handleFocus = () => fetchInboxes();
-    window.addEventListener('focus', handleFocus);
-    
-    return () => window.removeEventListener('focus', handleFocus);
-  }, [fetchInboxes]);
-
-  return { inboxes, loading, error, refetch: fetchInboxes };
-}
-
 export type inboxType = {
   id?: number;
   created_by: string;
   name: string;
 };
-export async function createUserInbox(inbox: inboxType) {
-  const data = await createInbox(inbox);
-  return data;
-}
-//Inbox Data
-
-export function useInboxData(id: string | undefined) {
-  const [inboxData, setInboxData] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<any>(null);
-
-  const fetchInboxData = useCallback(async () => {
-    if (!id) {
-      setInboxData(null);
-      return;
-    }
-    setLoading(true);
-    try {
-      const data = await getInboxData(id);
-      setInboxData(data);
-      setError(null);
-    } catch (err) {
-      setError(err);
-      console.error('Error fetching inbox data:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, [id]);
-
-  useEffect(() => {
-    fetchInboxData();
-    
-    // Refetch when window regains focus
-    const handleFocus = () => fetchInboxData();
-    window.addEventListener('focus', handleFocus);
-    
-    return () => window.removeEventListener('focus', handleFocus);
-  }, [fetchInboxData]);
-
-  return { inboxData, loading, error, refetch: fetchInboxData };
-}
-
-export async function deleteUserInboxData(id: string) {
-  const data = await deleteInboxData(id);
-  return data;
-}
-
-export async function deleteUserInbox(id: string) {
-  const data = await deleteInbox(id);
-  return data;
-}
-
-export function useLatestMessages(email: string | undefined | null, limit: number = 4) {
-  const [messages, setMessages] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<any>(null);
-
-  const fetchMessages = useCallback(async () => {
-    if (!email) {
-      setMessages([]);
-      return;
-    }
-    setLoading(true);
-    try {
-      const { getLatestMessages } = await import('./app/inbox');
-      const data = await getLatestMessages(email, limit);
-      setMessages(data || []);
-      setError(null);
-    } catch (err) {
-      setError(err);
-      console.error('Error fetching latest messages:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, [email, limit]);
-
-  useEffect(() => {
-    fetchMessages();
-  }, [fetchMessages]);
-
-  return { messages, loading, error, refetch: fetchMessages };
-}
-
-
-// Company part --
 
 export type ActivityDataType = {
   day: string;
@@ -237,42 +45,179 @@ export type CompanyType = {
   sharing?: SharingMemberType[];
 };
 
+// Helper function for fetch requests
+async function fetchApi(endpoint: string, options: RequestInit = {}) {
+  const response = await fetch(`${API_URL}${endpoint}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+    ...options,
+  });
+  if (!response.ok) {
+    throw new Error(`API Error: ${response.statusText}`);
+  }
+  return response.json();
+}
+
+// --- Blogs ---
+
+export function useUserBlogs(email: string | undefined | null) {
+  return useQuery({
+    queryKey: ['blogs', email],
+    queryFn: () => fetchApi(`/dashboard/blogs/${email}`),
+    enabled: !!email,
+  });
+}
+
+export function useBlog(email: string | undefined | null, id: string | undefined) {
+  return useQuery({
+    queryKey: ['blog', id],
+    queryFn: () => fetchApi(`/dashboard/blogs/${email}/${id}`),
+    enabled: !!email && !!id,
+  });
+}
+
+export function useCreateBlog() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (newBlog: blogType) =>
+      fetchApi('/dashboard/blogs', {
+        method: 'POST',
+        body: JSON.stringify(newBlog),
+      }),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['blogs', variables.created_by] });
+    },
+  });
+}
+
+export function useUpdateBlog() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, blog }: { id: number; blog: blogType }) =>
+      fetchApi(`/dashboard/blogs/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(blog),
+      }),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['blogs', variables.blog.created_by] });
+    },
+  });
+}
+
+export function useDeleteBlog() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) =>
+      fetchApi(`/dashboard/blogs/${id}`, {
+        method: 'DELETE',
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] });
+    },
+  });
+}
+
+// --- Inbox ---
+
+export function useUserInboxes(email: string | undefined | null) {
+  return useQuery({
+    queryKey: ['inboxes', email],
+    queryFn: () => fetchApi(`/dashboard/inbox/${email}`),
+    enabled: !!email,
+  });
+}
+
+export function useCreateInbox() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (newInbox: inboxType) =>
+      fetchApi('/dashboard/inbox', {
+        method: 'POST',
+        body: JSON.stringify(newInbox),
+      }),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['inboxes', variables.created_by] });
+    },
+  });
+}
+
+export function useDeleteInbox() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) =>
+      fetchApi(`/dashboard/inbox/${id}`, {
+        method: 'DELETE',
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['inboxes'] });
+    },
+  });
+}
+
+export function useInboxData(id: string | undefined) {
+  return useQuery({
+    queryKey: ['inboxData', id],
+    queryFn: () => fetchApi(`/dashboard/inbox/data/${id}`),
+    enabled: !!id,
+  });
+}
+
+export function useDeleteInboxData() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) =>
+      fetchApi(`/dashboard/inbox/data/${id}`, {
+        method: 'DELETE',
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['inboxData'] });
+    },
+  });
+}
+
+export function useLatestMessages(email: string | undefined | null, limit: number = 4) {
+  return useQuery({
+    queryKey: ['latestMessages', email, limit],
+    queryFn: () => fetchApi(`/dashboard/inbox/${email}/latest/${limit}`),
+    enabled: !!email,
+  });
+}
+
+// --- Company ---
+
 export function useCompany(companyId: string | undefined | null) {
-  const [company, setCompany] = useState<CompanyType | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<any>(null);
-
-  const fetchCompany = useCallback(async () => {
-    if (!companyId) {
-      setCompany(null);
-      return;
-    }
-    setLoading(true);
-    try {
-      const data = await getCompanyById(companyId);
-      setCompany((data && (data as CompanyType)) || null);
-      setError(null);
-    } catch (err) {
-      setError(err);
-      console.error('Error fetching company:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, [companyId]);
-
-  useEffect(() => {
-    fetchCompany();
-  }, [fetchCompany]);
-
-  return { company, loading, error, refetch: fetchCompany };
+  return useQuery({
+    queryKey: ['company', companyId],
+    queryFn: () => fetchApi(`/dashboard/company/${companyId}`),
+    enabled: !!companyId,
+  });
 }
 
-export async function createUserCompany(company: CompanyType) {
-  const data = await createCompany(company);
-  return data;
+export function useCreateCompany() {
+  return useMutation({
+    mutationFn: (newCompany: CompanyType) =>
+      fetchApi('/dashboard/company', {
+        method: 'POST',
+        body: JSON.stringify(newCompany),
+      }),
+    onSuccess: () => {
+      // Invalidate queries if necessary, e.g., if there's a list of companies
+    },
+  });
 }
 
-export async function updateUserCompany(id: string, company: CompanyType) {
-  const data = await updateCompany(id, company);
-  return data;
+export function useUpdateCompany() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, company }: { id: string; company: CompanyType }) =>
+      fetchApi(`/dashboard/company/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(company),
+      }),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['company', variables.id] });
+    },
+  });
 }

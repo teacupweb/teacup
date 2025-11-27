@@ -10,7 +10,7 @@ function Settings() {
   const navigate = useNavigate();
   const companyId =
     user && typeof user !== 'string' ? user.user_metadata?.company_id : null;
-  const { company, loading } = useCompany(companyId);
+  const { data: company, isLoading: loading } = useCompany(companyId);
 
   // State for toggles
   const [emailNotifications, setEmailNotifications] = useState(true);
@@ -188,7 +188,7 @@ function Settings() {
                 </h4>
                 {company?.sharing && company.sharing.length > 0 ? (
                   <div className='space-y-3'>
-                    {company.sharing.map((member, index) => (
+                    {company.sharing.map((member: any, index: number) => (
                       <div
                         className='flex items-center justify-between bg-slate-50 p-3 rounded-lg'
                         key={member.email + index}
@@ -197,7 +197,7 @@ function Settings() {
                           <div className='w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center text-rose-600 text-xs font-bold'>
                             {member.name
                               .split(' ')
-                              .map((word) => word.charAt(0).toUpperCase())
+                              .map((word: string) => word.charAt(0).toUpperCase())
                               .join('')
                               .slice(0, 2)}
                           </div>

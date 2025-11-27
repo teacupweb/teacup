@@ -2,14 +2,16 @@ import DisplayCard from '@/Components/DisplayCards';
 import DashboardHeader from '../Components/DashboardHeader';
 import { Link } from 'react-router';
 import { useAuth } from '@/AuthProvider';
-import { deleteUserBlog, useUserBlogs, type blogType } from '@/backendProvider';
+import { useDeleteBlog, useUserBlogs, type blogType } from '@/backendProvider';
 import Swal from 'sweetalert2';
 import Spinner from '@/Components/Spinner';
 import { useEffect } from 'react';
 
 function Blogs() {
   const { user } = useAuth();
-  const { blogs: data, loading, refetch } = useUserBlogs(user === 'userNotFound' ? null : user?.email);
+  const { data, isLoading: loading, refetch } = useUserBlogs(user === 'userNotFound' ? null : user?.email);
+
+  const deleteBlogMutation = useDeleteBlog();
 
   // Refetch data when component mounts or becomes visible
   useEffect(() => {
@@ -28,9 +30,9 @@ function Blogs() {
     }).then((result) => {
       if (result.isConfirmed) {
         if (id !== undefined) {
-          deleteUserBlog(id).then(() => {
+          deleteBlogMutation.mutateAsync(id).then(() => {
             Swal.fire('Deleted!', 'Your blog has been deleted.', 'success');
-            refetch();
+            // refetch is handled by query invalidation in backendProvider
           });
         }
       }

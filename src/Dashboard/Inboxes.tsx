@@ -1,6 +1,6 @@
 import { useAuth } from "@/AuthProvider";
 import {
-  createUserInbox,
+  useCreateInbox,
   useUserInboxes,
   type inboxType,
 } from "@/backendProvider";
@@ -14,12 +14,14 @@ import { useEffect } from 'react';
 
 export default function Inboxes() {
   const { user } = useAuth();
-  const { inboxes: data, loading, refetch } = useUserInboxes(user === 'userNotFound' ? null : user?.email);
+  const { data, isLoading: loading, refetch } = useUserInboxes(user === 'userNotFound' ? null : user?.email);
 
   // Refetch data when component mounts
   useEffect(() => {
     refetch();
   }, [refetch]);
+
+  const createInboxMutation = useCreateInbox();
 
   const handleCreateInbox = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -54,7 +56,7 @@ export default function Inboxes() {
         },
       });
 
-      await createUserInbox(inboxData);
+      await createInboxMutation.mutateAsync(inboxData);
 
       // Success message
       Swal.fire({
@@ -71,8 +73,8 @@ export default function Inboxes() {
           modal.close();
         }
 
-        // Refresh the inbox list
-        refetch();
+        // Refresh the inbox list - handled by query invalidation
+        // refetch();
 
         // Reset the form
         form.reset();
@@ -127,7 +129,7 @@ export default function Inboxes() {
                           </td>
                         </tr>
                       ) : data.length > 0 ? (
-                        data.map((inbox) => (
+                        data.map((inbox: inboxType) => (
                           <tr
                             key={inbox.id}
                             className="bg-white border-b border-gray-200 hover:bg-gray-50 "

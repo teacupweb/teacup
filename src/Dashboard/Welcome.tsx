@@ -10,7 +10,7 @@ import {
   LogOut,
   Users,
 } from 'lucide-react';
-import { createUserCompany, type CompanyType } from '@/backendProvider';
+import { useCreateCompany, type CompanyType } from '@/backendProvider';
 import Spinner from '@/Components/Spinner';
 import supabase from '@/supabaseClient';
 
@@ -25,6 +25,8 @@ export default function Welcome() {
     domain: '',
     owner: '',
   });
+
+  const createCompanyMutation = useCreateCompany();
 
   useEffect(() => {
     // Check if user is authenticated
@@ -120,7 +122,7 @@ export default function Welcome() {
       };
 
       // TODO: This will call the commented Supabase logic
-      await createUserCompany(newCompany);
+      await createCompanyMutation.mutateAsync(newCompany);
 
       // Update user metadata with owner_email
       await supabase.auth.updateUser({

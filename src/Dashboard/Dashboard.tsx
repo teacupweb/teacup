@@ -31,9 +31,9 @@ function Dashboard() {
   const { user } = useAuth();
   const companyId =
     user && typeof user !== 'string' ? user.user_metadata?.company_id : null;
-  const { company, loading } = useCompany(companyId);
+  const { data: company, isLoading: loading } = useCompany(companyId);
   const userEmail = user && typeof user !== 'string' ? user.email : null;
-  const { messages: latestMessages, loading: messagesLoading } = useLatestMessages(userEmail, 4);
+  const { data: latestMessages, isLoading: messagesLoading } = useLatestMessages(userEmail, 4);
 
   const [isAILoading, setIsAILoading] = useState(false);
   const [prompt, setPrompt] = useState('');

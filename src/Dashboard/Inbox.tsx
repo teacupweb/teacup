@@ -1,4 +1,4 @@
-import { useInboxData, deleteUserInboxData, deleteUserInbox } from "@/backendProvider";
+import { useInboxData, useDeleteInboxData, useDeleteInbox } from "@/backendProvider";
 import DashboardHeader from "@/Components/DashboardHeader";
 import DisplayCard from "@/Components/DisplayCards";
 import { useState, useEffect } from "react";
@@ -11,7 +11,7 @@ export default function Inbox() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [modalData, setModalData] = useState<any>(null);
-  const { inboxData: data, loading, refetch } = useInboxData(id);
+  const { data, isLoading: loading, refetch } = useInboxData(id);
   
   // Refetch data when component mounts
   useEffect(() => {
@@ -22,6 +22,9 @@ export default function Inbox() {
   // Based on previous code: setData(data) -> map(data => ...)
   // It seems data is expected to be an array.
   const displayData = Array.isArray(data) ? data : (data ? [data] : []);
+
+  const deleteInboxDataMutation = useDeleteInboxData();
+  const deleteInboxMutation = useDeleteInbox();
 
   const handleDelete = (itemId: string) => async () => {
     // Close the modal if open
@@ -39,8 +42,8 @@ export default function Inbox() {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await deleteUserInboxData(itemId);
-          await refetch();
+          await deleteInboxDataMutation.mutateAsync(itemId);
+          // refetch is handled by query invalidation
           Swal.fire(
             'Deleted!',
             'The message has been deleted.',
@@ -71,7 +74,7 @@ export default function Inbox() {
       if (result.isConfirmed) {
         try {
           if (id) {
-            await deleteUserInbox(id);
+            await deleteInboxMutation.mutateAsync(id);
             Swal.fire(
               'Deleted!',
               'The inbox has been deleted.',
