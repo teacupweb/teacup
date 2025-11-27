@@ -73,11 +73,10 @@ function Settings() {
     user && typeof user !== 'string'
       ? user.user_metadata?.name || 'User'
       : 'User';
-  const userEmail =
-    user && typeof user !== 'string' ? user.email || '' : '';
+  const userEmail = user && typeof user !== 'string' ? user.email || '' : '';
   const userInitials = userName
     .split(' ')
-    .map((word) => word.charAt(0).toUpperCase())
+    .map((word: any) => word.charAt(0).toUpperCase())
     .join('')
     .slice(0, 2);
 
@@ -300,9 +299,7 @@ function Settings() {
           </div>
 
           <div className='bg-red-50 p-6 rounded-2xl border border-red-100'>
-            <h3 className='font-bold text-xl text-red-800 mb-2'>
-              Danger Zone
-            </h3>
+            <h3 className='font-bold text-xl text-red-800 mb-2'>Danger Zone</h3>
             <p className='text-red-600/80 text-sm mb-4'>
               Once you logout, you will need to enter your credentials to access
               the dashboard again.

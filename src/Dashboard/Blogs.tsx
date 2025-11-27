@@ -1,14 +1,20 @@
 import DisplayCard from '@/Components/DisplayCards';
 import DashboardHeader from '../Components/DashboardHeader';
 import { Link } from 'react-router';
-import { deleteUserBlog, useUserBlogs, type blogType } from '@/backendProvider';
 import { useAuth } from '@/AuthProvider';
+import { deleteUserBlog, useUserBlogs, type blogType } from '@/backendProvider';
 import Swal from 'sweetalert2';
 import Spinner from '@/Components/Spinner';
+import { useEffect } from 'react';
 
 function Blogs() {
   const { user } = useAuth();
   const { blogs: data, loading, refetch } = useUserBlogs(user === 'userNotFound' ? null : user?.email);
+
+  // Refetch data when component mounts or becomes visible
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
 
   const handleDeleteBlog = (id: number | undefined) => async () => {
     Swal.fire({
@@ -83,7 +89,7 @@ function Blogs() {
                             <Spinner className="mx-auto" />
                           </td>
                         </tr>
-                      ) : (
+                      ) : data.length > 0 ? (
                         data.map((blog: blogType) => (
                           <tr className='bg-white border-b border-gray-200 hover:bg-gray-50 ' key={blog.id}>
                             <th
@@ -111,6 +117,41 @@ function Blogs() {
                             </td>
                           </tr>
                         ))
+                      ) : (
+                        <tr>
+                          <td colSpan={3} className="py-16 text-center">
+                            <div className="flex flex-col items-center gap-4">
+                              <div className="w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center">
+                                <svg
+                                  className="w-10 h-10 text-rose-400"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                  />
+                                </svg>
+                              </div>
+                              <div>
+                                <p className="text-gray-700 font-semibold text-lg mb-1">
+                                  No blog posts yet
+                                </p>
+                                <p className="text-gray-500 text-sm">
+                                  Start writing your first blog post to share with your audience
+                                </p>
+                              </div>
+                              <Link to='/dashboard/Blogs/new'>
+                                <button className="mt-2 bg-rose-600 text-white px-6 py-2 rounded-xl hover:bg-rose-700 transition font-medium">
+                                  Create Blog Post
+                                </button>
+                              </Link>
+                            </div>
+                          </td>
+                        </tr>
                       )}
                     </tbody>
                   </table>

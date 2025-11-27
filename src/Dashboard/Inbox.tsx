@@ -1,7 +1,7 @@
 import { useInboxData, deleteUserInboxData, deleteUserInbox } from "@/backendProvider";
 import DashboardHeader from "@/Components/DashboardHeader";
 import DisplayCard from "@/Components/DisplayCards";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import Modal, { openModal } from "@/Components/Modal";
 import Spinner from "@/Components/Spinner";
@@ -12,6 +12,11 @@ export default function Inbox() {
   const navigate = useNavigate();
   const [modalData, setModalData] = useState<any>(null);
   const { inboxData: data, loading, refetch } = useInboxData(id);
+  
+  // Refetch data when component mounts
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
   
   // Ensure data is an array for mapping, or handle if it's a single object
   // Based on previous code: setData(data) -> map(data => ...)
@@ -123,7 +128,7 @@ export default function Inbox() {
                             <Spinner className="mx-auto" />
                           </td>
                         </tr>
-                      ) : (
+                      ) : displayData.length > 0 ? (
                         displayData.map((data: any) => (
                           <tr
                             key={data.id}
@@ -149,6 +154,36 @@ export default function Inbox() {
                             </td>
                           </tr>
                         ))
+                      ) : (
+                        <tr>
+                          <td colSpan={2} className="py-16 text-center">
+                            <div className="flex flex-col items-center gap-4">
+                              <div className="w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center">
+                                <svg
+                                  className="w-10 h-10 text-rose-400"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+                                  />
+                                </svg>
+                              </div>
+                              <div>
+                                <p className="text-gray-700 font-semibold text-lg mb-1">
+                                  No messages yet
+                                </p>
+                                <p className="text-gray-500 text-sm">
+                                  Messages from your forms will appear here
+                                </p>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
                       )}
                     </tbody>
                   </table>

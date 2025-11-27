@@ -7,13 +7,19 @@ import {
 import DashboardHeader from "@/Components/DashboardHeader";
 import DisplayCard from "@/Components/DisplayCards";
 import Modal, { openModal } from "@/Components/Modal";
-import { Link } from "react-router";
-import Swal from "sweetalert2";
-import Spinner from "@/Components/Spinner";
+import { Link } from 'react-router';
+import Swal from 'sweetalert2';
+import Spinner from '@/Components/Spinner';
+import { useEffect } from 'react';
 
 export default function Inboxes() {
   const { user } = useAuth();
   const { inboxes: data, loading, refetch } = useUserInboxes(user === 'userNotFound' ? null : user?.email);
+
+  // Refetch data when component mounts
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
 
   const handleCreateInbox = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -120,7 +126,7 @@ export default function Inboxes() {
                             <Spinner className="mx-auto" />
                           </td>
                         </tr>
-                      ) : (
+                      ) : data.length > 0 ? (
                         data.map((inbox) => (
                           <tr
                             key={inbox.id}
@@ -143,6 +149,42 @@ export default function Inboxes() {
                             </td>
                           </tr>
                         ))
+                      ) : (
+                        <tr>
+                          <td colSpan={2} className="py-16 text-center">
+                            <div className="flex flex-col items-center gap-4">
+                              <div className="w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center">
+                                <svg
+                                  className="w-10 h-10 text-rose-400"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                                  />
+                                </svg>
+                              </div>
+                              <div>
+                                <p className="text-gray-700 font-semibold text-lg mb-1">
+                                  No inboxes yet
+                                </p>
+                                <p className="text-gray-500 text-sm">
+                                  Create your first inbox to start receiving messages
+                                </p>
+                              </div>
+                              <button
+                                onClick={() => openModal("create-inbox")}
+                                className="mt-2 bg-rose-600 text-white px-6 py-2 rounded-xl hover:bg-rose-700 transition font-medium"
+                              >
+                                Create Inbox
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
                       )}
                     </tbody>
                   </table>

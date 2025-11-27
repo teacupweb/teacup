@@ -1,13 +1,4 @@
-import {
-  Calendar,
-  Inbox,
-  Settings,
-  BarChart3,
-  LayoutDashboard,
-  Folder,
-  List,
-  Users,
-} from 'lucide-react';
+import { Calendar, Inbox, Settings, LayoutDashboard } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,

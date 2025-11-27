@@ -49,6 +49,12 @@ export function useUserBlogs(email: string | undefined | null) {
 
   useEffect(() => {
     fetchBlogs();
+    
+    // Refetch when window regains focus (user comes back to tab)
+    const handleFocus = () => fetchBlogs();
+    window.addEventListener('focus', handleFocus);
+    
+    return () => window.removeEventListener('focus', handleFocus);
   }, [fetchBlogs]);
 
   return { blogs, loading, error, refetch: fetchBlogs };
@@ -101,6 +107,12 @@ export function useUserInboxes(email: string | undefined | null) {
 
   useEffect(() => {
     fetchInboxes();
+    
+    // Refetch when window regains focus
+    const handleFocus = () => fetchInboxes();
+    window.addEventListener('focus', handleFocus);
+    
+    return () => window.removeEventListener('focus', handleFocus);
   }, [fetchInboxes]);
 
   return { inboxes, loading, error, refetch: fetchInboxes };
@@ -142,6 +154,12 @@ export function useInboxData(id: string | undefined) {
 
   useEffect(() => {
     fetchInboxData();
+    
+    // Refetch when window regains focus
+    const handleFocus = () => fetchInboxData();
+    window.addEventListener('focus', handleFocus);
+    
+    return () => window.removeEventListener('focus', handleFocus);
   }, [fetchInboxData]);
 
   return { inboxData, loading, error, refetch: fetchInboxData };
