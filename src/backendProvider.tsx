@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, useQueries } from '@tanstack/react-query';
 
 const API_URL = import.meta.env.VITE_BACKEND;
 
@@ -178,11 +178,48 @@ export function useDeleteInboxData() {
 }
 
 export function useLatestMessages(email: string | undefined | null, limit: number = 4) {
-  return useQuery({
-    queryKey: ['latestMessages', email, limit],
-    queryFn: () => fetchApi(`/dashboard/inbox/${email}/latest/${limit}`),
-    enabled: !!email,
+  // 1. Fetch all inboxes for the user
+  const { data: inboxes, isLoading: inboxesLoading } = useUserInboxes(email);
+
+  // 2. Fetch data for each inbox
+  const inboxQueries = useQueries({
+    queries: (inboxes || []).map((inbox: inboxType) => ({
+      queryKey: ['inboxData', inbox.id],
+      queryFn: () => fetchApi(`/dashboard/inbox/data/${inbox.id}`),
+      enabled: !!inboxes,
+    })),
   });
+
+  // 3. Aggregate the last message from each inbox
+  const messages = inboxQueries
+    .map((query, index) => {
+      const inbox = inboxes ? inboxes[index] : null;
+      const data = query.data;
+      
+      if (!data || !Array.isArray(data) || data.length === 0) return null;
+      
+      // Get the last item (length - 1)
+      const lastMessage = data[data.length - 1];
+      
+      // Attach inbox info if needed
+      return {
+        ...lastMessage,
+        inbox: inbox, // Add inbox details to the message
+      };
+    })
+    .filter((msg) => msg !== null) // Remove nulls (empty inboxes or loading)
+    // Sort by created_at if available, otherwise keep order or use ID
+    .sort((a, b) => {
+      const dateA = new Date(a.created_at || 0).getTime();
+      const dateB = new Date(b.created_at || 0).getTime();
+      return dateB - dateA; // Descending order
+    })
+    .slice(0, limit); // Take only the requested limit
+
+  const loading = inboxesLoading || inboxQueries.some((q) => q.isLoading);
+  const error = inboxQueries.find((q) => q.error)?.error || null;
+
+  return { data: messages, isLoading: loading, error };
 }
 
 // --- Company ---
