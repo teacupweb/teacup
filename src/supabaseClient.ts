@@ -1,7 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  `${import.meta.env.VITE_DB_URL}`,
-  `${import.meta.env.VITE_DB_ANON}`
-);
+import data from './envData';
+const { dbURL, dbAnon } = data;
+const supabase = createClient(`${dbURL}`, `${dbAnon}`);
 export default supabase;
