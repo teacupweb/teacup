@@ -1,4 +1,9 @@
-import { useQuery, useMutation, useQueryClient, useQueries } from '@tanstack/react-query';
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  useQueries,
+} from '@tanstack/react-query';
 
 const API_URL = import.meta.env.VITE_BACKEND;
 
@@ -70,7 +75,10 @@ export function useUserBlogs(email: string | undefined | null) {
   });
 }
 
-export function useBlog(email: string | undefined | null, id: string | undefined) {
+export function useBlog(
+  email: string | undefined | null,
+  id: string | undefined
+) {
   return useQuery({
     queryKey: ['blog', id],
     queryFn: () => fetchApi(`/dashboard/blogs/${email}/${id}`),
@@ -87,7 +95,9 @@ export function useCreateBlog() {
         body: JSON.stringify(newBlog),
       }),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['blogs', variables.created_by] });
+      queryClient.invalidateQueries({
+        queryKey: ['blogs', variables.created_by],
+      });
     },
   });
 }
@@ -101,7 +111,9 @@ export function useUpdateBlog() {
         body: JSON.stringify(blog),
       }),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['blogs', variables.blog.created_by] });
+      queryClient.invalidateQueries({
+        queryKey: ['blogs', variables.blog.created_by],
+      });
     },
   });
 }
@@ -138,7 +150,9 @@ export function useCreateInbox() {
         body: JSON.stringify(newInbox),
       }),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['inboxes', variables.created_by] });
+      queryClient.invalidateQueries({
+        queryKey: ['inboxes', variables.created_by],
+      });
     },
   });
 }
@@ -177,7 +191,10 @@ export function useDeleteInboxData() {
   });
 }
 
-export function useLatestMessages(email: string | undefined | null, limit: number = 4) {
+export function useLatestMessages(
+  email: string | undefined | null,
+  limit: number = 4
+) {
   // 1. Fetch all inboxes for the user
   const { data: inboxes, isLoading: inboxesLoading } = useUserInboxes(email);
 
@@ -195,12 +212,12 @@ export function useLatestMessages(email: string | undefined | null, limit: numbe
     .map((query, index) => {
       const inbox = inboxes ? inboxes[index] : null;
       const data = query.data;
-      
+
       if (!data || !Array.isArray(data) || data.length === 0) return null;
-      
+
       // Get the last item (length - 1)
       const lastMessage = data[data.length - 1];
-      
+
       // Attach inbox info if needed
       return {
         ...lastMessage,
@@ -255,6 +272,19 @@ export function useUpdateCompany() {
       }),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['company', variables.id] });
+    },
+  });
+}
+// hold my tea
+
+export function useHoldMyTea(Owner_email: string, Content: string) {
+  return useQuery({
+    queryKey: ['holdMyTea'],
+    queryFn: () => {
+      return fetchApi(`/holdMyTea/ask`, {
+        method: 'POST',
+        body: JSON.stringify({ Owner_email, Content }),
+      });
     },
   });
 }
