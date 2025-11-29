@@ -277,14 +277,16 @@ export function useUpdateCompany() {
 }
 // hold my tea
 
-export function useHoldMyTea(Owner_email: string, Content: string) {
-  return useQuery({
-    queryKey: ['holdMyTea'],
-    queryFn: () => {
-      return fetchApi(`/holdMyTea/ask`, {
-        method: 'POST',
-        body: JSON.stringify({ Owner_email, Content }),
-      });
+export async function useHoldMyTea(owner_email: string, question: string) {
+  const response = await fetch(`${API_URL}/holdmytea/ask`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
     },
+    body: JSON.stringify({ owner_email, question }),
   });
+  if (!response.ok) {
+    throw new Error(`API Error: ${response.statusText}`);
+  }
+  return response.json();
 }
