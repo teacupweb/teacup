@@ -14,6 +14,7 @@ import Swal from 'sweetalert2';
 
 const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
   const { cloudinaryName, cloudinaryPreset } = envData;
+  console.log(cloudinaryPreset);
   const navigate = useNavigate();
   const { id } = useParams();
   const { user } = useAuth();
@@ -122,8 +123,8 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
   const uploadImageToServer = async (file: File): Promise<string> => {
     try {
       const uploadFormData = new FormData();
-      uploadFormData.append('upload_preset', cloudinaryName);
-      uploadFormData.append('cloud_name', cloudinaryPreset);
+      uploadFormData.append('upload_preset', cloudinaryPreset);
+      uploadFormData.append('cloud_name', cloudinaryName);
       uploadFormData.append('file', file);
 
       const response = await fetch(
@@ -190,9 +191,7 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
         ...formData,
         image: finalImageUrl,
         // Ensure created_by is set if it wasn't already
-        created_by:
-          formData.created_by ||
-          (userEmail || ''),
+        created_by: formData.created_by || userEmail || '',
       };
 
       const result = await Swal.fire({
@@ -209,7 +208,10 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
 
       if (result.isConfirmed) {
         if (isEditMode) {
-          await updateBlogMutation.mutateAsync({ id: Number(id), blog: submitData as blogType });
+          await updateBlogMutation.mutateAsync({
+            id: Number(id),
+            blog: submitData as blogType,
+          });
           await Swal.fire(
             'Updated!',
             'Your article has been updated.',
