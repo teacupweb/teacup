@@ -170,7 +170,7 @@ export function useDeleteInbox() {
   });
 }
 
-export function useInboxData(id: string | undefined) {
+export function useInboxData(id: number | undefined) {
   return useQuery({
     queryKey: ['inboxData', id],
     queryFn: () => fetchApi(`/dashboard/inbox/data/${id}`),
@@ -181,7 +181,7 @@ export function useInboxData(id: string | undefined) {
 export function useDeleteInboxData() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) =>
+    mutationFn: (id: number) =>
       fetchApi(`/dashboard/inbox/data/${id}`, {
         method: 'DELETE',
       }),

@@ -76,7 +76,8 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
       if (formData.data && formData.data !== '<p><br></p>') {
         // Check if content is different to avoid cursor jumps or loops
         if (quill.root.innerHTML !== formData.data) {
-          quill.clipboard.dangerouslyPasteHTML(formData.data);
+          quill.setText(''); // Clear first to avoid delta errors
+          quill.clipboard.dangerouslyPasteHTML(0, formData.data);
         }
       }
     }
@@ -92,7 +93,8 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
 
       // Update Quill content if initialized
       if (quillInstanceRef.current && blogData.data) {
-        quillInstanceRef.current.clipboard.dangerouslyPasteHTML(blogData.data);
+        quillInstanceRef.current.setText(''); // Clear first to avoid delta errors
+        quillInstanceRef.current.clipboard.dangerouslyPasteHTML(0, blogData.data);
       }
     }
   }, [isEditMode, blogData]);
