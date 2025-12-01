@@ -7,7 +7,6 @@ import {
 } from '@supabase/supabase-js';
 import supabase from './supabaseClient';
 import Spinner from '@/Components/Spinner';
-
 interface valueType {
   session: Session | null;
   user: User | null | 'userNotFound';
@@ -98,9 +97,10 @@ export default function AuthProvider({ children }: React.PropsWithChildren) {
   async function signInWithGoogle(): Promise<void> {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      // options: {
-      //   redirectTo: 'https://example.com/welcome',
-      // },
+      options: {
+        // have to change for local use and production use
+        redirectTo: `https://teacupnet.netlify.app/welcome`,
+      },
     });
 
     console.error(error);
