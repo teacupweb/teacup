@@ -96,23 +96,24 @@ export default function AuthProvider({ children }: React.PropsWithChildren) {
     }, 200);
   }
   async function signInWithGoogle(): Promise<void> {
-    const { data, error } = await supabase.auth.signInWithOAuth({
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: 'http://localhost:5173/welcome',
       },
     });
     console.error(error);
+
     // return data;
   }
   function logout() {
-    const data = supabase.auth.signOut();
+    supabase.auth.signOut();
     setUser('userNotFound');
     localStorage.clear();
     // setTimeout(() => {
     //   window.location.reload();
     // }, 500);
-    console.log(data);
+    // console.log(data);
   }
   const value: valueType = {
     session,
