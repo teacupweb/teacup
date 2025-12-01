@@ -17,6 +17,7 @@ interface valueType {
     name: string
   ) => Promise<UserResponse>;
   loginUser: (email: string, password: string) => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
   logout: () => Promise<void> | void;
 }
 
@@ -94,6 +95,16 @@ export default function AuthProvider({ children }: React.PropsWithChildren) {
       window.location.href = '/welcome';
     }, 200);
   }
+  async function signInWithGoogle(): Promise<void> {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: 'http://localhost:5173/welcome',
+      },
+    });
+    console.error(error);
+    // return data;
+  }
   function logout() {
     const data = supabase.auth.signOut();
     setUser('userNotFound');
@@ -108,6 +119,7 @@ export default function AuthProvider({ children }: React.PropsWithChildren) {
     user,
     signUpUser,
     loginUser,
+    signInWithGoogle,
     logout,
   };
 
