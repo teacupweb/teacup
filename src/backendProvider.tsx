@@ -48,6 +48,7 @@ export type CompanyType = {
   activity_data?: ActivityDataType[];
   info?: InfoItemType[];
   sharing?: SharingMemberType[];
+  key: string;
 };
 
 // Helper function for fetch requests

@@ -114,11 +114,15 @@ export default function Welcome() {
         // Default sharing - owner is the first member
         sharing: [
           {
-            name: user && typeof user !== 'string' ? user.user_metadata?.name || 'Owner' : 'Owner',
+            name:
+              user && typeof user !== 'string'
+                ? user.user_metadata?.name || 'Owner'
+                : 'Owner',
             email: formData.owner,
             status: 'Owner',
           },
         ],
+        key: '', // key to be generated later in the backend
       };
 
       // TODO: This will call the commented Supabase logic
