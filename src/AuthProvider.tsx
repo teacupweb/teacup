@@ -98,10 +98,11 @@ export default function AuthProvider({ children }: React.PropsWithChildren) {
   async function signInWithGoogle(): Promise<void> {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: {
-        redirectTo: 'http://localhost:5173/welcome',
-      },
+      // options: {
+      //   redirectTo: 'https://example.com/welcome',
+      // },
     });
+
     console.error(error);
 
     // return data;
