@@ -7,6 +7,7 @@ import {
 } from '@supabase/supabase-js';
 import supabase from './supabaseClient';
 import Spinner from '@/Components/Spinner';
+import type { CompanyType } from './backendProvider';
 interface valueType {
   session: Session | null;
   user: User | null | 'userNotFound';
@@ -17,6 +18,7 @@ interface valueType {
   ) => Promise<UserResponse>;
   loginUser: (email: string, password: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
+  updateUserCompanyInfo: (data: CompanyType) => Promise<void>;
   logout: () => Promise<void> | void;
 }
 
@@ -99,13 +101,26 @@ export default function AuthProvider({ children }: React.PropsWithChildren) {
       provider: 'google',
       options: {
         // have to change for local use and production use
-        redirectTo: `https://teacupnet.netlify.app/welcome`,
+        redirectTo: 'http://localhost:5173/welcome',
+        // redirectTo: `https://teacupnet.netlify.app/welcome`,
       },
     });
 
     console.error(error);
 
     // return data;
+  }
+  async function updateUserCompanyInfo(data: CompanyType): Promise<void> {
+    // Update user metadata with company_id
+    // console.log('received data' + data.id);
+    // console.log(data);
+    const { error: updateError } = await supabase.auth.updateUser({
+      data: { company_id: data.id, owner_email: data.owner },
+    });
+    // console.log('updated user metadata with' + data.id);
+    if (updateError) {
+      console.error('Error updating user metadata:', updateError.message);
+    }
   }
   function logout() {
     supabase.auth.signOut();
@@ -122,6 +137,7 @@ export default function AuthProvider({ children }: React.PropsWithChildren) {
     signUpUser,
     loginUser,
     signInWithGoogle,
+    updateUserCompanyInfo,
     logout,
   };
 

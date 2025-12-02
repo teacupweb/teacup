@@ -185,7 +185,7 @@ export default function AuthPage({ isLogin }: { isLogin: boolean }) {
             <button
               type='button'
               onClick={signInWithGoogle}
-              className='w-full flex items-center justify-center gap-3 px-4 py-3 border-2 border-gray-200 rounded-xl hover:border-rose-500 hover:bg-rose-50 transition-all'
+              className='w-full flex items-center justify-center cursor-pointer gap-3 px-4 py-3 border-2 border-gray-200 rounded-xl hover:border-rose-500 hover:bg-rose-50 transition-all'
             >
               <svg className='w-5 h-5' viewBox='0 0 24 24'>
                 <path

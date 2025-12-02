@@ -10,12 +10,14 @@ import {
   LogOut,
   Users,
 } from 'lucide-react';
-import { useCreateCompany, type CompanyType } from '@/backendProvider';
+import type { CompanyType } from '@/backendProvider';
 import Spinner from '@/Components/Spinner';
 import supabase from '@/supabaseClient';
 
+const API_URL = import.meta.env.VITE_BACKEND;
+
 export default function Welcome() {
-  const { user, logout } = useAuth();
+  const { user, updateUserCompanyInfo, logout } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
@@ -25,8 +27,6 @@ export default function Welcome() {
     domain: '',
     owner: '',
   });
-
-  const createCompanyMutation = useCreateCompany();
 
   useEffect(() => {
     // Check if user is authenticated
@@ -125,23 +125,53 @@ export default function Welcome() {
         key: '', // key to be generated later in the backend
       };
 
-      // TODO: This will call the commented Supabase logic
-      await createCompanyMutation.mutateAsync(newCompany);
-
-      // Update user metadata with owner_email
-      await supabase.auth.updateUser({
-        data: {
-          owner_email: formData.owner,
+      // Manually create company using fetch
+      const response = await fetch(`${API_URL}/dashboard/company`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
+        body: JSON.stringify(newCompany),
       });
 
-      // After successful creation, redirect to dashboard
-      // Note: The createCompany function should update user metadata with company_id
+      if (!response.ok) {
+        throw new Error(`Failed to create company: ${response.statusText}`);
+      }
+
+      const createdCompany = await response.json();
+      // console.log('Company created:', createdCompany);
+
+      // Update user metadata with company_id
+      await updateUserCompanyInfo(createdCompany);
+
+      // Wait for auth state to update before navigating
+      // This ensures the Dashboard will have the updated user data
+      const unsubscribe = supabase.auth.onAuthStateChange(
+        async (_event, session) => {
+          if (session?.user?.user_metadata?.company_id === createdCompany.id) {
+            console.log('Auth state updated with company_id, navigating...');
+            unsubscribe.data.subscription.unsubscribe();
+            // Small delay to ensure everything is settled
+            setTimeout(() => {
+              navigate('/Dashboard');
+            }, 300);
+          }
+        }
+      );
+
+      // Fallback: If auth state doesn't update within 3 seconds, navigate anyway
       setTimeout(() => {
+        unsubscribe.data.subscription.unsubscribe();
+        console.log('Timeout reached, navigating to dashboard...');
         navigate('/Dashboard');
-      }, 500);
+      }, 3000);
     } catch (error) {
       console.error('Error creating company:', error);
+      alert(
+        error instanceof Error
+          ? `Failed to create company: ${error.message}`
+          : 'Failed to create company. Please try again.'
+      );
       setCreating(false);
     }
   };
@@ -217,7 +247,10 @@ export default function Welcome() {
             <div className='space-y-2'>
               <label className='text-sm font-medium text-gray-700 flex items-center gap-2'>
                 <Globe className='w-4 h-4 text-rose-500' />
-                Company Domain
+                Company Domain{' '}
+                <span className='text-xs text-gray-500'>
+                  None if you don't have one
+                </span>
               </label>
               <input
                 type='text'

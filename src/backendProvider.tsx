@@ -251,6 +251,7 @@ export function useCompany(companyId: string | undefined | null) {
 }
 
 export function useCreateCompany() {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (newCompany: CompanyType) =>
       fetchApi('/dashboard/company', {
@@ -259,6 +260,7 @@ export function useCreateCompany() {
       }),
     onSuccess: () => {
       // Invalidate queries if necessary, e.g., if there's a list of companies
+      queryClient.invalidateQueries({ queryKey: ['companies'] });
     },
   });
 }
