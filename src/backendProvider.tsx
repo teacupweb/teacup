@@ -13,12 +13,14 @@ export type blogType = {
   title: string;
   image: string;
   data: string;
-  created_by: string;
+  created_by?: string;
+  owner: string;
 };
 
 export type inboxType = {
   id?: number;
-  created_by: string;
+  created_by?: string;
+  owner: string;
   name: string;
 };
 
@@ -68,22 +70,22 @@ async function fetchApi(endpoint: string, options: RequestInit = {}) {
 
 // --- Blogs ---
 
-export function useUserBlogs(email: string | undefined | null) {
+export function useUserBlogs(companyId: number | undefined | null) {
   return useQuery({
-    queryKey: ['blogs', email],
-    queryFn: () => fetchApi(`/dashboard/blogs/${email}`),
-    enabled: !!email,
+    queryKey: ['blogs', companyId],
+    queryFn: () => fetchApi(`/dashboard/blogs/${companyId}`),
+    enabled: !!companyId,
   });
 }
 
 export function useBlog(
-  email: string | undefined | null,
+  companyId: string | undefined | null,
   id: string | undefined
 ) {
   return useQuery({
     queryKey: ['blog', id],
-    queryFn: () => fetchApi(`/dashboard/blogs/${email}/${id}`),
-    enabled: !!email && !!id,
+    queryFn: () => fetchApi(`/dashboard/blogs/${companyId}/${id}`),
+    enabled: !!companyId && !!id,
   });
 }
 
@@ -134,11 +136,11 @@ export function useDeleteBlog() {
 
 // --- Inbox ---
 
-export function useUserInboxes(email: string | undefined | null) {
+export function useUserInboxes(companyId: number | undefined | null) {
   return useQuery({
-    queryKey: ['inboxes', email],
-    queryFn: () => fetchApi(`/dashboard/inbox/${email}`),
-    enabled: !!email,
+    queryKey: ['inboxes', companyId],
+    queryFn: () => fetchApi(`/dashboard/inbox/${companyId}`),
+    enabled: !!companyId,
   });
 }
 
@@ -193,12 +195,12 @@ export function useDeleteInboxData() {
 }
 
 export function useLatestMessages(
-  email: string | undefined | null,
+  companyId: number | undefined | null,
   limit: number = 4
 ) {
   // 1. Fetch all inboxes for the user
-  const { data: inboxes, isLoading: inboxesLoading } = useUserInboxes(email);
-
+  const { data: inboxes, isLoading: inboxesLoading } =
+    useUserInboxes(companyId);
   // 2. Fetch data for each inbox
   const inboxQueries = useQueries({
     queries: (inboxes || []).map((inbox: inboxType) => ({
@@ -242,7 +244,7 @@ export function useLatestMessages(
 
 // --- Company ---
 
-export function useCompany(companyId: string | undefined | null) {
+export function useCompany(companyId: number | undefined | null) {
   return useQuery({
     queryKey: ['company', companyId],
     queryFn: () => fetchApi(`/dashboard/company/${companyId}`),
@@ -280,13 +282,13 @@ export function useUpdateCompany() {
 }
 // hold my tea
 
-export async function useHoldMyTea(owner_email: string, question: string) {
+export async function useHoldMyTea(owner: number, question: string) {
   const response = await fetch(`${API_URL}/holdmytea/ask`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ owner_email, question }),
+    body: JSON.stringify({ owner, question }),
   });
   if (!response.ok) {
     throw new Error(`API Error: ${response.statusText}`);

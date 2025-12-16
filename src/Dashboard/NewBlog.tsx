@@ -18,14 +18,16 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
   const navigate = useNavigate();
   const { id } = useParams();
   const { user } = useAuth();
-  const userEmail = user !== 'userNotFound' && user ? user.email : null;
+  // const userEmail = user !== 'userNotFound' && user ? user.email : null;
+  const company =
+    user !== 'userNotFound' && user ? user.user_metadata.company : null;
 
   // Mutations
   const createBlogMutation = useCreateBlog();
   const updateBlogMutation = useUpdateBlog();
 
   // Fetch Blog Data for Edit Mode
-  const { data: blogData } = useBlog(userEmail, id);
+  const { data: blogData } = useBlog(company, id);
 
   // Refs for Quill
   const editorContainerRef = useRef<HTMLDivElement>(null);
@@ -36,7 +38,7 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
     title: '',
     image: '',
     data: '',
-    created_by: userEmail || '',
+    owner: company,
   } as blogType);
 
   const [isUploading, setIsUploading] = useState(false);
@@ -94,7 +96,10 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
       // Update Quill content if initialized
       if (quillInstanceRef.current && blogData.data) {
         quillInstanceRef.current.setText(''); // Clear first to avoid delta errors
-        quillInstanceRef.current.clipboard.dangerouslyPasteHTML(0, blogData.data);
+        quillInstanceRef.current.clipboard.dangerouslyPasteHTML(
+          0,
+          blogData.data
+        );
       }
     }
   }, [isEditMode, blogData]);
@@ -193,7 +198,7 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
         ...formData,
         image: finalImageUrl,
         // Ensure created_by is set if it wasn't already
-        created_by: formData.created_by || userEmail || '',
+        owner: formData.owner || company,
       };
 
       const result = await Swal.fire({
