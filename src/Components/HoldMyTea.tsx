@@ -60,7 +60,7 @@ export default function HoldMyTea() {
         <div className='w-full rounded-2xl bg-gradient-to-br from-rose-600 to-rose-900 p-4 sm:p-6 md:p-8 text-white shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-[1.02]'>
           <div className='flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6'>
             <div className='flex flex-col sm:flex-row items-center gap-4 sm:gap-6 w-full'>
-              <div className='p-3 sm:p-4 text-4xl sm:text-5xl bg-white/20 rounded-2xl backdrop-blur-sm'>
+              <div className='p-3 sm:p-4 text-4xl sm:text-5xl bg-card/20 rounded-2xl backdrop-blur-sm'>
                 <BsFillCupHotFill className='text-3xl sm:text-4xl text-white' />
               </div>
               <div className='max-w-md text-center sm:text-left'>
@@ -73,7 +73,7 @@ export default function HoldMyTea() {
                 </p>
                 <button
                   onClick={handleClick}
-                  className='px-8 py-3 cursor-pointer bg-white text-rose-600 rounded-xl font-bold hover:bg-rose-50 transition-all duration-300 transform hover:scale-105 shadow-lg'
+                  className='px-8 py-3 cursor-pointer bg-card text-rose-600 rounded-xl font-bold hover:bg-muted transition-all duration-300 transform hover:scale-105 shadow-lg'
                 >
                   Just Do It!
                 </button>
@@ -96,7 +96,7 @@ export default function HoldMyTea() {
                 <h2 className='text-3xl font-bold bg-gradient-to-r from-rose-600 to-rose-800 bg-clip-text text-transparent ubuntu-font'>
                   Hold My Tea ☕
                 </h2>
-                <p className='text-slate-500 text-sm mt-1'>
+                <p className='text-muted-foreground text-sm mt-1'>
                   AI-powered magic at your fingertips
                 </p>
               </div>
@@ -105,8 +105,8 @@ export default function HoldMyTea() {
           </div>
 
           {/* Description */}
-          <div className='mb-6 p-4 bg-gradient-to-br from-rose-50 to-purple-50 rounded-xl border border-rose-100'>
-            <p className='text-slate-700 leading-relaxed'>
+          <div className='mb-6 p-4 bg-muted/40 rounded-xl border border-border'>
+            <p className='text-foreground/80 leading-relaxed'>
               ✨ Just type a prompt and watch the AI work its magic. Our
               intelligent system will process your request and deliver amazing
               results in seconds!
@@ -118,7 +118,7 @@ export default function HoldMyTea() {
             <div>
               <label
                 htmlFor='ai-prompt'
-                className='block text-sm font-semibold text-slate-700 mb-2'
+                className='block text-sm font-semibold text-foreground/80 mb-2'
               >
                 Your Prompt
               </label>
@@ -128,7 +128,7 @@ export default function HoldMyTea() {
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder='e.g., Create a landing page for my coffee shop...'
                 rows={4}
-                className='w-full px-4 py-3 text-base text-gray-700 bg-white border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all duration-200 resize-none'
+                className='w-full px-4 py-3 text-base text-foreground bg-card border-2 border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all duration-200 resize-none'
               />
             </div>
 
@@ -142,7 +142,7 @@ export default function HoldMyTea() {
           </form>
 
           {/* Footer hint */}
-          <p className='text-xs text-slate-400 text-center mt-4'>
+          <p className='text-xs text-muted-foreground text-center mt-4'>
             Press Enter or click the button to submit
           </p>
         </div>
@@ -188,7 +188,7 @@ export default function HoldMyTea() {
           <h3 className='text-3xl font-bold bg-gradient-to-r from-rose-600 to-rose-800 bg-clip-text text-transparent mb-3 ubuntu-font'>
             Magic Complete! ✨
           </h3>
-          <p className='text-slate-600 text-lg mb-6'>
+          <p className='text-muted-foreground text-lg mb-6'>
             Your request has been processed successfully. The AI has worked its
             magic!
           </p>

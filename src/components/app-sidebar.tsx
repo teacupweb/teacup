@@ -4,7 +4,6 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
 } from '@/components/ui/sidebar';
 
@@ -84,16 +83,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar
       collapsible='offcanvas'
-      className='shadow-xl shadow-pink-200 border-r-white'
+      className='shadow-xl shadow-pink-200 dark:shadow-none border-r border-sidebar-border'
       {...props}
     >
       <SidebarHeader>
         <SidebarGroup>
-          <SidebarGroupLabel className='pt-10'>
-            <Link to='/'>
-              <Logo className='h-[50px] min-w-[200px] px-2' />
+          <div className='flex items-center justify-between px-4 pt-6 mb-2'>
+            <Link to='/' className='flex-1'>
+              <Logo className='h-[40px] w-auto' />
             </Link>
-          </SidebarGroupLabel>
+          </div>
         </SidebarGroup>
       </SidebarHeader>
 

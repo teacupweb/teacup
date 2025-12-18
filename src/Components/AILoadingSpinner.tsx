@@ -29,17 +29,20 @@ function AILoadingSpinner({
         isVisible ? 'opacity-100' : 'opacity-0'
       }`}
     >
-      {/* Animated AI Gradient Background - Rose themed */}
-      <div className='absolute inset-0 bg-gradient-to-br from-rose-600 via-pink-600 to-rose-800 animate-gradient-shift'>
+      {/* Animated AI Gradient Background - Theme aware grayish with rose accents */}
+      <div className='absolute inset-0 bg-background dark:bg-[#0c0c0e] animate-gradient-shift'>
+        {/* Magic Overlay - keeps the premium feel but on grayish base */}
+        <div className='absolute inset-0 bg-gradient-to-br from-rose-500/20 via-transparent to-pink-500/20' />
+        
         {/* Overlay pattern */}
-        <div className='absolute inset-0 opacity-30'>
-          <div className='absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent animate-pulse' />
+        <div className='absolute inset-0 opacity-20'>
+          <div className='absolute inset-0 bg-gradient-to-tr from-transparent via-foreground/5 to-transparent animate-pulse' />
         </div>
 
         {/* Animated gradient orbs */}
-        <div className='absolute top-1/4 left-1/4 w-96 h-96 bg-rose-500/30 rounded-full blur-3xl animate-float' />
-        <div className='absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-500/30 rounded-full blur-3xl animate-float-delayed' />
-        <div className='absolute top-1/2 left-1/2 w-96 h-96 bg-rose-400/30 rounded-full blur-3xl animate-float-slow' />
+        <div className='absolute top-1/4 left-1/4 w-96 h-96 bg-rose-500/10 rounded-full blur-3xl animate-float' />
+        <div className='absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl animate-float-delayed' />
+        <div className='absolute top-1/2 left-1/2 w-96 h-96 bg-rose-400/10 rounded-full blur-3xl animate-float-slow' />
       </div>
 
       {/* Content */}
@@ -47,39 +50,39 @@ function AILoadingSpinner({
         {/* Spinner */}
         <div className='relative'>
           {/* Outer ring */}
-          <div className='w-32 h-32 rounded-full border-4 border-white/20 border-t-white border-r-white animate-spin' />
+          <div className='w-32 h-32 rounded-full border-4 border-rose-500/20 border-t-rose-500 border-r-rose-500 animate-spin' />
 
           {/* Inner pulsing circle */}
           <div className='absolute inset-0 flex items-center justify-center'>
-            <div className='w-20 h-20 rounded-full bg-white/30 backdrop-blur-sm animate-pulse' />
+            <div className='w-20 h-20 rounded-full bg-rose-500/10 backdrop-blur-sm animate-pulse' />
           </div>
 
           {/* Center dot */}
           <div className='absolute inset-0 flex items-center justify-center'>
-            <div className='w-8 h-8 rounded-full bg-white shadow-lg shadow-white/50 animate-ping' />
-            <div className='absolute w-8 h-8 rounded-full bg-white' />
+            <div className='w-8 h-8 rounded-full bg-rose-500 shadow-lg shadow-rose-500/50 animate-ping' />
+            <div className='absolute w-8 h-8 rounded-full bg-rose-500' />
           </div>
         </div>
 
         {/* Text */}
         <div className='text-center'>
-          <h3 className='text-3xl font-bold text-white mb-2 animate-pulse'>
+          <h3 className='text-3xl font-bold text-foreground mb-2 animate-pulse'>
             {message}
           </h3>
-          <p className='text-white/80 text-lg'>
+          <p className='text-muted-foreground text-lg'>
             AI is processing your request...
           </p>
         </div>
 
         {/* Loading dots */}
         <div className='flex gap-2'>
-          <div className='w-3 h-3 bg-white rounded-full animate-bounce' />
+          <div className='w-3 h-3 bg-rose-500 rounded-full animate-bounce' />
           <div
-            className='w-3 h-3 bg-white rounded-full animate-bounce'
+            className='w-3 h-3 bg-rose-500 rounded-full animate-bounce'
             style={{ animationDelay: '0.1s' }}
           />
           <div
-            className='w-3 h-3 bg-white rounded-full animate-bounce'
+            className='w-3 h-3 bg-rose-500 rounded-full animate-bounce'
             style={{ animationDelay: '0.2s' }}
           />
         </div>

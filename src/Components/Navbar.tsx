@@ -2,17 +2,18 @@ import { Link } from 'react-router';
 import Logo from '@/Components/logo';
 import { useAuth } from '@/AuthProvider';
 
+
 function Navbar() {
   const { user } = useAuth();
   return (
     <div>
-      <div className='mx-auto my-5 py-4 px-5 container items-center justify-between bg-rose-50 border border-rose-200 rounded-2xl w-full flex'>
+      <div className='mx-auto my-5 py-4 px-5 container items-center justify-between bg-rose-50 dark:bg-gray-900 border border-rose-200 dark:border-gray-800 rounded-2xl w-full flex'>
         <div className=''>
           {/* <img src='./Assets/icon.png' className='max-h-10' alt='' /> */}
-          <Logo className={'h-[50px] min-w-[200px] px-2 rounded-2xl'} />
+          <Logo className={'h-[50px] min-w-[200px]'} />
         </div>
         <div>
-          <ul className='flex gap-5 items-center'>
+          <ul className='flex gap-5 items-center dark:text-gray-200'>
             <li>
               <Link to='/' className='hover:text-rose-600 transition'>
                 Home

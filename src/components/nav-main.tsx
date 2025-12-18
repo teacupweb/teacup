@@ -22,7 +22,7 @@ export function NavMain({
   const location = useLocation().pathname;
   return (
     <SidebarGroup>
-      <SidebarGroupContent className='flex flex-col gap-2 border-t-2 border-rose-600 pt-5'>
+      <SidebarGroupContent className='flex flex-col gap-2 border-t border-sidebar-border pt-5'>
         <SidebarMenu>
           {items.map((item) => {
             if (item?.disabled == true) {

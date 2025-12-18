@@ -24,8 +24,8 @@ export default function Layout() {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main className='px-10 w-full bg-slate-50/50 min-h-screen bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:20px_20px]'>
-        <div className='block lg:hidden'>
+      <main className='px-4 sm:px-6 lg:px-10 w-full bg-background min-h-screen dark:bg-[radial-gradient(#1e293b_1px,transparent_1px)] bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:20px_20px] transition-colors duration-300'>
+        <div className='block lg:hidden py-4'>
           <SidebarTrigger />
         </div>
         <Outlet />

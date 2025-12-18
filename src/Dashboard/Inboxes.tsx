@@ -14,13 +14,9 @@ import { useEffect } from 'react';
 
 export default function Inboxes() {
   const { user } = useAuth();
-  const {
-    data,
-    isLoading: loading,
-    refetch,
-  } = useUserInboxes(
-    user == 'userNotFound' ? null : user?.user_metadata.company_id
-  );
+  const company_id = user !== 'userNotFound' && user?.user_metadata.company_id;
+  console.log(company_id);
+  const { data, isLoading: loading, refetch } = useUserInboxes(company_id);
 
   // Refetch data when component mounts
   useEffect(() => {
@@ -104,7 +100,7 @@ export default function Inboxes() {
       <DashboardHeader />
       <div className=''>
         <div className='flex flex-col gap-5 col-span-1'>
-          <DisplayCard className='min-h-screen my-5'>
+          <DisplayCard className='min-h-[500px] my-5'>
             <div className='h-full flex flex-col'>
               <div className='pt-5 pb-2 mb-3 border-b-2 border-rose-600 flex items-center justify-between'>
                 <h3 className='font-bold ubuntu-font text-2xl'>Inboxes</h3>

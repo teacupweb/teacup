@@ -106,9 +106,9 @@ export default function Inbox() {
                 </button>
               </div>
               <div>
-                <div className='relative overflow-x-auto shadow-md sm:rounded-lg'>
-                  <table className='w-full text-sm text-left rtl:text-right text-gray-500 '>
-                    <thead className='text-xs text-gray-200 uppercase bg-rose-500'>
+                <div className='relative overflow-x-auto shadow-md sm:rounded-lg border border-border'>
+                  <table className='w-full text-sm text-left rtl:text-right text-muted-foreground'>
+                    <thead className='text-xs text-white uppercase bg-rose-500'>
                       <tr>
                         <th scope='col' className='px-6 py-3'>
                           Messages
@@ -129,11 +129,11 @@ export default function Inbox() {
                         displayData.map((data: any) => (
                           <tr
                             key={data.id}
-                            className='bg-white border-b border-gray-200 hover:bg-gray-50 '
+                            className='bg-card border-b border-border hover:bg-muted transition-colors'
                           >
                             <th
                               scope='row'
-                              className='px-6 py-4 font-medium text-gray-900 whitespace-nowrap'
+                              className='px-6 py-4 font-medium text-foreground whitespace-nowrap'
                             >
                               {data.data.name || data.title || 'Unknown'}
                             </th>
@@ -155,9 +155,9 @@ export default function Inbox() {
                         <tr>
                           <td colSpan={2} className='py-16 text-center'>
                             <div className='flex flex-col items-center gap-4'>
-                              <div className='w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center'>
+                              <div className='w-20 h-20 bg-muted rounded-full flex items-center justify-center'>
                                 <svg
-                                  className='w-10 h-10 text-rose-400'
+                                  className='w-10 h-10 text-rose-400 dark:text-rose-500'
                                   fill='none'
                                   stroke='currentColor'
                                   viewBox='0 0 24 24'
@@ -171,10 +171,10 @@ export default function Inbox() {
                                 </svg>
                               </div>
                               <div>
-                                <p className='text-gray-700 font-semibold text-lg mb-1'>
+                                <p className='text-foreground font-semibold text-lg mb-1'>
                                   No messages yet
                                 </p>
-                                <p className='text-gray-500 text-sm'>
+                                <p className='text-muted-foreground text-sm'>
                                   Messages from your forms will appear here
                                 </p>
                               </div>
@@ -191,19 +191,19 @@ export default function Inbox() {
         </div>
       </div>
       <Modal id='inbox-data-modal'>
-        <div className='p-6 bg-white'>
-          <h2 className='text-xl font-semibold text-gray-900 mb-6'>Details</h2>
+        <div className='p-6 bg-card'>
+          <h2 className='text-xl font-semibold text-foreground mb-6'>Details</h2>
           <div className='space-y-4'>
             {modalData?.data &&
               Object.keys(modalData.data).map((key) => (
                 <div
                   key={key}
-                  className='flex border-b border-rose-100 pb-3 last:border-b-0'
+                  className='flex border-b border-border pb-3 last:border-b-0'
                 >
-                  <div className='w-1/3 text-sm font-bold text-rose-500 capitalize'>
+                  <div className='w-1/3 text-sm font-bold text-rose-500 dark:text-rose-400 capitalize'>
                     {key.replace(/([A-Z])/g, ' $1').trim()}
                   </div>
-                  <div className='w-2/3 text-gray-900'>
+                  <div className='w-2/3 text-foreground'>
                     {modalData.data[key]}
                   </div>
                 </div>

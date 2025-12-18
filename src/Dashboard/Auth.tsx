@@ -41,7 +41,7 @@ export default function AuthPage({ isLogin }: { isLogin: boolean }) {
   };
 
   return (
-    <div className='min-h-screen bg-linear-to-br from-rose-100 via-rose-50 to-pink-100 flex items-center justify-center p-4'>
+    <div className='min-h-screen bg-background flex items-center justify-center p-4 transition-colors'>
       <div className='absolute inset-0 overflow-hidden pointer-events-none'>
         <div className='absolute -top-40 -right-40 w-80 h-80 bg-rose-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse'></div>
         <div
@@ -51,17 +51,17 @@ export default function AuthPage({ isLogin }: { isLogin: boolean }) {
       </div>
 
       <div className='w-full max-w-md relative'>
-        <div className='bg-white rounded-3xl shadow-2xl overflow-hidden backdrop-blur-sm bg-opacity-95'>
-          <div className='bg-linear-to-r from-rose-500 to-rose-600 p-8 text-white'>
+        <div className='bg-card rounded-3xl shadow-2xl overflow-hidden border border-border backdrop-blur-sm bg-opacity-95'>
+          <div className='bg-gradient-to-r from-rose-500 to-rose-600 p-8 text-white'>
             <h1 className='text-3xl font-bold mb-2'>
               {isLogin ? 'Welcome Back!' : 'Create Account'}
             </h1>
-            <p className='text-rose-100'>
+            <p className='text-rose-50/90 font-medium'>
               {isLogin
                 ? 'Sign in to continue your journey'
                 : 'Join us and get started today'}{' '}
               or{' '}
-              <span className='font-bold hover:underline'>
+              <span className='font-bold hover:underline transition-all'>
                 <Link to='/'>Go back</Link>
               </span>
             </p>
@@ -70,7 +70,7 @@ export default function AuthPage({ isLogin }: { isLogin: boolean }) {
           <div className='p-8 space-y-6'>
             {!isLogin && (
               <div className='space-y-2'>
-                <label className='text-sm font-medium text-gray-700 flex items-center gap-2'>
+              <label className='text-sm font-medium text-foreground/80 flex items-center gap-2'>
                   <User className='w-4 h-4 text-rose-500' />
                   Full Name
                 </label>
@@ -79,7 +79,7 @@ export default function AuthPage({ isLogin }: { isLogin: boolean }) {
                   name='name'
                   value={formData.name}
                   onChange={handleChange}
-                  className='w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-rose-500 focus:outline-none transition-colors'
+                  className='w-full px-4 py-3 rounded-xl border-2 border-border bg-muted/30 text-foreground focus:border-rose-500 focus:outline-none transition-colors'
                   placeholder='John Doe'
                 />
               </div>
@@ -117,7 +117,7 @@ export default function AuthPage({ isLogin }: { isLogin: boolean }) {
                 <button
                   type='button'
                   onClick={() => setShowPassword(!showPassword)}
-                  className='absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-rose-500 transition-colors'
+                  className='absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-rose-500 transition-colors'
                 >
                   {showPassword ? (
                     <EyeOff className='w-5 h-5' />
@@ -130,7 +130,7 @@ export default function AuthPage({ isLogin }: { isLogin: boolean }) {
 
             {!isLogin && (
               <div className='space-y-2'>
-                <label className='text-sm font-medium text-gray-700 flex items-center gap-2'>
+              <label className='text-sm font-medium text-foreground/80 flex items-center gap-2'>
                   <Lock className='w-4 h-4 text-rose-500' />
                   Confirm Password
                 </label>
@@ -139,7 +139,7 @@ export default function AuthPage({ isLogin }: { isLogin: boolean }) {
                   name='confirmPassword'
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className='w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-rose-500 focus:outline-none transition-colors'
+                  className='w-full px-4 py-3 rounded-xl border-2 border-border bg-muted/30 text-foreground focus:border-rose-500 focus:outline-none transition-colors'
                   placeholder='••••••••'
                 />
               </div>
@@ -148,12 +148,12 @@ export default function AuthPage({ isLogin }: { isLogin: boolean }) {
             {isLogin && (
               <div className='flex items-center justify-between text-sm'>
                 <label className='flex items-center gap-2 cursor-pointer'>
-                  <input
-                    type='checkbox'
-                    className='w-4 h-4 text-rose-500 rounded border-gray-300 focus:ring-rose-500'
-                  />
-                  <span className='text-gray-600'>Remember me</span>
-                </label>
+                    <input
+                      type='checkbox'
+                      className='w-4 h-4 text-rose-500 rounded border-border bg-muted focus:ring-rose-500'
+                    />
+                    <span className='text-muted-foreground font-medium'>Remember me</span>
+                  </label>
                 <button
                   type='button'
                   className='text-rose-500 hover:text-rose-600 font-medium'
@@ -176,7 +176,7 @@ export default function AuthPage({ isLogin }: { isLogin: boolean }) {
                 <div className='w-full border-t border-gray-200'></div>
               </div>
               <div className='relative flex justify-center text-sm'>
-                <span className='px-4 bg-white text-gray-500'>
+                <span className='px-4 bg-card text-muted-foreground font-medium'>
                   Or continue with
                 </span>
               </div>
@@ -185,7 +185,7 @@ export default function AuthPage({ isLogin }: { isLogin: boolean }) {
             <button
               type='button'
               onClick={signInWithGoogle}
-              className='w-full flex items-center justify-center cursor-pointer gap-3 px-4 py-3 border-2 border-gray-200 rounded-xl hover:border-rose-500 hover:bg-rose-50 transition-all'
+              className='w-full flex items-center justify-center cursor-pointer gap-3 px-4 py-3 border-2 border-border rounded-xl hover:border-rose-500 hover:bg-rose-500/10 transition-all group'
             >
               <svg className='w-5 h-5' viewBox='0 0 24 24'>
                 <path
@@ -205,12 +205,12 @@ export default function AuthPage({ isLogin }: { isLogin: boolean }) {
                   d='M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z'
                 />
               </svg>
-              <span className='font-medium text-gray-700'>
+              <span className='font-medium text-foreground/80 group-hover:text-foreground transition-colors'>
                 Continue with Google
               </span>
             </button>
 
-            <p className='text-center text-sm text-gray-600'>
+            <p className='text-center text-sm text-muted-foreground'>
               {isLogin
                 ? "Don't have an account? "
                 : 'Already have an account? '}
@@ -225,7 +225,7 @@ export default function AuthPage({ isLogin }: { isLogin: boolean }) {
           </div>
         </div>
 
-        <p className='text-center mt-6 text-sm text-gray-600'>
+        <p className='text-center mt-6 text-sm text-muted-foreground'>
           By continuing, you agree to our{' '}
           <button className='text-rose-500 hover:text-rose-600'>
             Terms of Service

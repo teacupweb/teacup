@@ -4,16 +4,16 @@ import Footer from '@/Components/Footer';
 function About() {
   return (
     <>
-      <div>
-        <div className='mx-auto container bg-linear-30'>
+      <div className='bg-background text-foreground transition-colors duration-300'>
+        <div className='mx-auto container'>
           <Navbar />
           <div className='min-h-[70vh] py-12 px-4'>
             <div className='max-w-4xl mx-auto'>
-              <h1 className='text-5xl ubuntu-font mb-8 text-center'>
+              <h1 className='text-5xl ubuntu-font mb-8 text-center text-foreground'>
                 About Teacupnet
               </h1>
               
-              <div className='space-y-6 text-lg text-gray-700'>
+              <div className='space-y-6 text-lg text-muted-foreground'>
                 <p>
                   Welcome to Teacupnet, your trusted partner in building powerful
                   websites without the technical complexity. We believe that every
@@ -21,7 +21,7 @@ function About() {
                   their technical expertise.
                 </p>
 
-                <h2 className='text-3xl ubuntu-font mt-10 mb-4 text-gray-900'>
+                <h2 className='text-3xl ubuntu-font mt-10 mb-4 text-foreground'>
                   Our Mission
                 </h2>
                 <p>
@@ -31,7 +31,7 @@ function About() {
                   what matters most – growing your business.
                 </p>
 
-                <h2 className='text-3xl ubuntu-font mt-10 mb-4 text-gray-900'>
+                <h2 className='text-3xl ubuntu-font mt-10 mb-4 text-foreground'>
                   Why Choose Teacupnet?
                 </h2>
                 <ul className='list-disc list-inside space-y-3 ml-4'>

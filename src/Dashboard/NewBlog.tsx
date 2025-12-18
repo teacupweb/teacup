@@ -261,14 +261,14 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
   };
 
   return (
-    <div className='min-h-screen bg-white py-10'>
-      <div className='max-w-5xl mx-auto p-8 rounded-2xl shadow-sm border bg-white border-gray-100'>
-        <div className='mb-8 flex items-center justify-between border-b border-gray-100 pb-6'>
+    <div className='min-h-screen bg-background py-10 transition-colors'>
+      <div className='max-w-5xl mx-auto p-8 rounded-2xl shadow-sm border bg-card border-border'>
+        <div className='mb-8 flex items-center justify-between border-b border-border pb-6'>
           <div>
-            <h1 className='text-3xl font-bold text-gray-900 mb-2 ubuntu-font'>
+            <h1 className='text-3xl font-bold text-foreground mb-2 ubuntu-font'>
               {isEditMode ? 'Edit Article' : 'Create New Article'}
             </h1>
-            <p className='text-gray-500'>Share your knowledge with the world</p>
+            <p className='text-muted-foreground font-medium'>Share your knowledge with the world</p>
           </div>
           <button
             onClick={handleCancel}
@@ -294,7 +294,7 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
         <form onSubmit={handleSubmit} className='space-y-8'>
           {/* Title */}
           <div className='group'>
-            <label className='block text-sm font-semibold text-gray-700 mb-2 transition-all duration-200 group-focus-within:text-rose-600'>
+            <label className='block text-sm font-semibold text-foreground/80 mb-2 transition-all duration-200 group-focus-within:text-rose-600'>
               Article Title <span className='text-rose-500'>*</span>
             </label>
             <input
@@ -303,7 +303,7 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
               onChange={(e) =>
                 setFormData((prev) => ({ ...prev, title: e.target.value }))
               }
-              className='w-full px-4 py-3 border bg-gray-50 border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all duration-200 text-lg font-medium placeholder-gray-400'
+              className='w-full px-4 py-3 border bg-muted/30 border-border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all duration-200 text-lg font-medium placeholder-muted-foreground text-foreground'
               placeholder='Enter a compelling title...'
               required
             />
@@ -315,7 +315,7 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
               Cover Image <span className='text-rose-500'>*</span>
             </label>
 
-            <div className='border-2 border-dashed border-gray-300 rounded-xl p-6 hover:border-rose-400 transition-colors bg-gray-50/50 text-center relative group'>
+            <div className='border-2 border-dashed border-border rounded-xl p-6 hover:border-rose-400/50 transition-colors bg-muted/30 text-center relative group'>
               <input
                 ref={fileInputRef}
                 type='file'
@@ -377,10 +377,10 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
                       />
                     </svg>
                   </div>
-                  <p className='text-gray-600 font-medium'>
+                  <p className='text-foreground/80 font-medium'>
                     Click to upload or drag and drop
                   </p>
-                  <p className='text-sm text-gray-400 mt-1'>
+                  <p className='text-sm text-muted-foreground mt-1'>
                     SVG, PNG, JPG or GIF (max. 5MB)
                   </p>
                 </div>
@@ -390,23 +390,24 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
 
           {/* Editor */}
           <div className='group'>
-            <label className='block text-sm font-semibold text-gray-700 mb-2 transition-all duration-200 group-focus-within:text-rose-600'>
+            <label className='block text-sm font-semibold text-foreground/80 mb-2 transition-all duration-200 group-focus-within:text-rose-600'>
               Content <span className='text-rose-500'>*</span>
             </label>
-            <div className='bg-white rounded-xl overflow-hidden shadow-sm border border-gray-200 transition-all duration-200 hover:shadow-md focus-within:ring-2 focus-within:ring-rose-500/20 focus-within:border-rose-500'>
+            <div className='bg-card rounded-xl overflow-hidden shadow-sm border border-border transition-all duration-200 hover:shadow-md focus-within:ring-2 focus-within:ring-rose-500/20 focus-within:border-rose-500'>
               <div
                 ref={editorContainerRef}
+                className='text-foreground'
                 style={{ minHeight: '400px', height: '500px', border: 'none' }}
               ></div>
             </div>
           </div>
 
           {/* Form Actions */}
-          <div className='flex gap-4 pt-6 border-t border-gray-100'>
+          <div className='flex gap-4 pt-6 border-t border-border'>
             <button
               type='button'
               onClick={handleCancel}
-              className='px-6 py-3 bg-white border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 shadow-sm'
+              className='px-6 py-3 bg-card border border-border text-foreground/80 font-medium rounded-xl hover:bg-muted transition-all duration-200 shadow-sm'
             >
               Cancel
             </button>

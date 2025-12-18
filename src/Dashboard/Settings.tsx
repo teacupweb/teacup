@@ -6,6 +6,7 @@ import { useState } from 'react';
 import Spinner from '@/Components/Spinner';
 import Modal from '@/Components/Modal';
 import supabase from '@/supabaseClient';
+import { useTheme } from '@/ThemeProvider';
 
 function Settings() {
   const { logout, user } = useAuth();
@@ -19,7 +20,7 @@ function Settings() {
   // State for toggles
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [twoFactorAuth, setTwoFactorAuth] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   // State for modals
   const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
@@ -246,10 +247,10 @@ function Settings() {
   return (
     <div className='flex flex-col w-full h-full p-6'>
       <div className='mb-8'>
-        <h2 className='font-bold ubuntu-font text-3xl text-slate-800 mb-2'>
+        <h2 className='font-bold ubuntu-font text-3xl text-foreground mb-2'>
           Settings
         </h2>
-        <p className='text-slate-500'>
+        <p className='text-muted-foreground'>
           Manage your account preferences and system settings.
         </p>
       </div>
@@ -257,17 +258,17 @@ function Settings() {
       <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
         {/* Account Section */}
         <div className='lg:col-span-2 space-y-6'>
-          <div className='bg-white p-6 rounded-2xl border border-slate-100 shadow-sm'>
-            <h3 className='font-bold text-xl text-slate-800 mb-4 pb-2 border-b border-slate-50'>
+          <div className='bg-card p-6 rounded-2xl border border-border shadow-sm'>
+            <h3 className='font-bold text-xl text-foreground mb-4 pb-2 border-b border-border/50'>
               Account Settings
             </h3>
             <div className='space-y-4'>
-              <div className='flex items-center justify-between p-3 hover:bg-slate-50 rounded-lg transition-colors'>
+              <div className='flex items-center justify-between p-3 hover:bg-muted/50 rounded-lg transition-colors group cursor-default'>
                 <div>
-                  <h4 className='font-medium text-slate-700'>
+                  <h4 className='font-medium text-foreground/90 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors'>
                     Email Notifications
                   </h4>
-                  <p className='text-sm text-slate-500'>
+                  <p className='text-sm text-muted-foreground'>
                     Receive daily summaries
                   </p>
                 </div>
@@ -281,15 +282,15 @@ function Settings() {
                       console.log('Email Notifications:', e.target.checked);
                     }}
                   />
-                  <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-rose-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-600"></div>
+                  <div className="w-11 h-6 bg-muted peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-rose-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-600"></div>
                 </label>
               </div>
-              <div className='flex items-center justify-between p-3 hover:bg-slate-50 rounded-lg transition-colors'>
+              <div className='flex items-center justify-between p-3 hover:bg-muted/50 rounded-lg transition-colors group cursor-default'>
                 <div>
-                  <h4 className='font-medium text-slate-700'>
+                  <h4 className='font-medium text-foreground/90 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors'>
                     Two-Factor Authentication
                   </h4>
-                  <p className='text-sm text-slate-500'>
+                  <p className='text-sm text-muted-foreground'>
                     Add an extra layer of security
                   </p>
                 </div>
@@ -309,13 +310,13 @@ function Settings() {
             </div>
           </div>
 
-          <div className='bg-white p-6 rounded-2xl border border-slate-100 shadow-sm'>
-            <h3 className='font-bold text-xl text-slate-800 mb-4 pb-2 border-b border-slate-50'>
+          <div className='bg-card p-6 rounded-2xl border border-border shadow-sm'>
+            <h3 className='font-bold text-xl text-foreground mb-4 pb-2 border-b border-border/50'>
               Team Management
             </h3>
             <div className='space-y-4'>
               <div>
-                <label className='block text-sm font-medium text-slate-700 mb-1'>
+                <label className='block text-sm font-medium text-foreground/80 mb-1'>
                   Invite Team Member
                 </label>
                 <form onSubmit={handleInviteClick} className='flex gap-2'>
@@ -325,11 +326,11 @@ function Settings() {
                     value={inviteEmail}
                     onChange={(e) => setInviteEmail(e.target.value)}
                     placeholder='colleague@example.com'
-                    className='flex-1 px-4 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all'
+                    className='flex-1 px-4 py-2 border border-border bg-card rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all text-foreground'
                   />
                   <button
                     type='submit'
-                    className='bg-slate-800 text-white px-4 py-2 rounded-xl hover:bg-slate-900 transition-colors font-medium'
+                    className='bg-primary text-primary-foreground px-4 py-2 rounded-xl hover:bg-primary/90 transition-colors font-medium'
                   >
                     Invite
                   </button>
@@ -343,7 +344,7 @@ function Settings() {
                   <div className='space-y-3'>
                     {company.sharing.map((member: any, index: number) => (
                       <div
-                        className='flex items-center justify-between bg-slate-50 p-3 rounded-lg'
+                        className='flex items-center justify-between bg-muted/50 p-3 rounded-lg'
                         key={member.email + index}
                       >
                         <div className='flex items-center gap-3'>
@@ -355,10 +356,10 @@ function Settings() {
                               .slice(0, 2)}
                           </div>
                           <div>
-                            <p className='text-sm font-medium text-slate-700'>
+                            <p className='text-sm font-medium text-foreground/90'>
                               {member.name}
                             </p>
-                            <p className='text-xs text-slate-500'>
+                            <p className='text-xs text-muted-foreground'>
                               {member.email}
                             </p>
                           </div>
@@ -378,7 +379,7 @@ function Settings() {
                     ))}
                   </div>
                 ) : (
-                  <p className='text-sm text-slate-500 text-center py-4'>
+                  <p className='text-sm text-muted-foreground text-center py-4'>
                     No team members yet. Invite someone to get started!
                   </p>
                 )}
@@ -386,35 +387,30 @@ function Settings() {
             </div>
           </div>
 
-          <div className='bg-white p-6 rounded-2xl border border-slate-100 shadow-sm'>
-            <h3 className='font-bold text-xl text-slate-800 mb-4 pb-2 border-b border-slate-50'>
+          <div className='bg-card p-6 rounded-2xl border border-border shadow-sm'>
+            <h3 className='font-bold text-xl text-foreground mb-4 pb-2 border-b border-border/50'>
               Appearance
             </h3>
             <div className='space-y-4'>
-              <div className='flex items-center justify-between p-3 hover:bg-slate-50 rounded-lg transition-colors'>
+              <div className='flex items-center justify-between p-3 hover:bg-muted/50 rounded-lg transition-colors group cursor-default'>
                 <div className='flex-1'>
                   <div className='flex items-center gap-2'>
-                    <h4 className='font-medium text-slate-700'>Dark Mode</h4>
-                    <span className='text-xs font-semibold px-2 py-0.5 bg-blue-100 text-blue-600 rounded-full'>
-                      Coming Soon
-                    </span>
+                    <h4 className='font-medium text-foreground/90 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors'>Dark Mode</h4>
                   </div>
-                  <p className='text-sm text-slate-500'>
+                  <p className='text-sm text-muted-foreground'>
                     Switch between light and dark themes
                   </p>
                 </div>
-                <label className='relative inline-flex items-center cursor-not-allowed opacity-50'>
+                <label className='relative inline-flex items-center cursor-pointer'>
                   <input
                     type='checkbox'
                     className='sr-only peer'
-                    checked={darkMode}
-                    disabled
+                    checked={theme === 'dark'}
                     onChange={(e) => {
-                      setDarkMode(e.target.checked);
-                      console.log('Dark Mode:', e.target.checked);
+                      setTheme(e.target.checked ? 'dark' : 'light');
                     }}
                   />
-                  <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-rose-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-slate-800"></div>
+                  <div className="w-11 h-6 bg-muted dark:bg-muted/80 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-rose-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-600"></div>
                 </label>
               </div>
             </div>
@@ -423,21 +419,21 @@ function Settings() {
 
         {/* Sidebar */}
         <div className='space-y-6'>
-          <div className='bg-white p-6 rounded-2xl border border-slate-100 shadow-sm'>
-            <h3 className='font-bold text-xl text-slate-800 mb-4'>Profile</h3>
+          <div className='bg-card p-6 rounded-2xl border border-border shadow-sm'>
+            <h3 className='font-bold text-xl text-foreground mb-4'>Profile</h3>
             <div className='flex flex-col items-center text-center'>
-              <div className='w-20 h-20 bg-rose-100 rounded-full flex items-center justify-center text-rose-600 font-bold text-2xl mb-3'>
+              <div className='w-20 h-20 bg-rose-100 dark:bg-rose-900/30 rounded-full flex items-center justify-center text-rose-600 dark:text-rose-400 font-bold text-2xl mb-3'>
                 {userInitials}
               </div>
-              <h4 className='font-bold text-lg text-slate-800'>{userName}</h4>
-              <p className='text-slate-500 text-sm mb-1'>{userEmail}</p>
-              <p className='text-slate-400 text-xs mb-4'>
+              <h4 className='font-bold text-lg text-foreground'>{userName}</h4>
+              <p className='text-muted-foreground text-sm mb-1'>{userEmail}</p>
+              <p className='text-muted-foreground/60 text-xs mb-4'>
                 {company?.sharing?.[0]?.status || 'Member'}
               </p>
               <div className='w-full space-y-2'>
                 <button
                   onClick={handleEditProfile}
-                  className='w-full py-2 px-4 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 transition-colors font-medium'
+                  className='w-full py-2 px-4 border border-border rounded-xl text-foreground/70 hover:bg-muted hover:text-foreground transition-all font-medium'
                 >
                   Edit Profile
                 </button>
@@ -451,26 +447,26 @@ function Settings() {
             </div>
           </div>
 
-          <div className='bg-white p-6 rounded-2xl border border-slate-100 shadow-sm'>
-            <h3 className='font-bold text-lg text-slate-800 mb-2'>
+          <div className='bg-card p-6 rounded-2xl border border-border shadow-sm'>
+            <h3 className='font-bold text-lg text-foreground mb-2'>
               Company Information
             </h3>
-            <p className='text-xs text-slate-500 mb-3'>
+            <p className='text-xs text-muted-foreground mb-3'>
               Your company identifier and owner
             </p>
             <div className='space-y-2 mb-3'>
               <div>
-                <p className='text-xs font-medium text-slate-600 mb-1'>Company ID</p>
-                <div className='bg-slate-50 p-2 rounded-lg border border-slate-200'>
-                  <code className='text-xs text-slate-700 font-mono break-all'>
+                <p className='text-xs font-medium text-muted-foreground mb-1'>Company ID</p>
+                <div className='bg-muted/50 p-2 rounded-lg border border-border'>
+                  <code className='text-xs text-foreground/80 font-mono break-all'>
                     {companyId || 'No company ID'}
                   </code>
                 </div>
               </div>
               <div>
-                <p className='text-xs font-medium text-slate-600 mb-1'>Owner Email</p>
-                <div className='bg-slate-50 p-2 rounded-lg border border-slate-200'>
-                  <code className='text-xs text-slate-700 font-mono break-all'>
+                <p className='text-xs font-medium text-muted-foreground mb-1'>Owner Email</p>
+                <div className='bg-muted/50 p-2 rounded-lg border border-border'>
+                  <code className='text-xs text-foreground/80 font-mono break-all'>
                     {ownerEmail || 'No owner email'}
                   </code>
                 </div>
@@ -478,16 +474,16 @@ function Settings() {
             </div>
             <button
               onClick={handleOpenManualCompanyModal}
-              className='w-full py-2 px-4 border border-amber-300 bg-amber-50 rounded-xl text-amber-700 hover:bg-amber-100 transition-colors font-medium text-sm'
+              className='w-full py-2 px-4 border border-amber-500/30 bg-amber-500/10 rounded-xl text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 transition-colors font-medium text-sm'
             >
               ⚠️ Set Manually
             </button>
           </div>
 
           {companyId && (
-            <div className='bg-orange-50 p-6 rounded-2xl border border-orange-100'>
-              <h3 className='font-bold text-xl text-orange-800 mb-2'>Leave Company</h3>
-              <p className='text-orange-600/80 text-sm mb-4'>
+            <div className='bg-orange-500/10 p-6 rounded-2xl border border-orange-500/30'>
+              <h3 className='font-bold text-xl text-orange-600 dark:text-orange-400 mb-2'>Leave Company</h3>
+              <p className='text-orange-600/80 dark:text-orange-400/80 text-sm mb-4'>
                 Remove yourself from this company. You will lose access to all company data.
               </p>
               <button
@@ -507,14 +503,14 @@ function Settings() {
         onClose={() => setIsEditProfileModalOpen(false)}
       >
         <div className='p-6'>
-          <h3 className='font-bold text-2xl text-slate-800 mb-2'>Edit Profile</h3>
-          <p className='text-slate-500 text-sm mb-6'>
+          <h3 className='font-bold text-2xl text-foreground mb-2'>Edit Profile</h3>
+          <p className='text-muted-foreground text-sm mb-6'>
             Update your profile information
           </p>
           
           <div className='space-y-4'>
             <div>
-              <label className='block text-sm font-medium text-slate-700 mb-1'>
+              <label className='block text-sm font-medium text-foreground/80 mb-1'>
                 Name
               </label>
               <input
@@ -522,12 +518,12 @@ function Settings() {
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
                 placeholder='Your name'
-                className='w-full px-4 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all'
+                className='w-full px-4 py-2 border border-border bg-card rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all text-foreground'
               />
             </div>
             
             <div>
-              <label className='block text-sm font-medium text-slate-700 mb-1'>
+              <label className='block text-sm font-medium text-foreground/80 mb-1'>
                 Email
               </label>
               <input
@@ -535,7 +531,7 @@ function Settings() {
                 value={editEmail}
                 onChange={(e) => setEditEmail(e.target.value)}
                 placeholder='your.email@example.com'
-                className='w-full px-4 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all'
+                className='w-full px-4 py-2 border border-border bg-card rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all text-foreground'
               />
             </div>
           </div>
@@ -543,7 +539,7 @@ function Settings() {
           <div className='flex gap-3 mt-6'>
             <button
               onClick={() => setIsEditProfileModalOpen(false)}
-              className='flex-1 py-2 px-4 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 transition-colors font-medium'
+              className='flex-1 py-2 px-4 border border-border rounded-xl text-foreground/70 hover:bg-muted hover:text-foreground transition-all font-medium'
             >
               Cancel
             </button>
@@ -563,15 +559,15 @@ function Settings() {
         onClose={() => setIsInviteModalOpen(false)}
       >
         <div className='p-6'>
-          <h3 className='font-bold text-2xl text-slate-800 mb-2'>Send Invitation</h3>
-          <p className='text-slate-500 text-sm mb-6'>
-            Generate an invite link for <span className='font-semibold text-slate-700'>{inviteEmail}</span>
+          <h3 className='font-bold text-2xl text-foreground mb-2'>Send Invitation</h3>
+          <p className='text-muted-foreground text-sm mb-6'>
+            Generate an invite link for <span className='font-semibold text-foreground'>{inviteEmail}</span>
           </p>
           
           <div className='flex gap-3'>
             <button
               onClick={() => setIsInviteModalOpen(false)}
-              className='flex-1 py-2 px-4 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 transition-colors font-medium'
+              className='flex-1 py-2 px-4 border border-border rounded-xl text-foreground/70 hover:bg-muted hover:text-foreground transition-all font-medium'
             >
               Cancel
             </button>
@@ -591,21 +587,21 @@ function Settings() {
         onClose={() => setIsInviteLinkModalOpen(false)}
       >
         <div className='p-6'>
-          <h3 className='font-bold text-2xl text-slate-800 mb-2'>Invitation Link</h3>
-          <p className='text-slate-500 text-sm mb-6'>
+          <h3 className='font-bold text-2xl text-foreground mb-2'>Invitation Link</h3>
+          <p className='text-muted-foreground text-sm mb-6'>
             Share this link with your team member to join the company
           </p>
           
           <div className='space-y-4'>
             <div>
-              <label className='block text-sm font-medium text-slate-700 mb-1'>
+              <label className='block text-sm font-medium text-foreground/80 mb-1'>
                 Invite Link
               </label>
               <input
                 type='text'
                 value={generatedInviteLink}
                 readOnly
-                className='w-full px-4 py-2 border border-slate-200 rounded-xl bg-slate-50 text-slate-700 text-sm font-mono'
+                className='w-full px-4 py-2 border border-border rounded-xl bg-muted/50 text-foreground text-sm font-mono'
               />
             </div>
           </div>
@@ -613,7 +609,7 @@ function Settings() {
           <div className='flex gap-3 mt-6'>
             <button
               onClick={() => setIsInviteLinkModalOpen(false)}
-              className='flex-1 py-2 px-4 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 transition-colors font-medium'
+              className='flex-1 py-2 px-4 border border-border rounded-xl text-foreground/70 hover:bg-muted hover:text-foreground transition-all font-medium'
             >
               Close
             </button>
@@ -636,7 +632,7 @@ function Settings() {
         onClose={() => setIsManualCompanyModalOpen(false)}
       >
         <div className='p-6'>
-          <h3 className='font-bold text-2xl text-slate-800 mb-2'>⚠️ Manual Company Configuration</h3>
+          <h3 className='font-bold text-2xl text-foreground mb-2'>⚠️ Manual Company Configuration</h3>
           
           {/* Warning Alert */}
           <div className='bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded'>
@@ -659,7 +655,7 @@ function Settings() {
           
           <div className='space-y-4'>
             <div>
-              <label className='block text-sm font-medium text-slate-700 mb-1'>
+              <label className='block text-sm font-medium text-foreground/80 mb-1'>
                 Company ID
               </label>
               <input
@@ -667,12 +663,12 @@ function Settings() {
                 value={manualCompanyId}
                 onChange={(e) => setManualCompanyId(e.target.value)}
                 placeholder='Enter company ID'
-                className='w-full px-4 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all font-mono text-sm'
+                className='w-full px-4 py-2 border border-border bg-card rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all font-mono text-sm text-foreground'
               />
             </div>
             
             <div>
-              <label className='block text-sm font-medium text-slate-700 mb-1'>
+              <label className='block text-sm font-medium text-foreground/80 mb-1'>
                 Owner Email
               </label>
               <input
@@ -680,7 +676,7 @@ function Settings() {
                 value={manualOwnerEmail}
                 onChange={(e) => setManualOwnerEmail(e.target.value)}
                 placeholder='owner@example.com'
-                className='w-full px-4 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all'
+                className='w-full px-4 py-2 border border-border bg-card rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all text-foreground'
               />
             </div>
           </div>
@@ -695,7 +691,7 @@ function Settings() {
           <div className='flex gap-3 mt-6'>
             <button
               onClick={() => setIsManualCompanyModalOpen(false)}
-              className='flex-1 py-2 px-4 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 transition-colors font-medium'
+              className='flex-1 py-2 px-4 border border-border rounded-xl text-foreground/70 hover:bg-muted hover:text-foreground transition-all font-medium'
             >
               Cancel
             </button>

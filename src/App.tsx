@@ -9,18 +9,18 @@ function App() {
   // login();
   return (
     <>
-      <div>
-        <div className='mx-auto container bg-linear-30'>
+      <div className='bg-background text-foreground transition-colors duration-300'>
+        <div className='mx-auto container'>
           <Navbar />
           <div className='min-h-[70vh] flex flex-col items-center justify-center'>
             <div className='flex flex-col gap-6 max-w-4xl text-center px-4'>
-              <span className='bg-rose-100 rounded-3xl'>
+              <span className='bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-300 px-4 py-1 rounded-3xl w-fit mx-auto text-sm font-medium'>
                 Try Teacupnet for free for the first time.
               </span>
-              <h1 className='text-6xl ubuntu-font '>
+              <h1 className='text-6xl ubuntu-font text-foreground'>
                 Easy use Tech with Teacupnet
               </h1>
-              <p className='text-xl text-gray-600'>
+              <p className='text-xl text-muted-foreground'>
                 Teacupnet is a 100% no-code SaaS for retail, ecommerce, and
                 service businesses who want a powerful website without technical
                 headaches. Launch a fast, professional site that boosts customer

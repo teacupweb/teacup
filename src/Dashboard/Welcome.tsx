@@ -178,14 +178,14 @@ export default function Welcome() {
 
   if (loading) {
     return (
-      <div className='min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-rose-100 flex items-center justify-center'>
+      <div className='min-h-screen bg-background flex items-center justify-center transition-colors'>
         <Spinner size='lg' />
       </div>
     );
   }
 
   return (
-    <div className='min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-rose-100 flex items-center justify-center p-4 relative overflow-hidden'>
+    <div className='min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden transition-colors'>
       {/* Animated background blobs */}
       <div className='absolute inset-0 overflow-hidden pointer-events-none'>
         <div className='absolute -top-40 -right-40 w-96 h-96 bg-rose-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse'></div>
@@ -202,22 +202,22 @@ export default function Welcome() {
       <div className='w-full max-w-2xl relative'>
         {/* Welcome Header */}
         <div className='text-center mb-8 animate-fade-in'>
-          <div className='inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full shadow-lg mb-6'>
+          <div className='inline-flex items-center gap-2 bg-card/80 backdrop-blur-sm px-6 py-3 rounded-full shadow-lg border border-border mb-6'>
             <Sparkles className='w-5 h-5 text-rose-500' />
             <span className='text-rose-600 font-semibold'>
               Welcome to Teacupnet
             </span>
           </div>
-          <h1 className='text-5xl font-bold text-gray-800 mb-4 ubuntu-font'>
+          <h1 className='text-5xl font-bold text-foreground mb-4 ubuntu-font'>
             Let's Create Your Company
           </h1>
-          <p className='text-xl text-gray-600'>
+          <p className='text-xl text-muted-foreground font-medium'>
             Set up your company profile to get started with your dashboard
           </p>
         </div>
 
         {/* Company Creation Form */}
-        <div className='bg-white rounded-3xl shadow-2xl overflow-hidden backdrop-blur-sm bg-opacity-95 animate-slide-up'>
+        <div className='bg-card rounded-3xl shadow-2xl overflow-hidden border border-border backdrop-blur-sm bg-opacity-95 animate-slide-up'>
           <div className='bg-gradient-to-r from-rose-500 to-rose-600 p-8 text-white'>
             <h2 className='text-3xl font-bold mb-2'>Company Information</h2>
             <p className='text-rose-100'>
@@ -228,7 +228,7 @@ export default function Welcome() {
           <form onSubmit={handleSubmit} className='p-8 space-y-6'>
             {/* Company Name */}
             <div className='space-y-2'>
-              <label className='text-sm font-medium text-gray-700 flex items-center gap-2'>
+              <label className='text-sm font-medium text-foreground/80 flex items-center gap-2'>
                 <Building2 className='w-4 h-4 text-rose-500' />
                 Company Name
               </label>
@@ -238,17 +238,17 @@ export default function Welcome() {
                 value={formData.name}
                 onChange={handleChange}
                 required
-                className='w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-rose-500 focus:outline-none transition-colors'
+                className='w-full px-4 py-3 rounded-xl border-2 border-border bg-muted/30 text-foreground focus:border-rose-500 focus:outline-none transition-colors'
                 placeholder='Acme Corporation'
               />
             </div>
 
             {/* Domain */}
             <div className='space-y-2'>
-              <label className='text-sm font-medium text-gray-700 flex items-center gap-2'>
+              <label className='text-sm font-medium text-foreground/80 flex items-center gap-2'>
                 <Globe className='w-4 h-4 text-rose-500' />
                 Company Domain{' '}
-                <span className='text-xs text-gray-500'>
+                <span className='text-xs text-muted-foreground'>
                   None if you don't have one
                 </span>
               </label>
@@ -258,14 +258,14 @@ export default function Welcome() {
                 value={formData.domain}
                 onChange={handleChange}
                 required
-                className='w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-rose-500 focus:outline-none transition-colors'
+                className='w-full px-4 py-3 rounded-xl border-2 border-border bg-muted/30 text-foreground focus:border-rose-500 focus:outline-none transition-colors'
                 placeholder='acme.com'
               />
             </div>
 
             {/* Owner Email */}
             <div className='space-y-2'>
-              <label className='text-sm font-medium text-gray-700 flex items-center gap-2'>
+              <label className='text-sm font-medium text-foreground/80 flex items-center gap-2'>
                 <Mail className='w-4 h-4 text-rose-500' />
                 Owner Email
               </label>
@@ -279,7 +279,7 @@ export default function Welcome() {
                 placeholder='owner@acme.com'
                 readOnly
               />
-              <p className='text-xs text-gray-500'>
+              <p className='text-xs text-muted-foreground'>
                 This is automatically set to your account email
               </p>
             </div>
@@ -304,10 +304,10 @@ export default function Welcome() {
             </button>
 
             {/* Referral Info */}
-            <div className='bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start gap-3'>
-              <Users className='w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5' />
-              <p className='text-sm text-gray-600'>
-                <span className='font-semibold text-blue-600'>
+            <div className='bg-blue-500/10 border border-blue-500/30 rounded-xl p-4 flex items-start gap-3'>
+              <Users className='w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5' />
+              <p className='text-sm text-muted-foreground'>
+                <span className='font-semibold text-blue-500'>
                   Already part of a company?
                 </span>{' '}
                 Ask a team member for a referral link to join their existing
@@ -316,9 +316,9 @@ export default function Welcome() {
             </div>
 
             {/* Info Note */}
-            <div className='bg-rose-50 border border-rose-200 rounded-xl p-4'>
-              <p className='text-sm text-gray-600'>
-                <span className='font-semibold text-rose-600'>Note:</span> You
+            <div className='bg-rose-500/10 border border-rose-500/30 rounded-xl p-4'>
+              <p className='text-sm text-muted-foreground'>
+                <span className='font-semibold text-rose-500'>Note:</span> You
                 can update your company information later in the settings.
               </p>
             </div>
@@ -327,9 +327,9 @@ export default function Welcome() {
 
         {/* Footer */}
         <div className='flex items-center justify-between mt-6'>
-          <p className='text-sm text-gray-600'>
+          <p className='text-sm text-muted-foreground'>
             Need help?{' '}
-            <button className='text-rose-500 hover:text-rose-600 font-medium'>
+            <button className='text-rose-500 hover:text-rose-600 font-medium transition-colors'>
               Contact Support
             </button>
           </p>
@@ -338,7 +338,7 @@ export default function Welcome() {
               logout();
               navigate('/login');
             }}
-            className='text-sm text-gray-600 hover:text-rose-600 font-medium flex items-center gap-1 transition-colors'
+            className='text-sm text-muted-foreground hover:text-rose-500 font-medium flex items-center gap-1 transition-colors'
           >
             <LogOut className='w-4 h-4' />
             <span>Wrong account? Logout</span>
