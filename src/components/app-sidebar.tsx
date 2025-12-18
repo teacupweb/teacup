@@ -1,4 +1,10 @@
-import { Calendar, Inbox, Settings, LayoutDashboard } from 'lucide-react';
+import {
+  Calendar,
+  Inbox,
+  Settings,
+  LayoutDashboard,
+  BarChart3,
+} from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -47,12 +53,12 @@ const data = {
     //   icon: List,
     //   disabled: true,
     // },
-    // {
-    //   title: 'Analytics',
-    //   url: '/Dashboard/Analytics',
-    //   icon: BarChart3,
-    //   disabled: true,
-    // },
+    {
+      title: 'Analytics',
+      url: '/Dashboard/Analytics',
+      icon: BarChart3,
+      disabled: false,
+    },
     // {
     //   title: 'Projects',
     //   url: '/Dashboard/Projects',
@@ -88,9 +94,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     >
       <SidebarHeader>
         <SidebarGroup>
-          <div className='flex items-center justify-between px-4 pt-6 mb-2'>
-            <Link to='/' className='flex-1'>
-              <Logo className='h-[40px] w-auto' />
+          <div className='flex items-center justify-between p-2'>
+            <Link to='/'>
+              <Logo className='w-auto' />
             </Link>
           </div>
         </SidebarGroup>

@@ -115,7 +115,7 @@ export default function Inboxes() {
               </div>
               <div>
                 <div className='relative overflow-x-auto shadow-md sm:rounded-lg'>
-                  <table className='w-full text-sm text-left rtl:text-right text-gray-500 '>
+                  <table className='w-full text-sm text-left rtl:text-right text-muted-foreground'>
                     <thead className='text-xs text-gray-200 uppercase bg-rose-500'>
                       <tr>
                         <th scope='col' className='px-6 py-3'>
@@ -137,11 +137,11 @@ export default function Inboxes() {
                         data.map((inbox: inboxType) => (
                           <tr
                             key={inbox.id}
-                            className='bg-white border-b border-gray-200 hover:bg-gray-50 '
+                            className='bg-card border-b border-border hover:bg-muted transition-colors'
                           >
                             <th
                               scope='row'
-                              className='px-6 py-4 font-medium text-gray-900 whitespace-nowrap'
+                              className='px-6 py-4 font-medium text-foreground whitespace-nowrap'
                             >
                               {inbox.name}
                             </th>

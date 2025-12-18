@@ -13,7 +13,7 @@ import Contact from './Pages/Contact';
 import PublicBlogs from './Pages/Blogs';
 import BlogPost from './Pages/BlogPost';
 import Welcome from './Dashboard/Welcome';
-
+import Analytics from './Dashboard/Analytics/Analytics';
 
 function Router() {
   return (
@@ -41,7 +41,7 @@ function Router() {
           />
           <Route path='/Dashboard/Blogs/new' element={<NewBlog />} />
         </Route>
-
+        <Route path='/Dashboard/Analytics' element={<Analytics />} />
         <Route path='/Dashboard/Settings' element={<Settings />} />
       </Route>
     </Routes>
