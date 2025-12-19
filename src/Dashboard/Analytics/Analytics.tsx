@@ -8,73 +8,76 @@ import {
   Layers, 
   TrendingUp, 
   Users, 
+  MousePointerClick
 } from 'lucide-react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Cell
-} from 'recharts';
+// Import the generated 90-day analytics data
+import analyticsData from './data.json';
 
 function Analytics() {
   const [dataType, setDataType] = useState<'buttons' | 'forms' | 'pages'>('pages');
   const [selectedRoute, setSelectedRoute] = useState('home');
   const [selectedForm, setSelectedForm] = useState('contact-us');
+  const [selectedButton, setSelectedButton] = useState('cta-primary');
 
   const routes = [
-    { label: 'Home', value: 'home' },
-    { label: 'About', value: 'about' },
+    { label: 'Home Page', value: 'home' },
+    { label: 'About Us', value: 'about' },
     { label: 'Contact', value: 'contact' },
     { label: 'Pricing', value: 'pricing' },
     { label: 'Blog', value: 'blog' },
   ];
 
   const forms = [
-    { label: 'Contact Us', value: 'contact-us' },
+    { label: 'Contact Us Form', value: 'contact-us' },
     { label: 'Newsletter Sign-up', value: 'newsletter' },
     { label: 'Waitlist Form', value: 'waitlist' },
   ];
 
-  // Dummy Page Performance Data (Percentages - e.g. Bounce Rate)
-  const pageData = useMemo(() => {
-    return [
-      { name: 'Mon', percentage: Math.floor(Math.random() * 40) + 20 },
-      { name: 'Tue', percentage: Math.floor(Math.random() * 40) + 20 },
-      { name: 'Wed', percentage: Math.floor(Math.random() * 40) + 20 },
-      { name: 'Thu', percentage: Math.floor(Math.random() * 40) + 20 },
-      { name: 'Fri', percentage: Math.floor(Math.random() * 40) + 20 },
-      { name: 'Sat', percentage: Math.floor(Math.random() * 40) + 20 },
-      { name: 'Sun', percentage: Math.floor(Math.random() * 40) + 20 },
-    ];
-  }, [selectedRoute]);
+  const buttons = [
+    { label: 'Primary CTA', value: 'cta-primary' },
+    { label: 'Secondary CTA', value: 'cta-secondary' },
+    { label: 'Login Button', value: 'login' },
+    { label: 'Register Button', value: 'register' },
+  ];
 
-  // Dummy Form Completion Distribution Data (Visitors per Completion Level)
-  const formCompletionDistribution = useMemo(() => {
-    return [
-      { level: '0%', visitors: Math.floor(Math.random() * 200) + 400 },
-      { level: '25%', visitors: Math.floor(Math.random() * 150) + 250 },
-      { level: '50%', visitors: Math.floor(Math.random() * 100) + 150 },
-      { level: '75%', visitors: Math.floor(Math.random() * 100) + 100 },
-      { level: '100%', visitors: Math.floor(Math.random() * 200) + 300 },
-    ];
-  }, [selectedForm]);
+  // Map dataType to the correct key in our JSON
+  const dataKeyMap = {
+    pages: 'pages',
+    forms: 'forms',
+    buttons: 'buttons'
+  };
+
+  // Get the correct selection based on current dataType
+  const activeSelectionValue = useMemo(() => {
+    switch(dataType) {
+      case 'pages': return selectedRoute;
+      case 'forms': return selectedForm;
+      case 'buttons': return selectedButton;
+    }
+  }, [dataType, selectedRoute, selectedForm, selectedButton]);
+
+  // Extract the full 90-day dataset for the selected item from the JSON
+  const detailData = useMemo(() => {
+    const category = dataKeyMap[dataType] as keyof typeof analyticsData;
+    const itemData = (analyticsData[category] as any)[activeSelectionValue];
+    return itemData || [];
+  }, [dataType, activeSelectionValue]);
 
   const dummyStats = [
     { title: 'Active Users', value: '1,284', change: '+12%', icon: Users, color: 'text-blue-500' },
     { title: 'Top Page View', value: '/home', change: '+5%', icon: Layers, color: 'text-purple-500' },
     { title: 'Avg. Conv.', value: '14.2%', change: '+0.4%', icon: TrendingUp, color: 'text-green-500' },
   ];
+
+  const getActiveSelectionMetadata = () => {
+    switch(dataType) {
+      case 'pages': return { value: selectedRoute, setter: setSelectedRoute, list: routes, icon: MousePointer2 };
+      case 'forms': return { value: selectedForm, setter: setSelectedForm, list: forms, icon: FileCheck };
+      case 'buttons': return { value: selectedButton, setter: setSelectedButton, list: buttons, icon: MousePointerClick };
+    }
+  };
+
+  const active = getActiveSelectionMetadata();
 
   return (
     <div className='flex flex-col w-full h-full'>
@@ -146,185 +149,17 @@ function Analytics() {
           ))}
         </div>
 
-        {/* Middle Row: Main Chart Area */}
+        {/* Middle Row: Main Dynamic Chart Area */}
         <div className='w-full'>
-          <ChartAreaInteractive />
+          <ChartAreaInteractive 
+            dataType={dataType}
+            selectedItem={active.value}
+            onItemChange={active.setter}
+            options={active.list}
+            data={detailData}
+          />
         </div>
 
-        {/* Bottom Row: Detailed Analysis & Charts */}
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6'>
-          
-          {/* Pages Performance with Shadcn Select & Percentage BarChart */}
-          <DisplayCard 
-            resetClass 
-            className='bg-card border border-border/80 rounded-2xl p-6 relative overflow-hidden group shadow-sm h-full flex flex-col'
-          >
-            <div className='absolute inset-0 bg-gradient-to-br from-card to-rose-50/5 dark:to-rose-950/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none' />
-            
-            <div className='relative z-10 h-full flex flex-col'>
-              <div className='flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4'>
-                <div>
-                  <h3 className='font-bold text-xl text-foreground flex items-center gap-2'>
-                    <MousePointer2 className='w-5 h-5 text-rose-500' />
-                    Page Performance
-                  </h3>
-                  <p className='text-sm text-muted-foreground'>Individual route analysis (%)</p>
-                </div>
-                
-                <Select value={selectedRoute} onValueChange={setSelectedRoute}>
-                  <SelectTrigger className="w-[140px] bg-muted/40 border-border/60 rounded-xl h-9 text-xs">
-                    <SelectValue placeholder="Select Route" />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-xl border-border/60 bg-card/95 backdrop-blur-md">
-                    {routes.map((route) => (
-                      <SelectItem key={route.value} value={route.value} className="text-xs rounded-lg">
-                        {route.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* BarChart Implementation */}
-              <div className='w-full flex-1 min-h-[250px]'>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={pageData}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" opacity={0.5} />
-                    <XAxis 
-                      dataKey="name" 
-                      axisLine={false} 
-                      tickLine={false} 
-                      tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }} 
-                    />
-                    <YAxis hide domain={[0, 100]} />
-                    <Tooltip 
-                      cursor={{ fill: 'var(--muted)', opacity: 0.4 }}
-                      formatter={(value: number) => [`${value}%`, 'Value']}
-                      contentStyle={{ 
-                        background: 'var(--card)', 
-                        border: '1px solid var(--border)', 
-                        borderRadius: '12px',
-                        boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'
-                      }}
-                    />
-                    <Bar 
-                      dataKey="percentage" 
-                      fill="url(#roseGradient)" 
-                      radius={[6, 6, 0, 0]}
-                      barSize={32}
-                    >
-                      {pageData.map((_, index) => (
-                        <Cell key={`cell-${index}`} fill={index === 5 ? '#e11d48' : '#fb7185'} opacity={0.8} />
-                      ))}
-                    </Bar>
-                    <defs>
-                      <linearGradient id="roseGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#e11d48" stopOpacity={0.8}/>
-                        <stop offset="100%" stopColor="#e11d48" stopOpacity={0.2}/>
-                      </linearGradient>
-                    </defs>
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-          </DisplayCard>
-
-          {/* Forms Completion Frequency (Histogram) */}
-          <DisplayCard 
-            resetClass 
-            className='bg-card border border-border/80 rounded-2xl p-6 relative overflow-hidden group shadow-sm h-full flex flex-col'
-          >
-             <div className='absolute inset-0 bg-gradient-to-br from-card to-rose-50/5 dark:to-rose-950/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none' />
-            
-            <div className='relative z-10 h-full flex flex-col'>
-              <div className='flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4'>
-                <div>
-                  <h3 className='font-bold text-xl text-foreground flex items-center gap-2'>
-                    <FileCheck className='w-5 h-5 text-rose-500' />
-                    Form Completion
-                  </h3>
-                  <p className='text-sm text-muted-foreground'>Visitors by completion level</p>
-                </div>
-                
-                <Select value={selectedForm} onValueChange={setSelectedForm}>
-                  <SelectTrigger className="w-[160px] bg-muted/40 border-border/60 rounded-xl h-9 text-xs">
-                    <SelectValue placeholder="Select Form" />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-xl border-border/60 bg-card/95 backdrop-blur-md">
-                    {forms.map((form) => (
-                      <SelectItem key={form.value} value={form.value} className="text-xs rounded-lg">
-                        {form.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Histogram Implementation (BarChart) */}
-              <div className='w-full flex-1 min-h-[250px]'>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart 
-                    data={formCompletionDistribution} 
-                    layout="vertical"
-                    margin={{ left: 10, right: 30 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--border)" opacity={0.5} />
-                    <XAxis type="number" hide />
-                    <YAxis 
-                      dataKey="level" 
-                      type="category" 
-                      axisLine={false} 
-                      tickLine={false} 
-                      tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }} 
-                      width={50}
-                    />
-                    <Tooltip 
-                      cursor={{ fill: 'var(--muted)', opacity: 0.4 }}
-                      formatter={(value: number) => [`${value} visitors`, 'Count']}
-                      contentStyle={{ 
-                        background: 'var(--card)', 
-                        border: '1px solid var(--border)', 
-                        borderRadius: '12px'
-                      }}
-                    />
-                    <Bar 
-                      dataKey="visitors" 
-                      fill="url(#roseGradientForm)" 
-                      radius={[0, 6, 6, 0]}
-                      barSize={24}
-                    >
-                      {formCompletionDistribution.map((_, index) => (
-                        <Cell 
-                          key={`cell-${index}`} 
-                          fill="#e11d48" 
-                          fillOpacity={0.4 + (index * 0.15)}
-                        />
-                      ))}
-                    </Bar>
-                    <defs>
-                      <linearGradient id="roseGradientForm" x1="0" y1="0" x2="1" y2="0">
-                        <stop offset="0%" stopColor="#e11d48" stopOpacity={0.8}/>
-                        <stop offset="100%" stopColor="#e11d48" stopOpacity={0.2}/>
-                      </linearGradient>
-                    </defs>
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-
-              <div className='mt-4 flex justify-between items-center text-[10px] text-muted-foreground uppercase tracking-wider font-bold'>
-                <div className='flex items-center gap-2'>
-                  <div className='w-2 h-2 rounded-full bg-rose-500' />
-                  Top of Funnel
-                </div>
-                <div className='flex items-center gap-2'>
-                  <div className='w-2 h-2 rounded-full bg-rose-200' />
-                  Conversion
-                </div>
-              </div>
-            </div>
-          </DisplayCard>
-
-        </div>
       </div>
     </div>
   );
