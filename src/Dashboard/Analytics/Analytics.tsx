@@ -1,83 +1,115 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import DashboardHeader from '../../Components/DashboardHeader';
 import ChartAreaInteractive from './Chart';
 import DisplayCard from '@/Components/DisplayCards';
 import { 
-  MousePointer2, 
-  FileCheck, 
   Layers, 
   TrendingUp, 
   Users, 
-  MousePointerClick
+  AlertCircle
 } from 'lucide-react';
-// Import the generated 90-day analytics data
-import analyticsData from './data.json';
+import { useAuth } from '@/AuthProvider';
+import { useAnalytics, type AnalyticsEvent } from '@/backendProvider';
+import Spinner from '@/Components/Spinner';
 
 function Analytics() {
-  const [dataType, setDataType] = useState<'buttons' | 'forms' | 'pages'>('pages');
-  const [selectedRoute, setSelectedRoute] = useState('home');
-  const [selectedForm, setSelectedForm] = useState('contact-us');
-  const [selectedButton, setSelectedButton] = useState('cta-primary');
+  const { user } = useAuth();
+  const companyId = user && typeof user !== 'string' ? user.user_metadata?.company_id : null;
 
-  const routes = [
-    { label: 'Home Page', value: 'home' },
-    { label: 'About Us', value: 'about' },
-    { label: 'Contact', value: 'contact' },
-    { label: 'Pricing', value: 'pricing' },
-    { label: 'Blog', value: 'blog' },
-  ];
-
-  const forms = [
-    { label: 'Contact Us Form', value: 'contact-us' },
-    { label: 'Newsletter Sign-up', value: 'newsletter' },
-    { label: 'Waitlist Form', value: 'waitlist' },
-  ];
-
-  const buttons = [
-    { label: 'Primary CTA', value: 'cta-primary' },
-    { label: 'Secondary CTA', value: 'cta-secondary' },
-    { label: 'Login Button', value: 'login' },
-    { label: 'Register Button', value: 'register' },
-  ];
-
-  // Map dataType to the correct key in our JSON
-  const dataKeyMap = {
-    pages: 'pages',
-    forms: 'forms',
-    buttons: 'buttons'
+  const [dataType, setDataType] = useState<'pages' | 'forms' | 'buttons'>('pages');
+  
+  const eventMap: Record<string, AnalyticsEvent> = {
+    pages: 'page',
+    forms: 'form',
+    buttons: 'button'
   };
 
-  // Get the correct selection based on current dataType
-  const activeSelectionValue = useMemo(() => {
-    switch(dataType) {
-      case 'pages': return selectedRoute;
-      case 'forms': return selectedForm;
-      case 'buttons': return selectedButton;
-    }
-  }, [dataType, selectedRoute, selectedForm, selectedButton]);
+  const { data: analyticsResponse, isLoading, error } = useAnalytics(
+    companyId, 
+    eventMap[dataType]
+  );
 
-  // Extract the full 90-day dataset for the selected item from the JSON
+  const [selectedItem, setSelectedItem] = useState<string>('');
+
+  // Extract keys from data to form options
+  const options = useMemo(() => {
+    if (!analyticsResponse?.data) return [];
+    return Object.keys(analyticsResponse.data).map(key => ({
+      label: key,
+      value: key
+    }));
+  }, [analyticsResponse]);
+
+  // Handle initial selection and selection when dataType/options change
+  useEffect(() => {
+    if (options.length > 0) {
+      if (!selectedItem || !options.find(opt => opt.value === selectedItem)) {
+        setSelectedItem(options[0].value);
+      }
+    } else {
+      setSelectedItem('');
+    }
+  }, [options, dataType]);
+
+  // Extract the full 90-day dataset for the selected item
   const detailData = useMemo(() => {
-    const category = dataKeyMap[dataType] as keyof typeof analyticsData;
-    const itemData = (analyticsData[category] as any)[activeSelectionValue];
-    return itemData || [];
-  }, [dataType, activeSelectionValue]);
+    if (!analyticsResponse?.data || !selectedItem) return [];
+    const itemData = analyticsResponse.data[selectedItem] || [];
+    // Convert 'date' field to 'name' for the Chart component
+    return itemData.map((d: any) => ({ ...d, name: d.date }));
+  }, [analyticsResponse, selectedItem]);
 
-  const dummyStats = [
-    { title: 'Active Users', value: '1,284', change: '+12%', icon: Users, color: 'text-blue-500' },
-    { title: 'Top Page View', value: '/home', change: '+5%', icon: Layers, color: 'text-purple-500' },
-    { title: 'Avg. Conv.', value: '14.2%', change: '+0.4%', icon: TrendingUp, color: 'text-green-500' },
-  ];
+  // Compute summary stats for the current category
+  const computedStats = useMemo(() => {
+    if (!analyticsResponse?.data) return [];
 
-  const getActiveSelectionMetadata = () => {
-    switch(dataType) {
-      case 'pages': return { value: selectedRoute, setter: setSelectedRoute, list: routes, icon: MousePointer2 };
-      case 'forms': return { value: selectedForm, setter: setSelectedForm, list: forms, icon: FileCheck };
-      case 'buttons': return { value: selectedButton, setter: setSelectedButton, list: buttons, icon: MousePointerClick };
+    let totalPrimary = 0;
+    let totalSecondary = 0;
+    let count = 0;
+    let topItem = 'N/A';
+    let maxVal = -1;
+
+    Object.entries(analyticsResponse.data).forEach(([key, items]) => {
+      let itemPrimary = 0;
+      items.forEach((d: any) => {
+        itemPrimary += d.primary;
+        totalPrimary += d.primary;
+        totalSecondary += d.secondary;
+        count++;
+      });
+      if (itemPrimary > maxVal) {
+        maxVal = itemPrimary;
+        topItem = key;
+      }
+    });
+
+    const avgSecondary = count > 0 ? (totalSecondary / count).toFixed(1) : '0';
+    const avgPrimary = count > 0 ? (totalPrimary / count).toFixed(1) : '0';
+
+    if (dataType === 'pages') {
+      return [
+        { title: 'Total Views', value: totalPrimary.toLocaleString(), change: '', icon: Layers, color: 'text-blue-500' },
+        { title: 'Avg. Scroll', value: `${avgSecondary}%`, change: '', icon: TrendingUp, color: 'text-green-500' },
+        { title: 'Top Page', value: topItem, change: '', icon: Users, color: 'text-purple-500' },
+      ];
+    } else if (dataType === 'forms') {
+      const totalCompletions = Object.values(analyticsResponse.data).reduce((acc: number, items: any) => 
+        acc + items.reduce((sum: number, d: any) => sum + d.secondary, 0), 0
+      );
+      return [
+        { title: 'Avg. Completion', value: `${avgPrimary}%`, change: '', icon: TrendingUp, color: 'text-green-500' },
+        { title: '100% Completes', value: totalCompletions.toLocaleString(), change: '', icon: Layers, color: 'text-blue-500' },
+        { title: 'Top Form', value: topItem, change: '', icon: Users, color: 'text-purple-500' },
+      ];
+    } else {
+      return [
+        { title: 'Total Clicks', value: totalPrimary.toLocaleString(), change: '', icon: Layers, color: 'text-blue-500' },
+        { title: 'Avg. Clicks/Day', value: (totalPrimary / 90).toFixed(1), change: '', icon: TrendingUp, color: 'text-green-500' },
+        { title: 'Top Button', value: topItem, change: '', icon: Users, color: 'text-purple-500' },
+      ];
     }
-  };
+  }, [analyticsResponse, dataType]);
 
-  const active = getActiveSelectionMetadata();
 
   return (
     <div className='flex flex-col w-full h-full'>
@@ -119,8 +151,8 @@ function Analytics() {
             </div>
           </DisplayCard>
 
-          {/* Dummy Stats Cards */}
-          {dummyStats.map((stat, index) => (
+          {/* Dynamic Stats Cards */}
+          {computedStats.map((stat, index) => (
             <DisplayCard 
               key={index}
               resetClass
@@ -151,13 +183,36 @@ function Analytics() {
 
         {/* Middle Row: Main Dynamic Chart Area */}
         <div className='w-full'>
-          <ChartAreaInteractive 
-            dataType={dataType}
-            selectedItem={active.value}
-            onItemChange={active.setter}
-            options={active.list}
-            data={detailData}
-          />
+          {isLoading ? (
+            <div className='w-full h-[400px] flex items-center justify-center bg-card rounded-2xl border border-border/80'>
+              <Spinner size='lg' />
+            </div>
+          ) : error ? (
+            <div className='w-full h-[400px] flex flex-col items-center justify-center bg-card rounded-2xl border border-border/80 text-destructive gap-4'>
+              <AlertCircle className='w-12 h-12' />
+              <p className='font-semibold'>Failed to load analytics data</p>
+              <button 
+                onClick={() => window.location.reload()}
+                className='px-4 py-2 bg-rose-500 text-white rounded-lg text-sm hover:bg-rose-600 transition-colors'
+              >
+                Retry
+              </button>
+            </div>
+          ) : options.length === 0 ? (
+            <div className='w-full h-[400px] flex flex-col items-center justify-center bg-card rounded-2xl border border-border/80 text-muted-foreground gap-4'>
+              <Layers className='w-12 h-12 opacity-20' />
+              <p className='font-semibold'>No data available for this category</p>
+              <p className='text-xs'>Try selecting a different data source or check back later.</p>
+            </div>
+          ) : (
+            <ChartAreaInteractive 
+              dataType={dataType}
+              selectedItem={selectedItem}
+              onItemChange={setSelectedItem}
+              options={options}
+              data={detailData}
+            />
+          )}
         </div>
 
       </div>

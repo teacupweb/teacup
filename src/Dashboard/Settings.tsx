@@ -285,104 +285,130 @@ function Settings() {
                   <div className="w-11 h-6 bg-muted peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-rose-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-600"></div>
                 </label>
               </div>
-              <div className='flex items-center justify-between p-3 hover:bg-muted/50 rounded-lg transition-colors group cursor-default'>
-                <div>
-                  <h4 className='font-medium text-foreground/90 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors'>
-                    Two-Factor Authentication
-                  </h4>
-                  <p className='text-sm text-muted-foreground'>
-                    Add an extra layer of security
-                  </p>
+              <div className='relative group'>
+                {/* Coming Soon Overlay for 2FA */}
+                <div className='absolute inset-0 z-10 flex items-center justify-center bg-background/40 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-lg'>
+                  <span className='bg-card/90 border border-border px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest text-rose-600 shadow-lg transform -rotate-3'>
+                    Coming Soon
+                  </span>
                 </div>
-                <label className='relative inline-flex items-center cursor-pointer'>
-                  <input
-                    type='checkbox'
-                    className='sr-only peer'
-                    checked={twoFactorAuth}
-                    onChange={(e) => {
-                      setTwoFactorAuth(e.target.checked);
-                      console.log('Two-Factor Auth:', e.target.checked);
-                    }}
-                  />
-                  <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-rose-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-600"></div>
-                </label>
+
+                <div className='flex items-center justify-between p-3 hover:bg-muted/50 rounded-lg transition-all duration-300 cursor-default opacity-40 pointer-events-none grayscale-[50%] group-hover:blur-[0.5px]'>
+                  <div>
+                    <h4 className='font-medium text-foreground/90 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors'>
+                      Two-Factor Authentication
+                    </h4>
+                    <p className='text-sm text-muted-foreground'>
+                      Add an extra layer of security
+                    </p>
+                  </div>
+                  <label className='relative inline-flex items-center cursor-pointer'>
+                    <input
+                      disabled
+                      type='checkbox'
+                      className='sr-only peer'
+                      checked={twoFactorAuth}
+                      onChange={(e) => {
+                        setTwoFactorAuth(e.target.checked);
+                        console.log('Two-Factor Auth:', e.target.checked);
+                      }}
+                    />
+                    <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-rose-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-600"></div>
+                  </label>
+                </div>
               </div>
             </div>
           </div>
 
-          <div className='bg-card p-6 rounded-2xl border border-border shadow-sm'>
-            <h3 className='font-bold text-xl text-foreground mb-4 pb-2 border-b border-border/50'>
-              Team Management
-            </h3>
-            <div className='space-y-4'>
-              <div>
-                <label className='block text-sm font-medium text-foreground/80 mb-1'>
-                  Invite Team Member
-                </label>
-                <form onSubmit={handleInviteClick} className='flex gap-2'>
-                  <input
-                    required
-                    type='email'
-                    value={inviteEmail}
-                    onChange={(e) => setInviteEmail(e.target.value)}
-                    placeholder='colleague@example.com'
-                    className='flex-1 px-4 py-2 border border-border bg-card rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all text-foreground'
-                  />
-                  <button
-                    type='submit'
-                    className='bg-primary text-primary-foreground px-4 py-2 rounded-xl hover:bg-primary/90 transition-colors font-medium'
-                  >
-                    Invite
-                  </button>
-                </form>
+          <div className='bg-card p-6 rounded-2xl border border-border shadow-sm relative overflow-hidden group'>
+            {/* Coming Soon Overlay */}
+            <div className='absolute inset-0 z-20 flex items-center justify-center bg-background/50 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none'>
+              <div className='bg-card/90 border border-border px-4 py-2 rounded-xl shadow-xl transform -rotate-12 scale-110'>
+                <span className='text-rose-600 font-bold uppercase tracking-widest text-sm'>Coming Soon</span>
               </div>
-              <div className='pt-2'>
-                <h4 className='text-xs font-semibold text-rose-500 uppercase tracking-wider mb-3'>
-                  Members ({company?.sharing?.length || 0})
-                </h4>
-                {company?.sharing && company.sharing.length > 0 ? (
-                  <div className='space-y-3'>
-                    {company.sharing.map((member: any, index: number) => (
-                      <div
-                        className='flex items-center justify-between bg-muted/50 p-3 rounded-lg'
-                        key={member.email + index}
-                      >
-                        <div className='flex items-center gap-3'>
-                          <div className='w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center text-rose-600 text-xs font-bold'>
-                            {member.name
-                              .split(' ')
-                              .map((word: string) => word.charAt(0).toUpperCase())
-                              .join('')
-                              .slice(0, 2)}
-                          </div>
-                          <div>
-                            <p className='text-sm font-medium text-foreground/90'>
-                              {member.name}
-                            </p>
-                            <p className='text-xs text-muted-foreground'>
-                              {member.email}
-                            </p>
-                          </div>
-                        </div>
-                        <span
-                          className={`text-xs font-medium px-2 py-1 rounded-full ${
-                            member.status === 'Owner'
-                              ? 'bg-rose-100 text-rose-600'
-                              : member.status === 'Member'
-                              ? 'bg-blue-100 text-blue-600'
-                              : 'bg-orange-100 text-orange-600'
-                          }`}
+            </div>
+            
+            <div className='absolute inset-0 z-10 flex items-center justify-center pointer-events-none'>
+               <div className='px-3 py-1 bg-muted/80 backdrop-blur-sm border border-border rounded-lg opacity-100 group-hover:opacity-0 transition-opacity duration-300'>
+                  <span className='text-[10px] font-bold uppercase tracking-tighter text-muted-foreground'>Limited Preview</span>
+               </div>
+            </div>
+
+            <div className='relative z-0 opacity-40 pointer-events-none grayscale-[50%] transition-all duration-500 group-hover:blur-[1px]'>
+              <h3 className='font-bold text-xl text-foreground mb-4 pb-2 border-b border-border/50'>
+                Team Management
+              </h3>
+              <div className='space-y-4'>
+                <div>
+                  <label className='block text-sm font-medium text-foreground/80 mb-1'>
+                    Invite Team Member
+                  </label>
+                  <form onSubmit={handleInviteClick} className='flex gap-2'>
+                    <input
+                      disabled
+                      type='email'
+                      value={inviteEmail}
+                      onChange={(e) => setInviteEmail(e.target.value)}
+                      placeholder='colleague@example.com'
+                      className='flex-1 px-4 py-2 border border-border bg-card rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all text-foreground'
+                    />
+                    <button
+                      disabled
+                      type='submit'
+                      className='bg-primary text-primary-foreground px-4 py-2 rounded-xl hover:bg-primary/90 transition-colors font-medium opacity-50'
+                    >
+                      Invite
+                    </button>
+                  </form>
+                </div>
+                <div className='pt-2'>
+                  <h4 className='text-xs font-semibold text-rose-500 uppercase tracking-wider mb-3'>
+                    Members ({company?.sharing?.length || 0})
+                  </h4>
+                  {company?.sharing && company.sharing.length > 0 ? (
+                    <div className='space-y-3'>
+                      {company.sharing.map((member: any, index: number) => (
+                        <div
+                          className='flex items-center justify-between bg-muted/50 p-3 rounded-lg'
+                          key={member.email + index}
                         >
-                          {member.status}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className='text-sm text-muted-foreground text-center py-4'>
-                    No team members yet. Invite someone to get started!
-                  </p>
-                )}
+                          <div className='flex items-center gap-3'>
+                            <div className='w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center text-rose-600 text-xs font-bold'>
+                              {member.name
+                                .split(' ')
+                                .map((word: string) => word.charAt(0).toUpperCase())
+                                .join('')
+                                .slice(0, 2)}
+                            </div>
+                            <div>
+                              <p className='text-sm font-medium text-foreground/90'>
+                                {member.name}
+                              </p>
+                              <p className='text-xs text-muted-foreground'>
+                                {member.email}
+                              </p>
+                            </div>
+                          </div>
+                          <span
+                            className={`text-xs font-medium px-2 py-1 rounded-full ${
+                              member.status === 'Owner'
+                                ? 'bg-rose-100 text-rose-600'
+                                : member.status === 'Member'
+                                ? 'bg-blue-100 text-blue-600'
+                                : 'bg-orange-100 text-orange-600'
+                            }`}
+                          >
+                            {member.status}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className='text-sm text-muted-foreground text-center py-4'>
+                      No team members yet. Invite someone to get started!
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           </div>

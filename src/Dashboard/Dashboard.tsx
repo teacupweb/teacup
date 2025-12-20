@@ -15,6 +15,8 @@ import {
   CartesianGrid,
   ResponsiveContainer,
 } from 'recharts';
+import { useAnalytics } from '@/backendProvider';
+import { useMemo } from 'react';
 
 interface WebsiteInfo {
   title: string;
@@ -32,8 +34,87 @@ function Dashboard() {
   const { data: latestMessages, isLoading: messagesLoading } =
     useLatestMessages(companyId, 4);
 
-  // Show loading state while fetching company data
-  if (loading || !company) {
+  // Fetch all analytics categories
+  const { data: pageAnalytics, isLoading: pageLoading } = useAnalytics(companyId, 'page');
+  const { data: formAnalytics, isLoading: formLoading } = useAnalytics(companyId, 'form');
+  const { data: buttonAnalytics, isLoading: buttonLoading } = useAnalytics(companyId, 'button');
+
+  // Compute stats for cards
+  const stats = useMemo(() => {
+    let totalVisits = 0;
+    let totalConversions = 0;
+    let totalInteractions = 0;
+
+    if (pageAnalytics?.data) {
+      Object.values(pageAnalytics.data).forEach((pageData: any) => {
+        pageData.forEach((d: any) => (totalVisits += d.primary));
+      });
+    }
+
+    if (formAnalytics?.data) {
+      Object.values(formAnalytics.data).forEach((formData: any) => {
+        formData.forEach((d: any) => (totalConversions += d.secondary)); // secondary is 100% completions
+      });
+    }
+
+    if (buttonAnalytics?.data) {
+      Object.values(buttonAnalytics.data).forEach((btnData: any) => {
+        btnData.forEach((d: any) => (totalInteractions += d.primary)); // primary is click count
+      });
+    }
+
+    return [
+      {
+        title: 'Total visits',
+        description: 'Total page views across all routes',
+        data: totalVisits.toLocaleString(),
+        icon: 'globe',
+      },
+      {
+        title: 'New Messages',
+        description: 'Messages received in your inboxes',
+        data: latestMessages?.length || 0,
+        icon: 'mail',
+      },
+      {
+        title: 'Conversions',
+        description: 'Total 100% form completions',
+        data: totalConversions.toLocaleString(),
+        icon: 'users',
+      },
+      {
+        title: 'Interactions',
+        description: 'Total button clicks tracked',
+        data: totalInteractions.toLocaleString(),
+        icon: 'file-text',
+      },
+    ];
+  }, [pageAnalytics, formAnalytics, buttonAnalytics, latestMessages]);
+
+  // Aggregate daily visits for the chart
+  const activityData = useMemo(() => {
+    if (!pageAnalytics?.data) return [];
+    
+    const dailyTotals: Record<string, number> = {};
+    
+    Object.values(pageAnalytics.data).forEach((pageData: any) => {
+      pageData.forEach((d: any) => {
+        dailyTotals[d.date] = (dailyTotals[d.date] || 0) + d.primary;
+      });
+    });
+
+    return Object.entries(dailyTotals)
+      .map(([date, visits]) => ({
+        day: new Date(date).toLocaleDateString(undefined, { weekday: 'short' }),
+        visits,
+        rawDate: date
+      }))
+      .sort((a, b) => new Date(a.rawDate).getTime() - new Date(b.rawDate).getTime())
+      .slice(-7); // Take last 7 days
+  }, [pageAnalytics]);
+
+  // Show loading state
+  if (loading || pageLoading || formLoading || buttonLoading || !company) {
     return (
       <div className='flex flex-col w-full h-full'>
         <DashboardHeader />
@@ -66,8 +147,8 @@ function Dashboard() {
         <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 w-full h-full auto-rows-min'>
           {/* Enhanced Stats Cards */}
           <div className='col-span-1 md:col-span-2 xl:col-span-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6'>
-            {(websiteData.info as WebsiteInfo[]).map(
-              (item: WebsiteInfo, index: number) => (
+            {stats.map(
+              (item: any, index: number) => (
                 <DisplayCard
                   resetClass
                   className='col-span-1 bg-card dark:bg-card/50 text-card-foreground rounded-2xl border border-border/80 shadow-sm hover:shadow-xl transition-all duration-500 group p-4 sm:p-5 md:p-6 relative overflow-hidden w-full'
@@ -240,7 +321,7 @@ function Dashboard() {
                     </div>
                     <div className='h-4 w-px bg-border' />
                     <div className='text-sm text-foreground font-semibold'>
-                      {(company.activity_data || [])
+                      {activityData
                         .reduce((sum: number, day: any) => sum + day.visits, 0)
                         .toLocaleString()}{' '}
                       total
@@ -251,7 +332,7 @@ function Dashboard() {
                 <div className='flex-1 -mx-2 -mb-2 min-h-[250px] w-full'>
                   <ResponsiveContainer width='100%' height='100%'>
                     <ComposedChart
-                      data={company.activity_data || []}
+                      data={activityData}
                       margin={{ top: 10, right: 10, left: 10, bottom: 10 }}
                     >
                       <defs>
@@ -346,7 +427,7 @@ function Dashboard() {
                     <div className='text-foreground opacity-80'>
                       <span className='font-semibold text-rose-600'>
                         {Math.max(
-                          ...(company.activity_data || [{ visits: 0 }]).map(
+                          ...(activityData.length > 0 ? activityData : [{ visits: 0 }]).map(
                             (d: any) => d.visits
                           )
                         ).toLocaleString()}
@@ -356,10 +437,10 @@ function Dashboard() {
                     <div className='text-foreground opacity-80'>
                       <span className='font-semibold text-rose-600'>
                         {Math.round(
-                          (company.activity_data || []).reduce(
+                          activityData.reduce(
                             (sum: number, day: any) => sum + day.visits,
                             0
-                          ) / (company.activity_data?.length || 1)
+                          ) / (activityData.length || 1)
                         ).toLocaleString()}
                       </span>{' '}
                       avg daily

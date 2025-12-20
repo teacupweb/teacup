@@ -48,8 +48,19 @@ export default function ChartAreaInteractive({
   const [timeRange, setTimeRange] = React.useState('7d');
 
   const chartConfig = React.useMemo(() => {
-    const primaryLabel = dataType === 'buttons' ? 'Clicks' : 'Views';
-    const secondaryLabel = dataType === 'pages' ? 'Bounce Rate' : dataType === 'forms' ? 'Submissions' : 'Conversions';
+    let primaryLabel = 'Views';
+    let secondaryLabel = 'Scroll %';
+
+    if (dataType === 'pages') {
+      primaryLabel = 'Views';
+      secondaryLabel = 'Avg. Scroll';
+    } else if (dataType === 'forms') {
+      primaryLabel = 'Avg. Completion';
+      secondaryLabel = '100% Completions';
+    } else if (dataType === 'buttons') {
+      primaryLabel = 'Clicks';
+      secondaryLabel = ''; // Not used
+    }
     
     return {
       primary: {
@@ -210,7 +221,10 @@ export default function ChartAreaInteractive({
                   }}
                   formatter={(value: any, name: any) => {
                     const label = chartConfig[name as keyof typeof chartConfig]?.label;
-                    const suffix = (dataType === 'pages' && name === 'secondary') ? '%' : '';
+                    let suffix = '';
+                    if (dataType === 'pages' && name === 'secondary') suffix = '%';
+                    if (dataType === 'forms' && name === 'primary') suffix = '%';
+                    
                     return [
                       `${value}${suffix}`,
                       label || name

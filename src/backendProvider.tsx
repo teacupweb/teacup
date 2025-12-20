@@ -68,12 +68,37 @@ async function fetchApi(endpoint: string, options: RequestInit = {}) {
   return response.json();
 }
 
+// --- Universal Hooks ---
+
+export function useApiQuery<T = any>(
+  key: any[],
+  endpoint: string,
+  options?: any
+) {
+  return useQuery<T>({
+    queryKey: key,
+    queryFn: () => fetchApi(endpoint),
+    ...options,
+  });
+}
+
+export function useApiMutation<T = any, V = any>(
+  mutationFn: (variables: V) => Promise<T>,
+  onSuccess?: (data: T, variables: V) => void
+) {
+  return useMutation({
+    mutationFn,
+    onSuccess: (data, variables) => {
+      if (onSuccess) onSuccess(data, variables);
+      // Optional: Invalidate queries if needed
+    },
+  });
+}
+
 // --- Blogs ---
 
 export function useUserBlogs(companyId: number | undefined | null) {
-  return useQuery({
-    queryKey: ['blogs', companyId],
-    queryFn: () => fetchApi(`/dashboard/blogs/${companyId}`),
+  return useApiQuery(['blogs', companyId], `/dashboard/blogs/${companyId}`, {
     enabled: !!companyId,
   });
 }
@@ -82,116 +107,110 @@ export function useBlog(
   companyId: string | undefined | null,
   id: string | undefined
 ) {
-  return useQuery({
-    queryKey: ['blog', id],
-    queryFn: () => fetchApi(`/dashboard/blogs/${companyId}/${id}`),
+  return useApiQuery(['blog', id], `/dashboard/blogs/${companyId}/${id}`, {
     enabled: !!companyId && !!id,
   });
 }
 
 export function useCreateBlog() {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (newBlog: blogType) =>
+  return useApiMutation(
+    (newBlog: blogType) =>
       fetchApi('/dashboard/blogs', {
         method: 'POST',
         body: JSON.stringify(newBlog),
       }),
-    onSuccess: (_, variables) => {
+    (_, variables) => {
       queryClient.invalidateQueries({
         queryKey: ['blogs', variables.created_by],
       });
-    },
-  });
+    }
+  );
 }
 
 export function useUpdateBlog() {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({ id, blog }: { id: number; blog: blogType }) =>
+  return useApiMutation(
+    ({ id, blog }: { id: number; blog: blogType }) =>
       fetchApi(`/dashboard/blogs/${id}`, {
         method: 'PUT',
         body: JSON.stringify(blog),
       }),
-    onSuccess: (_, variables) => {
+    (_, variables) => {
       queryClient.invalidateQueries({
         queryKey: ['blogs', variables.blog.created_by],
       });
-    },
-  });
+    }
+  );
 }
 
 export function useDeleteBlog() {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (id: number) =>
+  return useApiMutation(
+    (id: number) =>
       fetchApi(`/dashboard/blogs/${id}`, {
         method: 'DELETE',
       }),
-    onSuccess: () => {
+    () => {
       queryClient.invalidateQueries({ queryKey: ['blogs'] });
-    },
-  });
+    }
+  );
 }
 
 // --- Inbox ---
 
 export function useUserInboxes(companyId: number | undefined | null) {
-  return useQuery({
-    queryKey: ['inboxes', companyId],
-    queryFn: () => fetchApi(`/dashboard/inbox/${companyId}`),
+  return useApiQuery(['inboxes', companyId], `/dashboard/inbox/${companyId}`, {
     enabled: !!companyId,
   });
 }
 
 export function useCreateInbox() {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (newInbox: inboxType) =>
+  return useApiMutation(
+    (newInbox: inboxType) =>
       fetchApi('/dashboard/inbox', {
         method: 'POST',
         body: JSON.stringify(newInbox),
       }),
-    onSuccess: (_, variables) => {
+    (_, variables) => {
       queryClient.invalidateQueries({
         queryKey: ['inboxes', variables.created_by],
       });
-    },
-  });
+    }
+  );
 }
 
 export function useDeleteInbox() {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (id: string) =>
+  return useApiMutation(
+    (id: string) =>
       fetchApi(`/dashboard/inbox/${id}`, {
         method: 'DELETE',
       }),
-    onSuccess: () => {
+    () => {
       queryClient.invalidateQueries({ queryKey: ['inboxes'] });
-    },
-  });
+    }
+  );
 }
 
 export function useInboxData(id: number | undefined) {
-  return useQuery({
-    queryKey: ['inboxData', id],
-    queryFn: () => fetchApi(`/dashboard/inbox/data/${id}`),
+  return useApiQuery(['inboxData', id], `/dashboard/inbox/data/${id}`, {
     enabled: !!id,
   });
 }
 
 export function useDeleteInboxData() {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (id: number) =>
+  return useApiMutation(
+    (id: number) =>
       fetchApi(`/dashboard/inbox/data/${id}`, {
         method: 'DELETE',
       }),
-    onSuccess: () => {
+    () => {
       queryClient.invalidateQueries({ queryKey: ['inboxData'] });
-    },
-  });
+    }
+  );
 }
 
 export function useLatestMessages(
@@ -245,41 +264,75 @@ export function useLatestMessages(
 // --- Company ---
 
 export function useCompany(companyId: number | undefined | null) {
-  return useQuery({
-    queryKey: ['company', companyId],
-    queryFn: () => fetchApi(`/dashboard/company/${companyId}`),
+  return useApiQuery(['company', companyId], `/dashboard/company/${companyId}`, {
     enabled: !!companyId,
   });
 }
 
 export function useCreateCompany() {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (newCompany: CompanyType) =>
+  return useApiMutation(
+    (newCompany: CompanyType) =>
       fetchApi('/dashboard/company', {
         method: 'POST',
         body: JSON.stringify(newCompany),
       }),
-    onSuccess: () => {
+    () => {
       // Invalidate queries if necessary, e.g., if there's a list of companies
       queryClient.invalidateQueries({ queryKey: ['companies'] });
-    },
-  });
+    }
+  );
 }
 
 export function useUpdateCompany() {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({ id, company }: { id: string; company: CompanyType }) =>
+  return useApiMutation(
+    ({ id, company }: { id: string; company: CompanyType }) =>
       fetchApi(`/dashboard/company/${id}`, {
         method: 'PUT',
         body: JSON.stringify(company),
       }),
-    onSuccess: (_, variables) => {
+    (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['company', variables.id] });
-    },
+    }
+  );
+}
+// --- Analytics ---
+
+export type AnalyticsEvent = 'page' | 'form' | 'button';
+
+export interface AnalyticsDataPoint {
+  date: string;
+  primary: number;
+  secondary: number;
+}
+
+export interface AnalyticsResponse {
+  message: string;
+  uniqueSets: string[] | null;
+  data: {
+    [identifier: string]: AnalyticsDataPoint[];
+  };
+}
+
+export function useAnalytics(owner: string | undefined, event: AnalyticsEvent) {
+  return useQuery<AnalyticsResponse>({
+    queryKey: ['analytics', owner, event],
+    queryFn: () => fetchApi(`/api/analytics/${owner}?event=${event}`),
+    enabled: !!owner && !!event,
   });
 }
+
+export function useTrackAnalytics() {
+  return useMutation({
+    mutationFn: (data: any) =>
+      fetchApi('/api/analytics', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+  });
+}
+
 // hold my tea
 
 export async function useHoldMyTea(owner: number, question: string) {
