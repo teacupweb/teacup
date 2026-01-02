@@ -1,12 +1,21 @@
 import Navbar from './Components/Navbar';
 import Footer from './Components/Footer';
 import { Link } from 'react-router';
+import { useEffect } from 'react';
 // import { useContext } from 'react';
 // import { authContext } from './AuthProvider';
 
 function App() {
   // const { login } = useContext(authContext);
   // login();
+  
+  // Force light theme on the main page
+  useEffect(() => {
+    const root = window.document.documentElement;
+    root.classList.remove('dark');
+    root.classList.add('light');
+  }, []);
+  
   return (
     <>
       <div className='bg-background text-foreground transition-colors duration-300'>

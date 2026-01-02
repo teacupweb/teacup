@@ -3,7 +3,7 @@ import DashboardHeader from '../Components/DashboardHeader';
 import { useCompany, useLatestMessages } from '@/backendProvider';
 import { useAuth } from '@/AuthProvider';
 import Spinner from '@/Components/Spinner';
-import websiteData from '@/assets/websiteData.json';
+// import websiteData from '@/assets/websiteData.json';
 import { Globe, Mail, Users, FileText } from 'lucide-react';
 import HoldMyTea from '@/Components/HoldMyTea';
 
@@ -18,12 +18,12 @@ import {
 import { useAnalytics } from '@/backendProvider';
 import { useMemo } from 'react';
 
-interface WebsiteInfo {
-  title: string;
-  description: string;
-  data: any[] | number | string;
-  icon?: string;
-}
+// interface WebsiteInfo {
+//   title: string;
+//   description: string;
+//   data: any[] | number | string;
+//   icon?: string;
+// }
 
 function Dashboard() {
   const { user } = useAuth();
@@ -35,9 +35,18 @@ function Dashboard() {
     useLatestMessages(companyId, 4);
 
   // Fetch all analytics categories
-  const { data: pageAnalytics, isLoading: pageLoading } = useAnalytics(companyId, 'page');
-  const { data: formAnalytics, isLoading: formLoading } = useAnalytics(companyId, 'form');
-  const { data: buttonAnalytics, isLoading: buttonLoading } = useAnalytics(companyId, 'button');
+  const { data: pageAnalytics, isLoading: pageLoading } = useAnalytics(
+    companyId,
+    'page'
+  );
+  const { data: formAnalytics, isLoading: formLoading } = useAnalytics(
+    companyId,
+    'form'
+  );
+  const { data: buttonAnalytics, isLoading: buttonLoading } = useAnalytics(
+    companyId,
+    'button'
+  );
 
   // Compute stats for cards
   const stats = useMemo(() => {
@@ -94,9 +103,9 @@ function Dashboard() {
   // Aggregate daily visits for the chart
   const activityData = useMemo(() => {
     if (!pageAnalytics?.data) return [];
-    
+
     const dailyTotals: Record<string, number> = {};
-    
+
     Object.values(pageAnalytics.data).forEach((pageData: any) => {
       pageData.forEach((d: any) => {
         dailyTotals[d.date] = (dailyTotals[d.date] || 0) + d.primary;
@@ -107,9 +116,11 @@ function Dashboard() {
       .map(([date, visits]) => ({
         day: new Date(date).toLocaleDateString(undefined, { weekday: 'short' }),
         visits,
-        rawDate: date
+        rawDate: date,
       }))
-      .sort((a, b) => new Date(a.rawDate).getTime() - new Date(b.rawDate).getTime())
+      .sort(
+        (a, b) => new Date(a.rawDate).getTime() - new Date(b.rawDate).getTime()
+      )
       .slice(-7); // Take last 7 days
   }, [pageAnalytics]);
 
@@ -147,38 +158,36 @@ function Dashboard() {
         <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 w-full h-full auto-rows-min'>
           {/* Enhanced Stats Cards */}
           <div className='col-span-1 md:col-span-2 xl:col-span-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6'>
-            {stats.map(
-              (item: any, index: number) => (
-                <DisplayCard
-                  resetClass
-                  className='col-span-1 bg-card dark:bg-card/50 text-card-foreground rounded-2xl border border-border/80 shadow-sm hover:shadow-xl transition-all duration-500 group p-4 sm:p-5 md:p-6 relative overflow-hidden w-full'
-                  key={index}
-                >
-                  {/* Animated background gradient */}
-                  <div className='absolute inset-0 bg-gradient-to-br from-card to-rose-50/10 dark:to-rose-950/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500' />
+            {stats.map((item: any, index: number) => (
+              <DisplayCard
+                resetClass
+                className='col-span-1 bg-card dark:bg-card/50 text-card-foreground rounded-2xl border border-border/80 shadow-sm hover:shadow-xl transition-all duration-500 group p-4 sm:p-5 md:p-6 relative overflow-hidden w-full'
+                key={index}
+              >
+                {/* Animated background gradient */}
+                <div className='absolute inset-0 bg-gradient-to-br from-card to-rose-50/10 dark:to-rose-950/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500' />
 
-                  {/* Icon in top right */}
-                  <div className='absolute top-4 right-4 p-2 bg-gradient-to-br from-rose-500 to-rose-600 rounded-xl text-white opacity-90 group-hover:opacity-100 transition-all duration-300 group-hover:scale-110'>
-                    {getIcon(item.icon)}
-                  </div>
+                {/* Icon in top right */}
+                <div className='absolute top-4 right-4 p-2 bg-gradient-to-br from-rose-500 to-rose-600 rounded-xl text-white opacity-90 group-hover:opacity-100 transition-all duration-300 group-hover:scale-110'>
+                  {getIcon(item.icon)}
+                </div>
 
-                  <div className='relative z-10'>
-                    <h3 className='font-semibold text-foreground mb-2 sm:mb-3 text-base sm:text-lg tracking-tight pr-12 opacity-80'>
-                      {item.title}
-                    </h3>
-                    <span className='text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-6 block leading-relaxed'>
-                      {item.description}
-                    </span>
-                    <span className='font-bold text-3xl sm:text-4xl block text-foreground group-hover:text-rose-600 transition-colors duration-300 tracking-tight'>
-                      {typeof item.data === 'string' ? item.data : item.data}
-                    </span>
-                  </div>
+                <div className='relative z-10'>
+                  <h3 className='font-semibold text-foreground mb-2 sm:mb-3 text-base sm:text-lg tracking-tight pr-12 opacity-80'>
+                    {item.title}
+                  </h3>
+                  <span className='text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-6 block leading-relaxed'>
+                    {item.description}
+                  </span>
+                  <span className='font-bold text-3xl sm:text-4xl block text-foreground group-hover:text-rose-600 transition-colors duration-300 tracking-tight'>
+                    {typeof item.data === 'string' ? item.data : item.data}
+                  </span>
+                </div>
 
-                  {/* Animated progress bar */}
-                  <div className='absolute bottom-0 left-0 w-0 h-1 bg-gradient-to-r from-rose-500 to-rose-400 group-hover:w-full transition-all duration-700 ease-out' />
-                </DisplayCard>
-              )
-            )}
+                {/* Animated progress bar */}
+                <div className='absolute bottom-0 left-0 w-0 h-1 bg-gradient-to-r from-rose-500 to-rose-400 group-hover:w-full transition-all duration-700 ease-out' />
+              </DisplayCard>
+            ))}
           </div>
 
           {/* Enhanced Messages Table */}
@@ -423,13 +432,14 @@ function Dashboard() {
                   <div className='text-xs text-muted-foreground/60 font-medium'>
                     Updated just now
                   </div>
-                   <div className='flex gap-6 text-xs'>
+                  <div className='flex gap-6 text-xs'>
                     <div className='text-foreground opacity-80'>
                       <span className='font-semibold text-rose-600'>
                         {Math.max(
-                          ...(activityData.length > 0 ? activityData : [{ visits: 0 }]).map(
-                            (d: any) => d.visits
-                          )
+                          ...(activityData.length > 0
+                            ? activityData
+                            : [{ visits: 0 }]
+                          ).map((d: any) => d.visits)
                         ).toLocaleString()}
                       </span>{' '}
                       peak visits
