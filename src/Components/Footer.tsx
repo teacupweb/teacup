@@ -11,14 +11,14 @@ function Footer() {
             className='text-xl max-w-lg text-center lg:text-start'
             style={{ color: '#fff' }}
           >
-            Stop begging your tech friend. With teacupnet, your business runs
+            Stop begging your tech friend. With Teacup, your business runs
             smoother than your cousin’s overpriced agency ever could.
           </p>
         </div>
         <div className=' border-white border-b-4 h-2 w-full my-3 mt-5'></div>
         <div className='text-white flex justify-between items-center flex-col lg:flex-row w-full'>
           <span className='text-xs sm:text-lg'>
-            &copy; All rights reserved, Teacupnet 2025
+            &copy; All rights reserved, Teacup 2025
           </span>
           <div className='flex gap-4 text-3xl '>
             {/* Social Media Icons */}

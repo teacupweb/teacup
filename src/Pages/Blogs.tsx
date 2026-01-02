@@ -6,9 +6,9 @@ import { Link } from 'react-router';
 const demoBlogPosts = [
   {
     id: 1,
-    title: 'Getting Started with Teacupnet: A Complete Guide',
+    title: 'Getting Started with Teacup: A Complete Guide',
     excerpt:
-      'Learn how to build your first website with Teacupnet in just 5 minutes. No coding required!',
+      'Learn how to build your first website with Teacup in just 5 minutes. No coding required!',
     author: 'Sarah Johnson',
     date: 'November 20, 2025',
     category: 'Tutorial',
@@ -39,7 +39,7 @@ const demoBlogPosts = [
   },
   {
     id: 4,
-    title: 'SEO Best Practices for Your Teacupnet Website',
+    title: 'SEO Best Practices for Your Teacup Website',
     excerpt:
       'Optimize your website for search engines and increase your organic traffic.',
     author: 'David Park',
@@ -52,7 +52,7 @@ const demoBlogPosts = [
     id: 5,
     title: 'Customer Success Story: How Jane Grew Her Business 300%',
     excerpt:
-      'Read how one entrepreneur used Teacupnet to triple her revenue in just 6 months.',
+      'Read how one entrepreneur used Teacup to triple her revenue in just 6 months.',
     author: 'Lisa Thompson',
     date: 'November 10, 2025',
     category: 'Success Stories',
@@ -83,7 +83,7 @@ function Blogs() {
               <div className='text-center mb-12'>
                 <h1 className='text-5xl ubuntu-font mb-4 text-foreground'>Our Blog</h1>
                 <p className='text-xl text-muted-foreground'>
-                  Insights, tutorials, and stories from the Teacupnet community
+                  Insights, tutorials, and stories from the Teacup community
                 </p>
               </div>
 

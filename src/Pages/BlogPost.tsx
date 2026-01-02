@@ -6,9 +6,9 @@ import { useParams, Link } from 'react-router';
 const demoBlogPosts = [
   {
     id: 1,
-    title: 'Getting Started with Teacupnet: A Complete Guide',
+    title: 'Getting Started with Teacup: A Complete Guide',
     excerpt:
-      'Learn how to build your first website with Teacupnet in just 5 minutes. No coding required!',
+      'Learn how to build your first website with Teacup in just 5 minutes. No coding required!',
     author: 'Sarah Johnson',
     date: 'November 20, 2025',
     category: 'Tutorial',
@@ -16,7 +16,7 @@ const demoBlogPosts = [
     readTime: '5 min read',
     content: `
       <h2>Introduction</h2>
-      <p>Welcome to Teacupnet! In this comprehensive guide, we'll walk you through everything you need to know to create your first professional website in just 5 minutes.</p>
+      <p>Welcome to Teacup! In this comprehensive guide, we'll walk you through everything you need to know to create your first professional website in just 5 minutes.</p>
       
       <h2>Step 1: Sign Up</h2>
       <p>Getting started is simple. Just head to our signup page and create your free account. No credit card required!</p>
@@ -34,7 +34,7 @@ const demoBlogPosts = [
       <p>Once you're happy with your website, hit the publish button and your site will be live on the internet instantly!</p>
       
       <h2>Conclusion</h2>
-      <p>That's it! You've just created your first website with Teacupnet. Now you can focus on growing your business while we handle all the technical details.</p>
+      <p>That's it! You've just created your first website with Teacup. Now you can focus on growing your business while we handle all the technical details.</p>
     `,
   },
   {
@@ -88,7 +88,7 @@ const demoBlogPosts = [
   },
   {
     id: 4,
-    title: 'SEO Best Practices for Your Teacupnet Website',
+    title: 'SEO Best Practices for Your Teacup Website',
     excerpt:
       'Optimize your website for search engines and increase your organic traffic.',
     author: 'David Park',
@@ -113,7 +113,7 @@ const demoBlogPosts = [
     id: 5,
     title: 'Customer Success Story: How Jane Grew Her Business 300%',
     excerpt:
-      'Read how one entrepreneur used Teacupnet to triple her revenue in just 6 months.',
+      'Read how one entrepreneur used Teacup to triple her revenue in just 6 months.',
     author: 'Lisa Thompson',
     date: 'November 10, 2025',
     category: 'Success Stories',
@@ -127,7 +127,7 @@ const demoBlogPosts = [
       <p>Jane needed a professional website that could showcase her products and accept online orders, but she didn't have the budget for a developer.</p>
       
       <h2>The Solution</h2>
-      <p>Jane discovered Teacupnet and built her new website in just one weekend. The results were immediate and impressive.</p>
+      <p>Jane discovered Teacup and built her new website in just one weekend. The results were immediate and impressive.</p>
       
       <h2>The Results</h2>
       <p>Within 6 months, Jane's revenue increased by 300%. She now processes orders online and has expanded her customer base significantly.</p>
@@ -239,7 +239,7 @@ function BlogPost() {
               <div className='mt-12 p-6 bg-gray-50 rounded-2xl'>
                 <h3 className='text-xl font-bold mb-2'>About the Author</h3>
                 <p className='text-gray-700'>
-                  <strong>{post.author}</strong> is a content writer at Teacupnet,
+                  <strong>{post.author}</strong> is a content writer at Teacup,
                   passionate about helping businesses succeed online.
                 </p>
               </div>

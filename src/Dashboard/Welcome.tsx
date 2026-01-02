@@ -205,7 +205,7 @@ export default function Welcome() {
           <div className='inline-flex items-center gap-2 bg-card/80 backdrop-blur-sm px-6 py-3 rounded-full shadow-lg border border-border mb-6'>
             <Sparkles className='w-5 h-5 text-rose-500' />
             <span className='text-rose-600 font-semibold'>
-              Welcome to Teacupnet
+              Welcome to Teacup
             </span>
           </div>
           <h1 className='text-5xl font-bold text-foreground mb-4 ubuntu-font'>

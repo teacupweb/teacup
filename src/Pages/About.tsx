@@ -10,12 +10,12 @@ function About() {
           <div className='min-h-[70vh] py-12 px-4'>
             <div className='max-w-4xl mx-auto'>
               <h1 className='text-5xl ubuntu-font mb-8 text-center text-foreground'>
-                About Teacupnet
+                About Teacup
               </h1>
               
               <div className='space-y-6 text-lg text-muted-foreground'>
                 <p>
-                  Welcome to Teacupnet, your trusted partner in building powerful
+                  Welcome to Teacup, your trusted partner in building powerful
                   websites without the technical complexity. We believe that every
                   business deserves a professional online presence, regardless of
                   their technical expertise.
@@ -32,7 +32,7 @@ function About() {
                 </p>
 
                 <h2 className='text-3xl ubuntu-font mt-10 mb-4 text-foreground'>
-                  Why Choose Teacupnet?
+                  Why Choose Teacup?
                 </h2>
                 <ul className='list-disc list-inside space-y-3 ml-4'>
                   <li>
@@ -61,7 +61,7 @@ function About() {
                   Our Story
                 </h2>
                 <p>
-                  Teacupnet was born from a simple observation: too many great
+                  Teacup was born from a simple observation: too many great
                   businesses struggle with their online presence because traditional
                   web development is too complex and expensive. We set out to change
                   that by creating a platform that puts powerful web technology in

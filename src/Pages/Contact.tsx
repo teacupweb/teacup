@@ -99,8 +99,8 @@ function Contact() {
                       <h3 className='text-xl font-semibold text-gray-900 mb-2'>
                         Email
                       </h3>
-                      <p className='text-gray-700'>support@teacupnet.com</p>
-                      <p className='text-gray-700'>sales@teacupnet.com</p>
+                      <p className='text-gray-700'>support@teacup.com</p>
+                      <p className='text-gray-700'>sales@teacup.com</p>
                     </div>
 
                     <div>
