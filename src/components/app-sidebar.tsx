@@ -4,6 +4,7 @@ import {
   Settings,
   LayoutDashboard,
   BarChart3,
+  Wrench,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -41,12 +42,12 @@ const data = {
       icon: Inbox,
       disabled: false,
     },
-    {
-      title: 'Blogs',
-      url: '/Dashboard/Blogs',
-      icon: Calendar,
-      disabled: false,
-    },
+    // {
+    //   title: 'Blogs',
+    //   url: '/Dashboard/Blogs',
+    //   icon: Calendar,
+    //   disabled: false,
+    // },
     // {
     //   title: 'Lifecycle',
     //   url: '/Dashboard/Lifecycle',
@@ -57,6 +58,12 @@ const data = {
       title: 'Analytics',
       url: '/Dashboard/Analytics',
       icon: BarChart3,
+      disabled: false,
+    },
+    {
+      title: 'Website Services',
+      url: '/Dashboard/Services',
+      icon: Wrench,
       disabled: false,
     },
     // {
