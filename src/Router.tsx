@@ -14,7 +14,6 @@ import PublicBlogs from './Pages/Blogs';
 import BlogPost from './Pages/BlogPost';
 import Welcome from './Dashboard/Welcome';
 import Analytics from './Dashboard/Analytics/Analytics';
-import WebsiteServices from './Dashboard/WebsiteServices';
 
 function Router() {
   return (
@@ -43,7 +42,7 @@ function Router() {
           <Route path='/Dashboard/Blogs/new' element={<NewBlog />} />
         </Route>
         <Route path='/Dashboard/Analytics' element={<Analytics />} />
-        <Route path='/Dashboard/Services' element={<WebsiteServices />} />
+        <Route path='/Dashboard/Analytics' element={<Analytics />} />
         <Route path='/Dashboard/Settings' element={<Settings />} />
       </Route>
     </Routes>

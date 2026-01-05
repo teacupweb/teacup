@@ -60,12 +60,6 @@ const data = {
       icon: BarChart3,
       disabled: false,
     },
-    {
-      title: 'Website Services',
-      url: '/Dashboard/Services',
-      icon: Wrench,
-      disabled: false,
-    },
     // {
     //   title: 'Projects',
     //   url: '/Dashboard/Projects',

@@ -6,9 +6,9 @@ import Spinner from '@/Components/Spinner';
 // import websiteData from '@/assets/websiteData.json';
 import { Globe, Mail, Users, FileText } from 'lucide-react';
 import HoldMyTea from '@/Components/HoldMyTea';
-
 import {
   Bar,
+  Line,
   Tooltip,
   ComposedChart,
   XAxis,
@@ -100,29 +100,61 @@ function Dashboard() {
     ];
   }, [pageAnalytics, formAnalytics, buttonAnalytics, latestMessages]);
 
-  // Aggregate daily visits for the chart
+  // Aggregate daily metrics for the chart (Visits & Conversions)
   const activityData = useMemo(() => {
-    if (!pageAnalytics?.data) return [];
+    const dailyMetrics: Record<
+      string,
+      { visits: number; conversions: number }
+    > = {};
 
-    const dailyTotals: Record<string, number> = {};
+    // Helper to normalize date to YYYY-MM-DD
+    const normalizeDate = (d: string) => new Date(d).toISOString().split('T')[0];
 
-    Object.values(pageAnalytics.data).forEach((pageData: any) => {
-      pageData.forEach((d: any) => {
-        dailyTotals[d.date] = (dailyTotals[d.date] || 0) + d.primary;
+    // Initialize last 7 days with zeros
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      dailyMetrics[normalizeDate(d.toISOString())] = {
+        visits: 0,
+        conversions: 0,
+      };
+    }
+
+    // Aggregate Visits
+    if (pageAnalytics?.data) {
+      Object.values(pageAnalytics.data).forEach((pageData: any) => {
+        pageData.forEach((d: any) => {
+          const date = normalizeDate(d.date);
+          if (dailyMetrics[date]) {
+            dailyMetrics[date].visits += d.primary;
+          }
+        });
       });
-    });
+    }
 
-    return Object.entries(dailyTotals)
-      .map(([date, visits]) => ({
+    // Aggregate Conversions (100% form completions)
+    if (formAnalytics?.data) {
+      Object.values(formAnalytics.data).forEach((formData: any) => {
+        formData.forEach((d: any) => {
+          const date = normalizeDate(d.date);
+          if (dailyMetrics[date]) {
+            dailyMetrics[date].conversions += d.secondary;
+          }
+        });
+      });
+    }
+
+    return Object.entries(dailyMetrics)
+      .map(([date, metrics]) => ({
         day: new Date(date).toLocaleDateString(undefined, { weekday: 'short' }),
-        visits,
+        visits: metrics.visits,
+        conversions: metrics.conversions,
         rawDate: date,
       }))
       .sort(
         (a, b) => new Date(a.rawDate).getTime() - new Date(b.rawDate).getTime()
-      )
-      .slice(-7); // Take last 7 days
-  }, [pageAnalytics]);
+      );
+  }, [pageAnalytics, formAnalytics]);
 
   // Show loading state
   if (loading || pageLoading || formLoading || buttonLoading || !company) {
@@ -180,7 +212,7 @@ function Dashboard() {
                     {item.description}
                   </span>
                   <span className='font-bold text-3xl sm:text-4xl block text-foreground group-hover:text-rose-600 transition-colors duration-300 tracking-tight'>
-                    {typeof item.data === 'string' ? item.data : item.data}
+                    {item.data}
                   </span>
                 </div>
 
@@ -308,10 +340,11 @@ function Dashboard() {
             </div>
           </DisplayCard>
 
-          {/* Chart */}
-          <div className='flex flex-col gap-4 sm:gap-6 col-span-1 md:col-span-2 xl:col-span-2 w-full h-full'>
-            <DisplayCard className='col-span-1 md:col-span-2 row-span-1 lg:row-span-2 p-4 sm:p-5 md:p-6 bg-card border border-border/80 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-500 w-full h-full min-h-[400px] sm:min-h-0'>
+          {/* Chart Section */}
+          <div className='flex flex-col gap-4 sm:gap-6 col-span-1 md:col-span-2 xl:col-span-2 row-span-1 lg:row-span-2 w-full h-full'>
+            <DisplayCard className='col-span-1 md:col-span-2 p-4 sm:p-5 md:p-6 bg-card border border-border/80 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-500 w-full h-full min-h-[400px] sm:min-h-0'>
               <div className='h-full flex flex-col'>
+                {/* Header Section */}
                 <div className='flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4'>
                   <div>
                     <h3 className='font-bold ubuntu-font text-xl sm:text-2xl text-foreground mb-2'>
@@ -328,16 +361,23 @@ function Dashboard() {
                         Visits
                       </span>
                     </div>
+                    <div className='flex items-center gap-2'>
+                      <div className='w-3 h-3 rounded-full bg-rose-400 shadow-sm' />
+                      <span className='text-muted-foreground text-sm font-medium'>
+                        Conversions
+                      </span>
+                    </div>
                     <div className='h-4 w-px bg-border' />
                     <div className='text-sm text-foreground font-semibold'>
                       {activityData
                         .reduce((sum: number, day: any) => sum + day.visits, 0)
                         .toLocaleString()}{' '}
-                      total
+                      visits
                     </div>
                   </div>
                 </div>
 
+                {/* Chart Content */}
                 <div className='flex-1 -mx-2 -mb-2 min-h-[250px] w-full'>
                   <ResponsiveContainer width='100%' height='100%'>
                     <ComposedChart
@@ -387,7 +427,15 @@ function Dashboard() {
                         fill='url(#barGradient)'
                         radius={[4, 4, 0, 0]}
                         barSize={40}
-                        opacity={0.9}
+                        opacity={0.8}
+                      />
+                      <Line
+                        type='monotone'
+                        dataKey='conversions'
+                        stroke='#fb7185'
+                        strokeWidth={3}
+                        dot={{ fill: '#fb7185', r: 4, strokeWidth: 2 }}
+                        activeDot={{ r: 6, strokeWidth: 0 }}
                       />
                       <Tooltip
                         contentStyle={{
@@ -419,15 +467,16 @@ function Dashboard() {
                           strokeWidth: 1,
                           strokeDasharray: '3 3',
                         }}
-                        formatter={(value: number) => [
+                        formatter={(value: number, name: string) => [
                           value.toLocaleString(),
-                          'Visits',
+                          name.charAt(0).toUpperCase() + name.slice(1),
                         ]}
                       />
                     </ComposedChart>
                   </ResponsiveContainer>
                 </div>
 
+                {/* Footer Stats Section */}
                 <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between pt-6 mt-4 border-t border-border gap-3'>
                   <div className='text-xs text-muted-foreground/60 font-medium'>
                     Updated just now
@@ -461,7 +510,6 @@ function Dashboard() {
             </DisplayCard>
           </div>
 
-          {/* Hold My Tea Component */}
           <HoldMyTea />
         </div>
       </div>
