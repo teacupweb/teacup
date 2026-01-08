@@ -13,13 +13,11 @@ export type blogType = {
   title: string;
   image: string;
   data: string;
-  created_by?: string;
   owner: string;
 };
 
 export type inboxType = {
   id?: number;
-  created_by?: string;
   owner: string;
   name: string;
 };
@@ -122,7 +120,7 @@ export function useCreateBlog() {
       }),
     (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ['blogs', variables.created_by],
+        queryKey: ['blogs', variables.owner],
       });
     }
   );
@@ -138,7 +136,7 @@ export function useUpdateBlog() {
       }),
     (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ['blogs', variables.blog.created_by],
+        queryKey: ['blogs', variables.blog.owner],
       });
     }
   );
@@ -175,7 +173,7 @@ export function useCreateInbox() {
       }),
     (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ['inboxes', variables.created_by],
+        queryKey: ['inboxes', variables.owner],
       });
     }
   );
@@ -264,9 +262,13 @@ export function useLatestMessages(
 // --- Company ---
 
 export function useCompany(companyId: number | undefined | null) {
-  return useApiQuery(['company', companyId], `/dashboard/company/${companyId}`, {
-    enabled: !!companyId,
-  });
+  return useApiQuery(
+    ['company', companyId],
+    `/dashboard/company/${companyId}`,
+    {
+      enabled: !!companyId,
+    }
+  );
 }
 
 export function useCreateCompany() {

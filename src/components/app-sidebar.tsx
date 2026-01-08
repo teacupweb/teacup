@@ -4,7 +4,7 @@ import {
   Settings,
   LayoutDashboard,
   BarChart3,
-  Wrench,
+  // Wrench,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -42,12 +42,12 @@ const data = {
       icon: Inbox,
       disabled: false,
     },
-    // {
-    //   title: 'Blogs',
-    //   url: '/Dashboard/Blogs',
-    //   icon: Calendar,
-    //   disabled: false,
-    // },
+    {
+      title: 'Blogs',
+      url: '/Dashboard/Blogs',
+      icon: Calendar,
+      disabled: false,
+    },
     // {
     //   title: 'Lifecycle',
     //   url: '/Dashboard/Lifecycle',

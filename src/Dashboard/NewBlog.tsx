@@ -11,6 +11,7 @@ import {
 import { useAuth } from '@/AuthProvider';
 import { useParams, useNavigate } from 'react-router';
 import Swal from 'sweetalert2';
+import { toast } from 'react-toastify';
 
 const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
   const { cloudinaryName, cloudinaryPreset } = envData;
@@ -110,13 +111,13 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      Swal.fire('Error', 'Please select a valid image file', 'error');
+      toast.error('Please select a valid image file');
       return;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      Swal.fire('Error', 'Image size should be less than 5MB', 'error');
+      toast.error('Image size should be less than 5MB');
       return;
     }
 
@@ -166,11 +167,7 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
 
     // Check if we have either a file or an existing image URL
     if (!formData.image && !selectedFile) {
-      Swal.fire(
-        'Error',
-        'Please provide an image by uploading a file',
-        'error'
-      );
+      toast.error('Please provide an image by uploading a file');
       return;
     }
 
@@ -180,7 +177,7 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
       !formData.data.trim() ||
       formData.data === '<p><br></p>'
     ) {
-      Swal.fire('Error', 'Please fill in all required fields', 'error');
+      toast.error('Please fill in all required fields');
       return;
     }
 
@@ -219,29 +216,19 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
             id: Number(id),
             blog: submitData as blogType,
           });
-          await Swal.fire(
-            'Updated!',
-            'Your article has been updated.',
-            'success'
-          );
+          toast.success('Article updated successfully!');
         } else {
           await createBlogMutation.mutateAsync(submitData as blogType);
-          await Swal.fire(
-            'Published!',
-            'Your article has been published.',
-            'success'
-          );
+          toast.success('Article published successfully!');
         }
         navigate('/dashboard/Blogs');
       }
     } catch (error) {
       console.error('Submission error:', error);
-      Swal.fire(
-        'Error',
+      toast.error(
         `Failed to process your request: ${
           error instanceof Error ? error.message : 'Unknown error'
-        }`,
-        'error'
+        }`
       );
     } finally {
       setIsUploading(false);
@@ -268,7 +255,9 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
             <h1 className='text-3xl font-bold text-foreground mb-2 ubuntu-font'>
               {isEditMode ? 'Edit Article' : 'Create New Article'}
             </h1>
-            <p className='text-muted-foreground font-medium'>Share your knowledge with the world</p>
+            <p className='text-muted-foreground font-medium'>
+              Share your knowledge with the world
+            </p>
           </div>
           <button
             onClick={handleCancel}

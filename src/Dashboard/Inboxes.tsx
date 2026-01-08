@@ -8,7 +8,7 @@ import DashboardHeader from '@/Components/DashboardHeader';
 import DisplayCard from '@/Components/DisplayCards';
 import Modal, { openModal } from '@/Components/Modal';
 import { Link } from 'react-router';
-import Swal from 'sweetalert2';
+import { toast } from 'react-toastify';
 import Spinner from '@/Components/Spinner';
 import { useEffect } from 'react';
 
@@ -33,12 +33,7 @@ export default function Inboxes() {
     const name = form.elements.namedItem('name')?.value.trim();
 
     if (!name) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'Please enter an inbox name!',
-        confirmButtonColor: '#e11d48',
-      });
+      toast.error('Please enter an inbox name!');
       return;
     }
 
@@ -51,25 +46,20 @@ export default function Inboxes() {
             : '',
       };
 
-      // Show loading state
-      Swal.fire({
-        title: 'Creating Inbox...',
-        text: 'Please wait while we create your inbox',
-        allowOutsideClick: false,
-        didOpen: () => {
-          Swal.showLoading();
-        },
-      });
+      // Show loading toast
+      const toastId = toast.loading('Creating inbox...');
 
       await createInboxMutation.mutateAsync(inboxData);
 
       // Success message
-      Swal.fire({
-        icon: 'success',
-        title: 'Success!',
-        text: 'Inbox created successfully!',
-        confirmButtonColor: '#e11d48',
-      }).then(() => {
+      toast.update(toastId, {
+        render: 'Inbox created successfully!',
+        type: 'success',
+        isLoading: false,
+        autoClose: 3000,
+      });
+
+      // Close the modal
         // Close the modal
         const modal = document.getElementById(
           'create-inbox'
@@ -83,15 +73,9 @@ export default function Inboxes() {
 
         // Reset the form
         form.reset();
-      });
     } catch (error) {
       console.error('Error creating inbox:', error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Failed to create inbox. Please try again.',
-        confirmButtonColor: '#e11d48',
-      });
+      toast.error('Failed to create inbox. Please try again.');
     }
   };
 

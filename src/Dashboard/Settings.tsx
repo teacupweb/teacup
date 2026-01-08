@@ -2,6 +2,7 @@ import { useAuth } from '@/AuthProvider';
 import { useNavigate } from 'react-router';
 import { useCompany } from '@/backendProvider';
 import Swal from 'sweetalert2';
+import { toast } from 'react-toastify';
 import { useState } from 'react';
 import Spinner from '@/Components/Spinner';
 import Modal from '@/Components/Modal';
@@ -26,7 +27,8 @@ function Settings() {
   const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [isInviteLinkModalOpen, setIsInviteLinkModalOpen] = useState(false);
-  const [isManualCompanyModalOpen, setIsManualCompanyModalOpen] = useState(false);
+  const [isManualCompanyModalOpen, setIsManualCompanyModalOpen] =
+    useState(false);
 
   // State for forms
   const [inviteEmail, setInviteEmail] = useState('');
@@ -48,15 +50,8 @@ function Settings() {
     }).then((result) => {
       if (result.isConfirmed) {
         logout();
-        Swal.fire({
-          title: 'Logged out!',
-          text: 'You have been successfully logged out.',
-          icon: 'success',
-          timer: 1500,
-          showConfirmButton: false,
-        }).then(() => {
-          navigate('/login');
-        });
+        toast.success('You have been successfully logged out.');
+        navigate('/login');
       }
     });
   };
@@ -64,7 +59,7 @@ function Settings() {
   const handleInviteClick = (e: React.FormEvent) => {
     e.preventDefault();
     if (!inviteEmail) return;
-    
+
     // Open the invite modal with the email
     setIsInviteModalOpen(true);
   };
@@ -73,7 +68,7 @@ function Settings() {
     // Generate the invite link
     const link = `https://teacupnet.netlify.app/welcome?company=${companyId}&owner_email=${ownerEmail}&user=${inviteEmail}`;
     setGeneratedInviteLink(link);
-    
+
     // Close invite modal and open link modal
     setIsInviteModalOpen(false);
     setIsInviteLinkModalOpen(true);
@@ -83,29 +78,17 @@ function Settings() {
   const handleCopyInviteLink = async () => {
     try {
       await navigator.clipboard.writeText(generatedInviteLink);
-      Swal.fire({
-        title: 'Copied!',
-        text: 'Invite link copied to clipboard',
-        icon: 'success',
-        timer: 1500,
-        showConfirmButton: false,
-      });
+      toast.success('Invite link copied to clipboard');
     } catch (err) {
-      Swal.fire({
-        title: 'Error',
-        text: 'Failed to copy link',
-        icon: 'error',
-      });
+      toast.error('Failed to copy link');
     }
   };
 
   const handleEditProfile = () => {
     const userName =
-      user && typeof user !== 'string'
-        ? user.user_metadata?.name || ''
-        : '';
+      user && typeof user !== 'string' ? user.user_metadata?.name || '' : '';
     const userEmail = user && typeof user !== 'string' ? user.email || '' : '';
-    
+
     setEditName(userName);
     setEditEmail(userEmail);
     setIsEditProfileModalOpen(true);
@@ -120,30 +103,20 @@ function Settings() {
 
       if (error) throw error;
 
-      Swal.fire({
-        title: 'Success!',
-        text: 'Profile updated successfully',
-        icon: 'success',
-        timer: 2000,
-        showConfirmButton: false,
-      });
+      toast.success('Profile updated successfully');
       setIsEditProfileModalOpen(false);
-      
+
       // Refresh the page to show updated data
       setTimeout(() => window.location.reload(), 2000);
     } catch (error: any) {
-      Swal.fire({
-        title: 'Error',
-        text: error.message || 'Failed to update profile',
-        icon: 'error',
-      });
+      toast.error(error.message || 'Failed to update profile');
     }
   };
 
   const handleLeaveCompany = () => {
     Swal.fire({
       title: 'Are you sure?',
-      text: "You will be removed from this company and lose access to its data!",
+      text: 'You will be removed from this company and lose access to its data!',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#e11d48',
@@ -154,30 +127,21 @@ function Settings() {
         try {
           // Remove company_id and owner_email from user metadata
           const { error } = await supabase.auth.updateUser({
-            data: { 
-              company_id: null, 
-              owner_email: null 
+            data: {
+              company_id: null,
+              owner_email: null,
             },
           });
 
           if (error) throw error;
 
-          Swal.fire({
-            title: 'Left Company!',
-            text: 'You have successfully left the company.',
-            icon: 'success',
-            timer: 2000,
-            showConfirmButton: false,
-          }).then(() => {
-            // Redirect to welcome page
+          toast.success('You have successfully left the company.');
+          // Redirect to welcome page
+          setTimeout(() => {
             window.location.href = '/welcome';
-          });
+          }, 1500);
         } catch (error: any) {
-          Swal.fire({
-            title: 'Error',
-            text: error.message || 'Failed to leave company',
-            icon: 'error',
-          });
+          toast.error(error.message || 'Failed to leave company');
         }
       }
     });
@@ -186,33 +150,23 @@ function Settings() {
   const handleSetManualCompany = async () => {
     try {
       const { error } = await supabase.auth.updateUser({
-        data: { 
-          company_id: manualCompanyId, 
-          owner_email: manualOwnerEmail 
+        data: {
+          company_id: manualCompanyId,
+          owner_email: manualOwnerEmail,
         },
       });
 
       if (error) throw error;
 
-      Swal.fire({
-        title: 'Success!',
-        text: 'Company information has been set manually',
-        icon: 'success',
-        timer: 2000,
-        showConfirmButton: false,
-      });
+      toast.success('Company information has been set manually');
       setIsManualCompanyModalOpen(false);
       setManualCompanyId('');
       setManualOwnerEmail('');
-      
+
       // Refresh the page to show updated data
       setTimeout(() => window.location.reload(), 2000);
     } catch (error: any) {
-      Swal.fire({
-        title: 'Error',
-        text: error.message || 'Failed to set company information',
-        icon: 'error',
-      });
+      toast.error(error.message || 'Failed to set company information');
     }
   };
 
@@ -263,58 +217,53 @@ function Settings() {
               Account Settings
             </h3>
             <div className='space-y-4'>
-              <div className='flex items-center justify-between p-3 hover:bg-muted/50 rounded-lg transition-colors group cursor-default'>
-                <div>
-                  <h4 className='font-medium text-foreground/90 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors'>
-                    Email Notifications
-                  </h4>
-                  <p className='text-sm text-muted-foreground'>
-                    Receive daily summaries
-                  </p>
+              {[
+                {
+                  text: 'Email Notifications',
+                  description: 'Receive email updates and alerts',
+                  disabled: false,
+                  checked: emailNotifications,
+                  onchange: (e: React.ChangeEvent<HTMLInputElement>) => {
+                    setEmailNotifications(e.target.checked);
+                  },
+                },
+              ].map((setting, index) => (
+                <div key={index}>
+                  <div className='flex items-center justify-between p-3 hover:bg-muted/50 rounded-lg transition-colors group cursor-default'>
+                    <div>
+                      <h4 className='font-medium text-foreground/90 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors'>
+                        {setting.text}
+                      </h4>
+                      <p className='text-sm text-muted-foreground'>
+                        {setting.description}
+                      </p>
+                    </div>
+                    <label className='relative inline-flex items-center cursor-pointer'>
+                      <input
+                        type='checkbox'
+                        className='sr-only peer'
+                        onChange={setting.onchange}
+                        checked={setting.checked}
+                      />
+                      <div className="w-11 h-6 bg-muted peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-rose-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-600"></div>
+                    </label>
+                  </div>
                 </div>
-                <label className='relative inline-flex items-center cursor-pointer'>
-                  <input
-                    type='checkbox'
-                    className='sr-only peer'
-                    checked={emailNotifications}
-                    onChange={(e) => {
-                      setEmailNotifications(e.target.checked);
-                      console.log('Email Notifications:', e.target.checked);
-                    }}
-                  />
-                  <div className="w-11 h-6 bg-muted peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-rose-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-600"></div>
-                </label>
-              </div>
-              <div className='relative group'>
-                {/* Coming Soon Overlay for 2FA */}
-                <div className='absolute inset-0 z-10 flex items-center justify-center bg-background/40 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-lg'>
-                  <span className='bg-card/90 border border-border px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest text-rose-600 shadow-lg transform -rotate-3'>
-                    Coming Soon
-                  </span>
-                </div>
-
-                <div className='flex items-center justify-between p-3 hover:bg-muted/50 rounded-lg transition-all duration-300 cursor-default opacity-40 pointer-events-none grayscale-[50%] group-hover:blur-[0.5px]'>
+              ))}
+              <div>
+                <div className='flex items-center justify-between p-3 hover:bg-muted/50 rounded-lg transition-colors group cursor-default'>
                   <div>
                     <h4 className='font-medium text-foreground/90 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors'>
-                      Two-Factor Authentication
+                      Company Secret
                     </h4>
                     <p className='text-sm text-muted-foreground'>
-                      Add an extra layer of security
+                      Company secret is for your website integration and API
+                      access
                     </p>
                   </div>
-                  <label className='relative inline-flex items-center cursor-pointer'>
-                    <input
-                      disabled
-                      type='checkbox'
-                      className='sr-only peer'
-                      checked={twoFactorAuth}
-                      onChange={(e) => {
-                        setTwoFactorAuth(e.target.checked);
-                        console.log('Two-Factor Auth:', e.target.checked);
-                      }}
-                    />
-                    <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-rose-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-600"></div>
-                  </label>
+                  <button className='text-white bg-rose-600 hover:bg-rose-700 rounded-xl cursor-pointer btn-xs p-5 py-1'>
+                    Copy
+                  </button>
                 </div>
               </div>
             </div>
@@ -324,14 +273,18 @@ function Settings() {
             {/* Coming Soon Overlay */}
             <div className='absolute inset-0 z-20 flex items-center justify-center bg-background/50 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none'>
               <div className='bg-card/90 border border-border px-4 py-2 rounded-xl shadow-xl transform -rotate-12 scale-110'>
-                <span className='text-rose-600 font-bold uppercase tracking-widest text-sm'>Coming Soon</span>
+                <span className='text-rose-600 font-bold uppercase tracking-widest text-sm'>
+                  Coming Soon
+                </span>
               </div>
             </div>
-            
+
             <div className='absolute inset-0 z-10 flex items-center justify-center pointer-events-none'>
-               <div className='px-3 py-1 bg-muted/80 backdrop-blur-sm border border-border rounded-lg opacity-100 group-hover:opacity-0 transition-opacity duration-300'>
-                  <span className='text-[10px] font-bold uppercase tracking-tighter text-muted-foreground'>Limited Preview</span>
-               </div>
+              <div className='px-3 py-1 bg-muted/80 backdrop-blur-sm border border-border rounded-lg opacity-100 group-hover:opacity-0 transition-opacity duration-300'>
+                <span className='text-[10px] font-bold uppercase tracking-tighter text-muted-foreground'>
+                  Limited Preview
+                </span>
+              </div>
             </div>
 
             <div className='relative z-0 opacity-40 pointer-events-none grayscale-[50%] transition-all duration-500 group-hover:blur-[1px]'>
@@ -376,7 +329,9 @@ function Settings() {
                             <div className='w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center text-rose-600 text-xs font-bold'>
                               {member.name
                                 .split(' ')
-                                .map((word: string) => word.charAt(0).toUpperCase())
+                                .map((word: string) =>
+                                  word.charAt(0).toUpperCase()
+                                )
                                 .join('')
                                 .slice(0, 2)}
                             </div>
@@ -421,7 +376,9 @@ function Settings() {
               <div className='flex items-center justify-between p-3 hover:bg-muted/50 rounded-lg transition-colors group cursor-default'>
                 <div className='flex-1'>
                   <div className='flex items-center gap-2'>
-                    <h4 className='font-medium text-foreground/90 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors'>Dark Mode</h4>
+                    <h4 className='font-medium text-foreground/90 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors'>
+                      Dark Mode
+                    </h4>
                   </div>
                   <p className='text-sm text-muted-foreground'>
                     Switch between light and dark themes
@@ -482,7 +439,9 @@ function Settings() {
             </p>
             <div className='space-y-2 mb-3'>
               <div>
-                <p className='text-xs font-medium text-muted-foreground mb-1'>Company ID</p>
+                <p className='text-xs font-medium text-muted-foreground mb-1'>
+                  Company ID
+                </p>
                 <div className='bg-muted/50 p-2 rounded-lg border border-border'>
                   <code className='text-xs text-foreground/80 font-mono break-all'>
                     {companyId || 'No company ID'}
@@ -490,10 +449,12 @@ function Settings() {
                 </div>
               </div>
               <div>
-                <p className='text-xs font-medium text-muted-foreground mb-1'>Owner Email</p>
+                <p className='text-xs font-medium text-muted-foreground mb-1'>
+                  Company Secret
+                </p>
                 <div className='bg-muted/50 p-2 rounded-lg border border-border'>
                   <code className='text-xs text-foreground/80 font-mono break-all'>
-                    {ownerEmail || 'No owner email'}
+                    {ownerEmail || 'No company secret'}
                   </code>
                 </div>
               </div>
@@ -508,9 +469,12 @@ function Settings() {
 
           {companyId && (
             <div className='bg-orange-500/10 p-6 rounded-2xl border border-orange-500/30'>
-              <h3 className='font-bold text-xl text-orange-600 dark:text-orange-400 mb-2'>Leave Company</h3>
+              <h3 className='font-bold text-xl text-orange-600 dark:text-orange-400 mb-2'>
+                Leave Company
+              </h3>
               <p className='text-orange-600/80 dark:text-orange-400/80 text-sm mb-4'>
-                Remove yourself from this company. You will lose access to all company data.
+                Remove yourself from this company. You will lose access to all
+                company data.
               </p>
               <button
                 onClick={handleLeaveCompany}
@@ -529,11 +493,13 @@ function Settings() {
         onClose={() => setIsEditProfileModalOpen(false)}
       >
         <div className='p-6'>
-          <h3 className='font-bold text-2xl text-foreground mb-2'>Edit Profile</h3>
+          <h3 className='font-bold text-2xl text-foreground mb-2'>
+            Edit Profile
+          </h3>
           <p className='text-muted-foreground text-sm mb-6'>
             Update your profile information
           </p>
-          
+
           <div className='space-y-4'>
             <div>
               <label className='block text-sm font-medium text-foreground/80 mb-1'>
@@ -547,7 +513,7 @@ function Settings() {
                 className='w-full px-4 py-2 border border-border bg-card rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all text-foreground'
               />
             </div>
-            
+
             <div>
               <label className='block text-sm font-medium text-foreground/80 mb-1'>
                 Email
@@ -561,7 +527,7 @@ function Settings() {
               />
             </div>
           </div>
-          
+
           <div className='flex gap-3 mt-6'>
             <button
               onClick={() => setIsEditProfileModalOpen(false)}
@@ -585,11 +551,14 @@ function Settings() {
         onClose={() => setIsInviteModalOpen(false)}
       >
         <div className='p-6'>
-          <h3 className='font-bold text-2xl text-foreground mb-2'>Send Invitation</h3>
+          <h3 className='font-bold text-2xl text-foreground mb-2'>
+            Send Invitation
+          </h3>
           <p className='text-muted-foreground text-sm mb-6'>
-            Generate an invite link for <span className='font-semibold text-foreground'>{inviteEmail}</span>
+            Generate an invite link for{' '}
+            <span className='font-semibold text-foreground'>{inviteEmail}</span>
           </p>
-          
+
           <div className='flex gap-3'>
             <button
               onClick={() => setIsInviteModalOpen(false)}
@@ -613,11 +582,13 @@ function Settings() {
         onClose={() => setIsInviteLinkModalOpen(false)}
       >
         <div className='p-6'>
-          <h3 className='font-bold text-2xl text-foreground mb-2'>Invitation Link</h3>
+          <h3 className='font-bold text-2xl text-foreground mb-2'>
+            Invitation Link
+          </h3>
           <p className='text-muted-foreground text-sm mb-6'>
             Share this link with your team member to join the company
           </p>
-          
+
           <div className='space-y-4'>
             <div>
               <label className='block text-sm font-medium text-foreground/80 mb-1'>
@@ -631,7 +602,7 @@ function Settings() {
               />
             </div>
           </div>
-          
+
           <div className='flex gap-3 mt-6'>
             <button
               onClick={() => setIsInviteLinkModalOpen(false)}
@@ -643,8 +614,18 @@ function Settings() {
               onClick={handleCopyInviteLink}
               className='flex-1 py-2 px-4 bg-rose-600 text-white rounded-xl hover:bg-rose-700 transition-colors font-medium flex items-center justify-center gap-2'
             >
-              <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z' />
+              <svg
+                className='w-4 h-4'
+                fill='none'
+                stroke='currentColor'
+                viewBox='0 0 24 24'
+              >
+                <path
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  strokeWidth={2}
+                  d='M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z'
+                />
               </svg>
               Copy Link
             </button>
@@ -658,27 +639,41 @@ function Settings() {
         onClose={() => setIsManualCompanyModalOpen(false)}
       >
         <div className='p-6'>
-          <h3 className='font-bold text-2xl text-foreground mb-2'>⚠️ Manual Company Configuration</h3>
-          
+          <h3 className='font-bold text-2xl text-foreground mb-2'>
+            ⚠️ Manual Company Configuration
+          </h3>
+
           {/* Warning Alert */}
           <div className='bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded'>
             <div className='flex items-start'>
               <div className='flex-shrink-0'>
-                <svg className='h-5 w-5 text-red-600' fill='currentColor' viewBox='0 0 20 20'>
-                  <path fillRule='evenodd' d='M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z' clipRule='evenodd' />
+                <svg
+                  className='h-5 w-5 text-red-600'
+                  fill='currentColor'
+                  viewBox='0 0 20 20'
+                >
+                  <path
+                    fillRule='evenodd'
+                    d='M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z'
+                    clipRule='evenodd'
+                  />
                 </svg>
               </div>
               <div className='ml-3'>
-                <h4 className='text-sm font-bold text-red-800 mb-1'>Danger: Advanced Users Only</h4>
+                <h4 className='text-sm font-bold text-red-800 mb-1'>
+                  Danger: Advanced Users Only
+                </h4>
                 <p className='text-xs text-red-700'>
-                  Manually setting company information can cause serious malfunctions if not done properly. 
-                  Only proceed if you know the exact Company ID and Owner Email you need to set. 
-                  Incorrect values may break your access to company data or cause authentication issues.
+                  Manually setting company information can cause serious
+                  malfunctions if not done properly. Only proceed if you know
+                  the exact Company ID and Owner Email you need to set.
+                  Incorrect values may break your access to company data or
+                  cause authentication issues.
                 </p>
               </div>
             </div>
           </div>
-          
+
           <div className='space-y-4'>
             <div>
               <label className='block text-sm font-medium text-foreground/80 mb-1'>
@@ -692,7 +687,7 @@ function Settings() {
                 className='w-full px-4 py-2 border border-border bg-card rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all font-mono text-sm text-foreground'
               />
             </div>
-            
+
             <div>
               <label className='block text-sm font-medium text-foreground/80 mb-1'>
                 Owner Email
@@ -706,14 +701,15 @@ function Settings() {
               />
             </div>
           </div>
-          
+
           <div className='bg-amber-50 border border-amber-200 p-3 rounded-lg mt-4'>
             <p className='text-xs text-amber-800'>
-              <strong>Note:</strong> After setting these values manually, the page will reload. 
-              Make sure you have valid credentials before proceeding.
+              <strong>Note:</strong> After setting these values manually, the
+              page will reload. Make sure you have valid credentials before
+              proceeding.
             </p>
           </div>
-          
+
           <div className='flex gap-3 mt-6'>
             <button
               onClick={() => setIsManualCompanyModalOpen(false)}

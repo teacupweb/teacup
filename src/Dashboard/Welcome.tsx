@@ -13,6 +13,7 @@ import {
 import type { CompanyType } from '@/backendProvider';
 import Spinner from '@/Components/Spinner';
 import supabase from '@/supabaseClient';
+import { toast } from 'react-toastify';
 
 const API_URL = import.meta.env.VITE_BACKEND;
 
@@ -167,7 +168,7 @@ export default function Welcome() {
       }, 3000);
     } catch (error) {
       console.error('Error creating company:', error);
-      alert(
+      toast.error(
         error instanceof Error
           ? `Failed to create company: ${error.message}`
           : 'Failed to create company. Please try again.'

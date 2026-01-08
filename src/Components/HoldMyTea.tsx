@@ -1,6 +1,7 @@
 import { BsFillCupHotFill } from 'react-icons/bs';
 import { useState } from 'react';
 import Modal, { openModal, closeModal } from '@/Components/Modal';
+import { toast } from 'react-toastify';
 import AILoadingSpinner from '@/Components/AILoadingSpinner';
 import { useAuth } from '@/AuthProvider';
 import { useHoldMyTea } from '@/backendProvider';
@@ -46,7 +47,7 @@ export default function HoldMyTea() {
       console.error('Hold My Tea error:', error);
       setIsAILoading(false);
       // You could add error handling UI here
-      alert('Something went wrong. Please try again.');
+      toast.error('Something went wrong. Please try again.');
     }
   }
 
@@ -126,7 +127,7 @@ export default function HoldMyTea() {
                 id='ai-prompt'
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
-                placeholder='e.g., Create a landing page for my coffee shop...'
+                placeholder='e.g., Create a blog post for my coffee shop...'
                 rows={4}
                 className='w-full px-4 py-3 text-base text-foreground bg-card border-2 border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all duration-200 resize-none'
               />

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Eye, EyeOff, Mail, Lock, User, ArrowRight } from 'lucide-react';
 import { useAuth } from '@/AuthProvider';
 import { Link, useNavigate } from 'react-router';
+import { toast } from 'react-toastify';
 
 export default function AuthPage({ isLogin }: { isLogin: boolean }) {
   const { signUpUser, loginUser, user, signInWithGoogle } = useAuth();
@@ -23,17 +24,23 @@ export default function AuthPage({ isLogin }: { isLogin: boolean }) {
     });
   });
 
-  const handleSubmit = () => {
-    // console.log('Form submitted:', formData);
-    if (!isLogin) {
-      signUpUser(formData.email, formData.password, formData.name);
+  const handleSubmit = async () => {
+    try {
+      if (!isLogin) {
+        if (formData.password !== formData.confirmPassword) {
+          toast.error('Passwords do not match');
+          return;
+        }
+        await signUpUser(formData.email, formData.password, formData.name);
+        toast.success('Account created successfully!');
+      } else {
+        await loginUser(formData.email, formData.password);
+        toast.success('Welcome back!');
+      }
       navigate('/');
-    } else {
-      loginUser(formData.email, formData.password);
-      navigate('/');
+    } catch (error: any) {
+      toast.error(error.message || 'Authentication failed');
     }
-
-    // Handle authentication logic here
   };
 
   const handleChange = (e: any) => {

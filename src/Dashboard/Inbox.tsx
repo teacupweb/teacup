@@ -10,6 +10,7 @@ import { useParams, useNavigate } from 'react-router';
 import Modal, { openModal } from '@/Components/Modal';
 import Spinner from '@/Components/Spinner';
 import Swal from 'sweetalert2';
+import { toast } from 'react-toastify';
 
 export default function Inbox() {
   const { id } = useParams();
@@ -49,11 +50,10 @@ export default function Inbox() {
       if (result.isConfirmed) {
         try {
           await deleteInboxDataMutation.mutateAsync(Number(itemId));
-          // refetch is handled by query invalidation
-          Swal.fire('Deleted!', 'The message has been deleted.', 'success');
+          toast.success('The message has been deleted.');
         } catch (error) {
           console.error('Error deleting message:', error);
-          Swal.fire('Error!', 'Failed to delete message.', 'error');
+          toast.error('Failed to delete message.');
         }
       }
     });
@@ -73,17 +73,12 @@ export default function Inbox() {
         try {
           if (id) {
             await deleteInboxMutation.mutateAsync(id);
-            Swal.fire(
-              'Deleted!',
-              'The inbox has been deleted.',
-              'success'
-            ).then(() => {
-              navigate('/dashboard/Inboxes');
-            });
+            toast.success('The inbox has been deleted.');
+            navigate('/dashboard/Inboxes');
           }
         } catch (error) {
           console.error('Error deleting inbox:', error);
-          Swal.fire('Error!', 'Failed to delete inbox.', 'error');
+          toast.error('Failed to delete inbox.');
         }
       }
     });
