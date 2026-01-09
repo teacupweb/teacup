@@ -32,53 +32,35 @@ const data = {
   navMain: [
     {
       title: 'Dashboard',
-      url: '/Dashboard',
+      url: '/dashboard',
       icon: LayoutDashboard,
       disabled: false,
     },
     {
       title: 'inboxes',
-      url: '/Dashboard/inboxes',
+      url: '/dashboard/inboxes',
       icon: Inbox,
       disabled: false,
     },
     {
       title: 'Blogs',
-      url: '/Dashboard/Blogs',
+      url: '/dashboard/blogs',
       icon: Calendar,
       disabled: false,
     },
-    // {
-    //   title: 'Lifecycle',
-    //   url: '/Dashboard/Lifecycle',
-    //   icon: List,
-    //   disabled: true,
-    // },
     {
       title: 'Analytics',
-      url: '/Dashboard/Analytics',
+      url: '/dashboard/analytics',
       icon: BarChart3,
       disabled: false,
     },
-    // {
-    //   title: 'Projects',
-    //   url: '/Dashboard/Projects',
-    //   icon: Folder,
-    //   disabled: true,
-    // },
-    // {
-    //   title: 'Team',
-    //   url: '/Dashboard/Team',
-    //   icon: Users,
-    //   disabled: true,
-    // },
   ],
 
   // Secondary navigation (moved to footer area)
   navSecondary: [
     {
       title: 'Settings',
-      url: '/Dashboard/Settings',
+      url: '/dashboard/settings',
       icon: Settings,
     },
   ],

@@ -108,7 +108,8 @@ function Dashboard() {
     > = {};
 
     // Helper to normalize date to YYYY-MM-DD
-    const normalizeDate = (d: string) => new Date(d).toISOString().split('T')[0];
+    const normalizeDate = (d: string) =>
+      new Date(d).toISOString().split('T')[0];
 
     // Initialize last 7 days with zeros
     for (let i = 6; i >= 0; i--) {
@@ -351,7 +352,7 @@ function Dashboard() {
                       Activity Overview
                     </h3>
                     <p className='text-muted-foreground text-sm'>
-                      Last 7 days performance
+                      Average weekly performance
                     </p>
                   </div>
                   <div className='flex items-center gap-4'>

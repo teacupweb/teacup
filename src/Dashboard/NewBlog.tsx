@@ -21,7 +21,7 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
   const { user } = useAuth();
   // const userEmail = user !== 'userNotFound' && user ? user.email : null;
   const company =
-    user !== 'userNotFound' && user ? user.user_metadata.company : null;
+    user && typeof user !== 'string' ? user.user_metadata?.company_id : null;
 
   // Mutations
   const createBlogMutation = useCreateBlog();
@@ -221,7 +221,7 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
           await createBlogMutation.mutateAsync(submitData as blogType);
           toast.success('Article published successfully!');
         }
-        navigate('/dashboard/Blogs');
+        navigate('/dashboard/blogs');
       }
     } catch (error) {
       console.error('Submission error:', error);

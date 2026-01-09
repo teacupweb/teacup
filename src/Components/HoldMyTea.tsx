@@ -16,10 +16,8 @@ export default function HoldMyTea() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   // Get owner email from user metadata
-  const ownerEmail =
-    user && typeof user !== 'string'
-      ? user.user_metadata?.owner_email || user.email
-      : null;
+  const company =
+    user && typeof user !== 'string' ? user.user_metadata?.company_id : null;
 
   // Mutation for Hold My Tea API
 
@@ -29,7 +27,7 @@ export default function HoldMyTea() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!prompt.trim() || !ownerEmail) return;
+    if (!prompt.trim() || !company) return;
 
     // Close modal and show AI loading
     closeModal('magic-tea-modal');
@@ -37,7 +35,7 @@ export default function HoldMyTea() {
 
     try {
       // Call the API
-      const res = await useHoldMyTea(ownerEmail, prompt);
+      const res = await useHoldMyTea(company, prompt);
       console.log(res);
       // Success - show success modal
       setIsAILoading(false);

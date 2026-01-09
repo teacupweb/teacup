@@ -149,6 +149,7 @@ export function useDeleteBlog() {
       fetchApi(`/dashboard/blogs/${id}`, {
         method: 'DELETE',
       }),
+
     () => {
       queryClient.invalidateQueries({ queryKey: ['blogs'] });
     }
@@ -261,14 +262,23 @@ export function useLatestMessages(
 
 // --- Company ---
 
-export function useCompany(companyId: number | undefined | null) {
-  return useApiQuery(
+export function useCompany(companyId: number | undefined | null): {
+  data: CompanyType | undefined;
+  isLoading: boolean;
+  error: unknown;
+} {
+  const data = useApiQuery(
     ['company', companyId],
     `/dashboard/company/${companyId}`,
     {
       enabled: !!companyId,
     }
   );
+  return data as {
+    data: CompanyType | undefined;
+    isLoading: boolean;
+    error: unknown;
+  };
 }
 
 export function useCreateCompany() {
