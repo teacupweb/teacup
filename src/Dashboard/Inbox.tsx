@@ -72,7 +72,7 @@ export default function Inbox() {
       if (result.isConfirmed) {
         try {
           if (id) {
-            await deleteInboxMutation.mutateAsync(id);
+            await deleteInboxMutation.mutateAsync(id as string);
             toast.success('The inbox has been deleted.');
             navigate.push('/dashboard/Inboxes');
           }
@@ -187,7 +187,9 @@ export default function Inbox() {
       </div>
       <Modal id='inbox-data-modal'>
         <div className='p-6 bg-card'>
-          <h2 className='text-xl font-semibold text-foreground mb-6'>Details</h2>
+          <h2 className='text-xl font-semibold text-foreground mb-6'>
+            Details
+          </h2>
           <div className='space-y-4'>
             {modalData?.data &&
               Object.keys(modalData.data).map((key) => (
