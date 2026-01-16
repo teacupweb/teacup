@@ -1,5 +1,5 @@
 import { useAuth } from '@/AuthProvider';
-import { useNavigate } from 'react-router';
+import { useRouter } from 'next/navigation';
 import { useCompany } from '@/backendProvider';
 import Swal from 'sweetalert2';
 import { toast } from 'react-toastify';
@@ -11,16 +11,17 @@ import { useTheme } from '@/ThemeProvider';
 
 function Settings() {
   const { logout, user } = useAuth();
-  const navigate = useNavigate();
+  const navigate = useRouter();
   const companyId =
     user && typeof user !== 'string' ? user.user_metadata?.company_id : null;
   const ownerEmail =
     user && typeof user !== 'string' ? user.user_metadata?.owner_email : null;
   const { data: company, isLoading: loading } = useCompany(companyId);
+  const companySecret = company?.key || 'No company secret found';
 
   // State for toggles
   const [emailNotifications, setEmailNotifications] = useState(true);
-  const [twoFactorAuth, setTwoFactorAuth] = useState(false);
+  // const [twoFactorAuth, setTwoFactorAuth] = useState(false);
   const { theme, setTheme } = useTheme();
 
   // State for modals
@@ -51,7 +52,7 @@ function Settings() {
       if (result.isConfirmed) {
         logout();
         toast.success('You have been successfully logged out.');
-        navigate('/login');
+        navigate.push('/login');
       }
     });
   };
@@ -261,7 +262,13 @@ function Settings() {
                       access
                     </p>
                   </div>
-                  <button className='text-white bg-rose-600 hover:bg-rose-700 rounded-xl cursor-pointer btn-xs p-5 py-1'>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(companySecret);
+                      toast.success('Copied to clipboard');
+                    }}
+                    className='text-white bg-rose-600 hover:bg-rose-700 rounded-xl cursor-pointer btn-xs p-5 py-1'
+                  >
                     Copy
                   </button>
                 </div>
@@ -450,11 +457,11 @@ function Settings() {
               </div>
               <div>
                 <p className='text-xs font-medium text-muted-foreground mb-1'>
-                  Company Secret
+                  Owner Email
                 </p>
                 <div className='bg-muted/50 p-2 rounded-lg border border-border'>
                   <code className='text-xs text-foreground/80 font-mono break-all'>
-                    {ownerEmail || 'No company secret'}
+                    {ownerEmail || 'Owner email not found'}
                   </code>
                 </div>
               </div>

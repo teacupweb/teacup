@@ -14,7 +14,8 @@ import {
   SidebarHeader,
 } from '@/components/ui/sidebar';
 
-import { Link, useLocation } from 'react-router';
+import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 import Logo from '@/Components/logo';
 // import { NavDocuments } from '@/components/nav-documents';
 import { NavMain } from '@/components/nav-main';
@@ -67,7 +68,7 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const currentRoute = useLocation().pathname;
+  const currentRoute = usePathname();
 
   return (
     <Sidebar
@@ -78,7 +79,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <SidebarGroup>
           <div className='flex items-center justify-between p-2'>
-            <Link to='/'>
+            <Link href='/'>
               <Logo className='w-auto' />
             </Link>
           </div>

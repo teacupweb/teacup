@@ -6,7 +6,7 @@ import {
 import DashboardHeader from '@/Components/DashboardHeader';
 import DisplayCard from '@/Components/DisplayCards';
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router';
+import { useParams, useRouter } from 'next/navigation';
 import Modal, { openModal } from '@/Components/Modal';
 import Spinner from '@/Components/Spinner';
 import Swal from 'sweetalert2';
@@ -14,7 +14,7 @@ import { toast } from 'react-toastify';
 
 export default function Inbox() {
   const { id } = useParams();
-  const navigate = useNavigate();
+  const navigate = useRouter();
   const [modalData, setModalData] = useState<any>(null);
   const { data, isLoading: loading, refetch } = useInboxData(Number(id));
 
@@ -74,7 +74,7 @@ export default function Inbox() {
           if (id) {
             await deleteInboxMutation.mutateAsync(id);
             toast.success('The inbox has been deleted.');
-            navigate('/dashboard/Inboxes');
+            navigate.push('/dashboard/Inboxes');
           }
         } catch (error) {
           console.error('Error deleting inbox:', error);

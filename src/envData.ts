@@ -1,6 +1,7 @@
 export default {
-  dbURL: `${import.meta.env.VITE_DB_URL}`,
-  dbAnon: `${import.meta.env.VITE_DB_ANON}`,
-  cloudinaryName: `${import.meta.env.VITE_CLOUDINARY_NAME}`,
-  cloudinaryPreset: `${import.meta.env.VITE_CLOUDINARY_PRESET}`,
+  dbURL: `${process.env.NEXT_PUBLIC_DB_URL}`,
+  dbAnon: `${process.env.NEXT_PUBLIC_DB_ANON}`,
+  cloudinaryName: `${process.env.NEXT_PUBLIC_CLOUDINARY_NAME}`,
+  cloudinaryPreset: `${process.env.NEXT_PUBLIC_CLOUDINARY_PRESET}`,
+  backendURL: `${process.env.NEXT_PUBLIC_BACKEND}`,
 };

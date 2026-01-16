@@ -27,3 +27,4 @@ dist-ssr
 # src/supabaseClient.ts
 # Local Netlify folder
 .netlify
+.next

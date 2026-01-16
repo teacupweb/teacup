@@ -7,7 +7,7 @@ import {
 import DashboardHeader from '@/Components/DashboardHeader';
 import DisplayCard from '@/Components/DisplayCards';
 import Modal, { openModal } from '@/Components/Modal';
-import { Link } from 'react-router';
+import Link from 'next/link';
 import { toast } from 'react-toastify';
 import Spinner from '@/Components/Spinner';
 import { useEffect } from 'react';
@@ -60,19 +60,19 @@ export default function Inboxes() {
       });
 
       // Close the modal
-        // Close the modal
-        const modal = document.getElementById(
-          'create-inbox'
-        ) as HTMLDialogElement;
-        if (modal) {
-          modal.close();
-        }
+      // Close the modal
+      const modal = document.getElementById(
+        'create-inbox'
+      ) as HTMLDialogElement;
+      if (modal) {
+        modal.close();
+      }
 
-        // Refresh the inbox list - handled by query invalidation
-        // refetch();
+      // Refresh the inbox list - handled by query invalidation
+      // refetch();
 
-        // Reset the form
-        form.reset();
+      // Reset the form
+      form.reset();
     } catch (error) {
       console.error('Error creating inbox:', error);
       toast.error('Failed to create inbox. Please try again.');
@@ -106,6 +106,9 @@ export default function Inboxes() {
                           Inbox Titles
                         </th>
                         <th scope='col' className='px-6 py-3'>
+                          ID
+                        </th>
+                        <th scope='col' className='px-6 py-3'>
                           <span className='sr-only'>View</span>
                         </th>
                       </tr>
@@ -129,10 +132,11 @@ export default function Inboxes() {
                             >
                               {inbox.name}
                             </th>
+                            <td className='px-6 py-4'>{inbox.id}</td>
 
                             <td className='px-6 py-4 text-right'>
                               <Link
-                                to={`/dashboard/inboxes/${inbox.id}`}
+                                href={`/dashboard/inboxes/${inbox.id}`}
                                 className='font-medium text-rose-600 hover:underline'
                               >
                                 Visit

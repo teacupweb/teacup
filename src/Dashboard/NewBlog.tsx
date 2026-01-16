@@ -9,15 +9,16 @@ import {
   type blogType,
 } from '@/backendProvider';
 import { useAuth } from '@/AuthProvider';
-import { useParams, useNavigate } from 'react-router';
+import { useParams, useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
 import { toast } from 'react-toastify';
 
 const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
   const { cloudinaryName, cloudinaryPreset } = envData;
   console.log(cloudinaryPreset);
-  const navigate = useNavigate();
+  const navigate = useRouter();
   const { id } = useParams();
+  const blogId = typeof id === 'string' ? id : undefined;
   const { user } = useAuth();
   // const userEmail = user !== 'userNotFound' && user ? user.email : null;
   const company =
@@ -28,7 +29,7 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
   const updateBlogMutation = useUpdateBlog();
 
   // Fetch Blog Data for Edit Mode
-  const { data: blogData } = useBlog(company, id);
+  const { data: blogData } = useBlog(company, blogId);
 
   // Refs for Quill
   const editorContainerRef = useRef<HTMLDivElement>(null);
@@ -213,7 +214,7 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
       if (result.isConfirmed) {
         if (isEditMode) {
           await updateBlogMutation.mutateAsync({
-            id: Number(id),
+            id: Number(blogId),
             blog: submitData as blogType,
           });
           toast.success('Article updated successfully!');
@@ -221,7 +222,7 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
           await createBlogMutation.mutateAsync(submitData as blogType);
           toast.success('Article published successfully!');
         }
-        navigate('/dashboard/blogs');
+        navigate.push('/dashboard/blogs');
       }
     } catch (error) {
       console.error('Submission error:', error);
@@ -244,7 +245,7 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
   };
 
   const handleCancel = () => {
-    navigate('/dashboard/Blogs');
+    navigate.push('/dashboard/Blogs');
   };
 
   return (

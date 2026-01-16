@@ -5,7 +5,7 @@ import {
   useQueries,
 } from '@tanstack/react-query';
 
-const API_URL = import.meta.env.VITE_BACKEND;
+const API_URL = process.env.BACKEND || 'http://localhost:3000';
 
 // Types
 export type blogType = {

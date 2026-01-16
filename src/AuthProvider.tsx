@@ -1,3 +1,4 @@
+'use client';
 import './index.css';
 import React, { useState, useEffect, useContext, createContext } from 'react';
 import {
@@ -101,8 +102,8 @@ export default function AuthProvider({ children }: React.PropsWithChildren) {
       provider: 'google',
       options: {
         // have to change for local use and production use
-        redirectTo: 'http://localhost:5173/welcome',
-        // redirectTo: `https://teacupnet.netlify.app/welcome`,
+        // redirectTo: 'http://localhost:3000/welcome',
+        redirectTo: `https://teacup.website/welcome`,
       },
     });
 

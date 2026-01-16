@@ -1,7 +1,7 @@
-import { Link } from 'react-router';
+'use client';
+import Link from 'next/link';
 import Logo from '@/Components/logo';
 import { useAuth } from '@/AuthProvider';
-
 
 function Navbar() {
   const { user } = useAuth();
@@ -15,32 +15,36 @@ function Navbar() {
         <div>
           <ul className='flex gap-5 items-center dark:text-gray-200'>
             <li>
-              <Link to='/' className='hover:text-rose-600 transition'>
+              <Link href='/' className='hover:text-rose-600 transition'>
                 Home
               </Link>
             </li>
             <li>
-              <Link to='/about' className='hover:text-rose-600 transition'>
+              <Link href='/about' className='hover:text-rose-600 transition'>
                 About
               </Link>
             </li>
             <li>
-              <Link to='/contact' className='hover:text-rose-600 transition'>
+              <Link href='/contact' className='hover:text-rose-600 transition'>
                 Contact
               </Link>
             </li>
-            <li>Blogs</li>
+            <li>
+              <Link href='/blogs' className='hover:text-rose-600 transition'>
+                Blogs
+              </Link>
+            </li>
             <li>
               {user !== 'userNotFound' ? (
                 <Link
-                  to='/dashboard'
+                  href='/dashboard'
                   className='bg-rose-600 text-white px-4 py-2 rounded-lg hover:bg-rose-700 transition'
                 >
                   Dashboard
                 </Link>
               ) : (
                 <Link
-                  to='/login'
+                  href='/login'
                   className='bg-rose-600 text-white px-4 py-2 rounded-lg hover:bg-rose-700 transition'
                 >
                   Login

@@ -10,7 +10,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { Link } from 'react-router';
+import Link from 'next/link';
 
 export function NavSecondary({
   items,
@@ -29,7 +29,7 @@ export function NavSecondary({
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton asChild>
-                <Link to={item.url}>
+                <Link href={item.url}>
                   <item.icon />
                   <span>{item.title}</span>
                 </Link>

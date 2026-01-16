@@ -7,7 +7,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { Link, useLocation } from 'react-router';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export function NavMain({
   items,
@@ -19,7 +20,7 @@ export function NavMain({
     disabled?: boolean;
   }[];
 }) {
-  const location = useLocation().pathname;
+  const location = usePathname();
   return (
     <SidebarGroup>
       <SidebarGroupContent className='flex flex-col gap-2 border-t border-sidebar-border pt-5'>
@@ -40,7 +41,7 @@ export function NavMain({
               );
             }
             return (
-              <Link to={item.url} key={item.title}>
+              <Link href={item.url} key={item.title}>
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     isActive={location === item.url /*  */}

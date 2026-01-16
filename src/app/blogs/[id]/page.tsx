@@ -1,6 +1,9 @@
+"use client";
+
 import Navbar from '@/Components/Navbar';
 import Footer from '@/Components/Footer';
-import { useParams, Link } from 'react-router';
+import Link from 'next/link';
+import { use } from 'react';
 
 // Demo blog data (same as in Blogs.tsx)
 const demoBlogPosts = [
@@ -163,103 +166,97 @@ const demoBlogPosts = [
   },
 ];
 
-function BlogPost() {
-  const { id } = useParams();
+export default function BlogPostPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const post = demoBlogPosts.find((p) => p.id === Number(id));
 
   if (!post) {
     return (
-      <>
-        <div>
-          <div className='mx-auto container bg-linear-30'>
-            <Navbar />
-            <div className='min-h-[70vh] py-12 px-4 flex items-center justify-center'>
-              <div className='text-center'>
-                <h1 className='text-4xl ubuntu-font mb-4'>Blog Post Not Found</h1>
-                <Link
-                  to='/blogs'
-                  className='text-rose-600 hover:text-rose-700 underline'
-                >
-                  ← Back to Blogs
-                </Link>
-              </div>
-            </div>
-          </div>
-          <Footer />
-        </div>
-      </>
-    );
-  }
-
-  return (
-    <>
       <div>
-        <div className='mx-auto container bg-linear-30'>
+        <div className='mx-auto container'>
           <Navbar />
-          <div className='min-h-[70vh] py-12 px-4'>
-            <div className='max-w-4xl mx-auto'>
-              {/* Back Link */}
+          <div className='min-h-[70vh] py-12 px-4 flex items-center justify-center'>
+            <div className='text-center'>
+              <h1 className='text-4xl ubuntu-font mb-4'>Blog Post Not Found</h1>
               <Link
-                to='/blogs'
-                className='text-rose-600 hover:text-rose-700 mb-6 inline-block'
+                href='/blogs'
+                className='text-rose-600 hover:text-rose-700 underline'
               >
                 ← Back to Blogs
               </Link>
-
-              {/* Blog Header */}
-              <div className='mb-8'>
-                <div className='flex items-center gap-3 mb-4'>
-                  <span className='text-sm font-semibold text-rose-600 bg-rose-50 px-3 py-1 rounded-full'>
-                    {post.category}
-                  </span>
-                  <span className='text-sm text-gray-500'>{post.readTime}</span>
-                </div>
-
-                <h1 className='text-5xl ubuntu-font mb-4'>{post.title}</h1>
-
-                <div className='flex items-center gap-4 text-gray-600'>
-                  <span>By {post.author}</span>
-                  <span>•</span>
-                  <span>{post.date}</span>
-                </div>
-              </div>
-
-              {/* Blog Image */}
-              <div className='bg-gradient-to-br from-rose-100 to-rose-50 h-96 rounded-2xl flex items-center justify-center text-9xl mb-8'>
-                {post.image}
-              </div>
-
-              {/* Blog Content */}
-              <div
-                className='prose prose-lg max-w-none'
-                dangerouslySetInnerHTML={{ __html: post.content }}
-              />
-
-              {/* Author Bio */}
-              <div className='mt-12 p-6 bg-gray-50 rounded-2xl'>
-                <h3 className='text-xl font-bold mb-2'>About the Author</h3>
-                <p className='text-gray-700'>
-                  <strong>{post.author}</strong> is a content writer at Teacup,
-                  passionate about helping businesses succeed online.
-                </p>
-              </div>
-
-              {/* Back Link */}
-              <div className='mt-8 text-center'>
-                <Link
-                  to='/blogs'
-                  className='text-rose-600 hover:text-rose-700 underline'
-                >
-                  ← Back to All Blogs
-                </Link>
-              </div>
             </div>
           </div>
         </div>
         <Footer />
       </div>
-    </>
+    );
+  }
+
+  return (
+    <div>
+      <div className='mx-auto container'>
+        <Navbar />
+        <div className='min-h-[70vh] py-12 px-4'>
+          <div className='max-w-4xl mx-auto'>
+            {/* Back Link */}
+            <Link
+              href='/blogs'
+              className='text-rose-600 hover:text-rose-700 mb-6 inline-block'
+            >
+              ← Back to Blogs
+            </Link>
+
+            {/* Blog Header */}
+            <div className='mb-8'>
+              <div className='flex items-center gap-3 mb-4'>
+                <span className='text-sm font-semibold text-rose-600 bg-rose-50 px-3 py-1 rounded-full'>
+                  {post.category}
+                </span>
+                <span className='text-sm text-gray-500'>{post.readTime}</span>
+              </div>
+
+              <h1 className='text-5xl ubuntu-font mb-4'>{post.title}</h1>
+
+              <div className='flex items-center gap-4 text-gray-600'>
+                <span>By {post.author}</span>
+                <span>•</span>
+                <span>{post.date}</span>
+              </div>
+            </div>
+
+            {/* Blog Image */}
+            <div className='bg-gradient-to-br from-rose-100 to-rose-50 h-96 rounded-2xl flex items-center justify-center text-9xl mb-8'>
+              {post.image}
+            </div>
+
+            {/* Blog Content */}
+            <div
+              className='prose prose-lg max-w-none text-foreground'
+              dangerouslySetInnerHTML={{ __html: post.content }}
+            />
+
+            {/* Author Bio */}
+            <div className='mt-12 p-6 bg-card rounded-2xl border border-border'>
+              <h3 className='text-xl font-bold mb-2'>About the Author</h3>
+              <p className='text-muted-foreground'>
+                <strong>{post.author}</strong> is a content writer at Teacup,
+                passionate about helping businesses succeed online.
+              </p>
+            </div>
+
+            {/* Back Link */}
+            <div className='mt-8 text-center'>
+              <Link
+                href='/blogs'
+                className='text-rose-600 hover:text-rose-700 underline'
+              >
+                ← Back to All Blogs
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+      <Footer />
+    </div>
   );
 }
-
-export default BlogPost;

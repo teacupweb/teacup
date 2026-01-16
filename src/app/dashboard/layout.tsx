@@ -1,26 +1,30 @@
+"use client";
+
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-// @ts-ignore
 import { AppSidebar } from '@/components/app-sidebar';
-import { Outlet, useNavigate } from 'react-router';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/AuthProvider';
 import { useEffect } from 'react';
 
-export default function Layout() {
-  const navigate = useNavigate();
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const router = useRouter();
   const { user } = useAuth();
+
   useEffect(() => {
     if (user === 'userNotFound') {
-      navigate('/login');
-      // console.log('from layout');
+      router.push('/login');
     } else if (user && typeof user !== 'string') {
-      // Check if user has company_id in metadata
       const companyId = user.user_metadata?.company_id;
       if (!companyId) {
-        // User doesn't have a company, redirect to welcome page
-        navigate('/welcome');
+        router.push('/welcome');
       }
     }
-  });
+  }, [user, router]);
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -28,7 +32,7 @@ export default function Layout() {
         <div className='block lg:hidden py-4'>
           <SidebarTrigger />
         </div>
-        <Outlet />
+        {children}
       </main>
     </SidebarProvider>
   );

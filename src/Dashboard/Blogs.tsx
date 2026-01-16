@@ -1,6 +1,6 @@
 import DisplayCard from '@/Components/DisplayCards';
 import DashboardHeader from '../Components/DashboardHeader';
-import { Link } from 'react-router';
+import Link from 'next/link';
 import { useAuth } from '@/AuthProvider';
 import { useDeleteBlog, useUserBlogs, type blogType } from '@/backendProvider';
 import Swal from 'sweetalert2';
@@ -66,7 +66,7 @@ function Blogs() {
                 <h3 className='font-bold ubuntu-font text-2xl'>
                   Recent Blog Posts
                 </h3>
-                <Link to='/dashboard/Blogs/new'>
+                <Link href='/dashboard/Blogs/new'>
                   <button className='bg-rose-600 cursor-pointer text-white px-5 py-1 rounded-2xl text-xs hover:bg-rose-700 transition'>
                     New Post
                   </button>
@@ -120,7 +120,7 @@ function Blogs() {
                             </td>
                             <td className='px-6 py-4 text-right'>
                               <Link
-                                to={`/dashboard/Blogs/edit/${blog.id}`}
+                                href={`/dashboard/Blogs/edit/${blog.id}`}
                                 className='font-medium text-rose-600 hover:underline'
                               >
                                 Edit
@@ -156,7 +156,7 @@ function Blogs() {
                                   with your audience
                                 </p>
                               </div>
-                              <Link to='/dashboard/Blogs/new'>
+                              <Link href='/dashboard/Blogs/new'>
                                 <button className='mt-2 bg-rose-600 text-white px-6 py-2 rounded-xl hover:bg-rose-700 transition font-medium'>
                                   Create Blog Post
                                 </button>

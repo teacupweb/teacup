@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/AuthProvider';
-import { useNavigate, useSearchParams } from 'react-router';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Building2,
   Globe,
@@ -15,12 +15,12 @@ import Spinner from '@/Components/Spinner';
 import supabase from '@/supabaseClient';
 import { toast } from 'react-toastify';
 
-const API_URL = import.meta.env.VITE_BACKEND;
+const API_URL = process.env.NEXT_PUBLIC_BACKEND;
 
 export default function Welcome() {
   const { user, updateUserCompanyInfo, logout } = useAuth();
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const navigate = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [formData, setFormData] = useState({
@@ -32,7 +32,7 @@ export default function Welcome() {
   useEffect(() => {
     // Check if user is authenticated
     if (user === 'userNotFound') {
-      navigate('/login');
+      navigate.push('/login');
       return;
     }
 
@@ -49,7 +49,7 @@ export default function Welcome() {
       const companyId = user.user_metadata?.company_id;
       if (companyId) {
         // User already has a company, redirect to dashboard
-        navigate('/Dashboard');
+        navigate.push('/Dashboard');
       } else {
         // User needs to create a company
         setLoading(false);
@@ -154,7 +154,7 @@ export default function Welcome() {
             unsubscribe.data.subscription.unsubscribe();
             // Small delay to ensure everything is settled
             setTimeout(() => {
-              navigate('/Dashboard');
+              navigate.push('/Dashboard');
             }, 300);
           }
         }
@@ -164,7 +164,7 @@ export default function Welcome() {
       setTimeout(() => {
         unsubscribe.data.subscription.unsubscribe();
         console.log('Timeout reached, navigating to dashboard...');
-        navigate('/Dashboard');
+        navigate.push('/Dashboard');
       }, 3000);
     } catch (error) {
       console.error('Error creating company:', error);
@@ -337,7 +337,7 @@ export default function Welcome() {
           <button
             onClick={() => {
               logout();
-              navigate('/login');
+              navigate.push('/login');
             }}
             className='text-sm text-muted-foreground hover:text-rose-500 font-medium flex items-center gap-1 transition-colors'
           >

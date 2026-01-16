@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Eye, EyeOff, Mail, Lock, User, ArrowRight } from 'lucide-react';
 import { useAuth } from '@/AuthProvider';
-import { Link, useNavigate } from 'react-router';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { toast } from 'react-toastify';
 
 export default function AuthPage({ isLogin }: { isLogin: boolean }) {
@@ -15,11 +16,11 @@ export default function AuthPage({ isLogin }: { isLogin: boolean }) {
     confirmPassword: '',
   });
   // const { user } = useAuth();
-  const navigate = useNavigate();
+  const navigate = useRouter();
   useEffect(() => {
     setTimeout(() => {
       if (user !== 'userNotFound') {
-        navigate('/');
+        navigate.push('/');
       }
     });
   });
@@ -37,7 +38,7 @@ export default function AuthPage({ isLogin }: { isLogin: boolean }) {
         await loginUser(formData.email, formData.password);
         toast.success('Welcome back!');
       }
-      navigate('/');
+      navigate.push('/');
     } catch (error: any) {
       toast.error(error.message || 'Authentication failed');
     }
@@ -69,7 +70,7 @@ export default function AuthPage({ isLogin }: { isLogin: boolean }) {
                 : 'Join us and get started today'}{' '}
               or{' '}
               <span className='font-bold hover:underline transition-all'>
-                <Link to='/'>Go back</Link>
+                <Link href='/'>Go back</Link>
               </span>
             </p>
           </div>
@@ -223,7 +224,7 @@ export default function AuthPage({ isLogin }: { isLogin: boolean }) {
                 : 'Already have an account? '}
               <button
                 type='button'
-                onClick={() => navigate(isLogin ? '/signup' : '/login')}
+                onClick={() => navigate.push(isLogin ? '/signup' : '/login')}
                 className='text-rose-500 hover:text-rose-600 font-semibold'
               >
                 {isLogin ? 'Sign up' : 'Sign in'}
