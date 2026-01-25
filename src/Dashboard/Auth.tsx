@@ -17,13 +17,14 @@ export default function AuthPage({ isLogin }: { isLogin: boolean }) {
   });
   // const { user } = useAuth();
   const navigate = useRouter();
+  const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+  const redirectPath = searchParams?.get('redirect') || '/';
+
   useEffect(() => {
-    setTimeout(() => {
-      if (user !== 'userNotFound') {
-        navigate.push('/');
-      }
-    });
-  });
+    if (user !== 'userNotFound' && user !== null) {
+      navigate.push(redirectPath);
+    }
+  }, [user, navigate, redirectPath]);
 
   const handleSubmit = async () => {
     try {
@@ -38,7 +39,7 @@ export default function AuthPage({ isLogin }: { isLogin: boolean }) {
         await loginUser(formData.email, formData.password);
         toast.success('Welcome back!');
       }
-      navigate.push('/');
+      // The useEffect will handle the redirection once user state updates
     } catch (error: any) {
       toast.error(error.message || 'Authentication failed');
     }

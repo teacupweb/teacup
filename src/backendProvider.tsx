@@ -5,7 +5,7 @@ import {
   useQueries,
 } from '@tanstack/react-query';
 
-const API_URL = process.env.BACKEND || 'http://localhost:3000';
+const API_URL = process.env.BACKEND || 'http://localhost:8000';
 
 // Types
 export type blogType = {
@@ -71,7 +71,7 @@ async function fetchApi(endpoint: string, options: RequestInit = {}) {
 export function useApiQuery<T = any>(
   key: any[],
   endpoint: string,
-  options?: any
+  options?: any,
 ) {
   return useQuery<T>({
     queryKey: key,
@@ -82,7 +82,7 @@ export function useApiQuery<T = any>(
 
 export function useApiMutation<T = any, V = any>(
   mutationFn: (variables: V) => Promise<T>,
-  onSuccess?: (data: T, variables: V) => void
+  onSuccess?: (data: T, variables: V) => void,
 ) {
   return useMutation({
     mutationFn,
@@ -103,7 +103,7 @@ export function useUserBlogs(companyId: number | undefined | null) {
 
 export function useBlog(
   companyId: string | undefined | null,
-  id: string | undefined
+  id: string | undefined,
 ) {
   return useApiQuery(['blog', id], `/dashboard/blogs/${companyId}/${id}`, {
     enabled: !!companyId && !!id,
@@ -122,7 +122,7 @@ export function useCreateBlog() {
       queryClient.invalidateQueries({
         queryKey: ['blogs', variables.owner],
       });
-    }
+    },
   );
 }
 
@@ -138,7 +138,7 @@ export function useUpdateBlog() {
       queryClient.invalidateQueries({
         queryKey: ['blogs', variables.blog.owner],
       });
-    }
+    },
   );
 }
 
@@ -152,7 +152,7 @@ export function useDeleteBlog() {
 
     () => {
       queryClient.invalidateQueries({ queryKey: ['blogs'] });
-    }
+    },
   );
 }
 
@@ -176,7 +176,7 @@ export function useCreateInbox() {
       queryClient.invalidateQueries({
         queryKey: ['inboxes', variables.owner],
       });
-    }
+    },
   );
 }
 
@@ -189,7 +189,7 @@ export function useDeleteInbox() {
       }),
     () => {
       queryClient.invalidateQueries({ queryKey: ['inboxes'] });
-    }
+    },
   );
 }
 
@@ -208,13 +208,13 @@ export function useDeleteInboxData() {
       }),
     () => {
       queryClient.invalidateQueries({ queryKey: ['inboxData'] });
-    }
+    },
   );
 }
 
 export function useLatestMessages(
   companyId: number | undefined | null,
-  limit: number = 4
+  limit: number = 4,
 ) {
   // 1. Fetch all inboxes for the user
   const { data: inboxes, isLoading: inboxesLoading } =
@@ -272,7 +272,7 @@ export function useCompany(companyId: number | undefined | null): {
     `/dashboard/company/${companyId}`,
     {
       enabled: !!companyId,
-    }
+    },
   );
   return data as {
     data: CompanyType | undefined;
@@ -292,7 +292,7 @@ export function useCreateCompany() {
     () => {
       // Invalidate queries if necessary, e.g., if there's a list of companies
       queryClient.invalidateQueries({ queryKey: ['companies'] });
-    }
+    },
   );
 }
 
@@ -306,7 +306,7 @@ export function useUpdateCompany() {
       }),
     (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['company', variables.id] });
-    }
+    },
   );
 }
 // --- Analytics ---

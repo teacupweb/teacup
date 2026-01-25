@@ -18,7 +18,7 @@ function Footer() {
         <div className=' border-white border-b-4 h-2 w-full my-3 mt-5'></div>
         <div className='text-white flex justify-between items-center flex-col lg:flex-row w-full'>
           <span className='text-xs sm:text-lg'>
-            &copy; All rights reserved, Teacup 2025
+            &copy; All rights reserved, Teacup 2026
           </span>
           <div className='flex gap-4 text-3xl '>
             {/* Social Media Icons */}

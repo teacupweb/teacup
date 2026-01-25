@@ -15,7 +15,7 @@ interface valueType {
   signUpUser: (
     email: string,
     password: string,
-    name: string
+    name: string,
   ) => Promise<UserResponse>;
   loginUser: (email: string, password: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;

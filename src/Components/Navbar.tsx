@@ -35,6 +35,11 @@ function Navbar() {
               </Link>
             </li>
             <li>
+              <Link href='/pricing' className='hover:text-rose-600 transition'>
+                Pricing
+              </Link>
+            </li>
+            <li>
               {user !== 'userNotFound' ? (
                 <Link
                   href='/dashboard'
