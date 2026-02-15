@@ -1,10 +1,11 @@
-"use client";
+'use client';
 
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/app-sidebar';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/AuthProvider';
 import { useEffect } from 'react';
+import { SiteHeader } from '@/components/site-header';
 
 export default function DashboardLayout({
   children,
@@ -26,14 +27,25 @@ export default function DashboardLayout({
   }, [user, router]);
 
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <main className='px-4 sm:px-6 lg:px-10 w-full bg-background min-h-screen dark:bg-[radial-gradient(#1e293b_1px,transparent_1px)] bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:20px_20px] transition-colors duration-300'>
-        <div className='block lg:hidden py-4'>
-          <SidebarTrigger />
+        <SidebarProvider
+      style={
+        {
+          "--sidebar-width": "calc(var(--spacing) * 72)",
+          "--header-height": "calc(var(--spacing) * 12)",
+        } as React.CSSProperties
+      }
+    >
+      <AppSidebar variant="inset" />
+      <SidebarInset>
+        <SiteHeader />
+        <div className="flex flex-1 flex-col">
+          <div className="@container/main flex flex-1 flex-col gap-2">
+            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+             {children}
+            </div>
+          </div>
         </div>
-        {children}
-      </main>
+      </SidebarInset>
     </SidebarProvider>
   );
 }

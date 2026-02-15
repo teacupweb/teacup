@@ -1,4 +1,4 @@
-import { type Icon } from '@tabler/icons-react';
+import { type Icon } from "@tabler/icons-react"
 
 import {
   SidebarGroup,
@@ -6,56 +6,34 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from '@/components/ui/sidebar';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+} from "@/components/ui/sidebar"
+import Link from "next/link"
 
 export function NavMain({
   items,
 }: {
   items: {
-    title: string;
-    url: string;
-    icon?: Icon;
-    disabled?: boolean;
-  }[];
+    title: string
+    url: string
+    icon?: Icon
+  }[]
 }) {
-  const location = usePathname();
   return (
     <SidebarGroup>
-      <SidebarGroupContent className='flex flex-col gap-2 border-t border-sidebar-border pt-5'>
+      <SidebarGroupContent className="flex flex-col gap-2">
         <SidebarMenu>
-          {items.map((item) => {
-            if (item?.disabled == true) {
-              return (
-                <button key={item.title} disabled>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild>
-                      <div className='flex cursor-not-allowed hover:opacity-100 opacity-50 hover:bg-transparent text-gray-600'>
-                        {item.icon && <item.icon />}
-                        <span>{item.title}</span>
-                      </div>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                </button>
-              );
-            }
-            return (
-              <Link href={item.url} key={item.title}>
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    isActive={location === item.url /*  */}
-                    tooltip={item.title}
-                  >
-                    {item.icon && <item.icon />}
-                    <span>{item.title}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              </Link>
-            );
-          })}
+          {items.map((item) => (
+            <SidebarMenuItem key={item.title}>
+              <SidebarMenuButton asChild tooltip={item.title}>
+                <Link href={item.url}>
+                  {item.icon && <item.icon />}
+                  <span>{item.title}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>
-  );
+  )
 }

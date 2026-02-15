@@ -1,3 +1,5 @@
+"use client";
+
 import { BsFillCupHotFill } from 'react-icons/bs';
 import { useState } from 'react';
 import Modal, { openModal, closeModal } from '@/Components/Modal';

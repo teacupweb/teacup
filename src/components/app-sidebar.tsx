@@ -1,110 +1,26 @@
 import {
-  Calendar,
-  Inbox,
-  Settings,
-  LayoutDashboard,
-  BarChart3,
-  // Wrench,
-} from 'lucide-react';
-import {
   Sidebar,
   SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
   SidebarHeader,
+  SidebarFooter,
 } from '@/components/ui/sidebar';
 
-import { usePathname } from 'next/navigation';
-import Link from 'next/link';
-import Logo from '@/Components/logo';
-// import { NavDocuments } from '@/components/nav-documents';
-import { NavMain } from '@/components/nav-main';
-import { NavSecondary } from '@/components/nav-secondary';
-
-// Combined menu items - keeping the original structure but adding new sections
-const data = {
-  // user: {
-  //   name: 'shadcn',
-  //   email: 'm@example.com',
-  //   avatar: '/avatars/shadcn.jpg',
-  // },
-
-  // Original main navigation items
-  navMain: [
-    {
-      title: 'Dashboard',
-      url: '/dashboard',
-      icon: LayoutDashboard,
-      disabled: false,
-    },
-    {
-      title: 'inboxes',
-      url: '/dashboard/inboxes',
-      icon: Inbox,
-      disabled: false,
-    },
-    {
-      title: 'Blogs',
-      url: '/dashboard/blogs',
-      icon: Calendar,
-      disabled: false,
-    },
-    {
-      title: 'Analytics',
-      url: '/dashboard/analytics',
-      icon: BarChart3,
-      disabled: false,
-    },
-  ],
-
-  // Secondary navigation (moved to footer area)
-  navSecondary: [
-    {
-      title: 'Settings',
-      url: '/dashboard/settings',
-      icon: Settings,
-    },
-  ],
-};
+import { SidebarHeader as CustomSidebarHeader } from '@/components/sidebar-header';
+import { SidebarNavigation } from '@/components/sidebar-navigation';
+import { SidebarUserSection } from '@/components/sidebar-user-section';
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const currentRoute = usePathname();
-
   return (
-    <Sidebar
-      collapsible='offcanvas'
-      className='shadow-xl shadow-pink-200 dark:shadow-none border-r border-sidebar-border'
-      {...props}
-    >
+    <Sidebar collapsible='offcanvas' variant='inset' {...props}>
       <SidebarHeader>
-        <SidebarGroup>
-          <div className='flex items-center justify-between p-2'>
-            <Link href='/'>
-              <Logo className='w-auto' />
-            </Link>
-          </div>
-        </SidebarGroup>
+        <CustomSidebarHeader />
       </SidebarHeader>
-
       <SidebarContent>
-        {/* Main Navigation */}
-        <SidebarGroup>
-          <SidebarGroupContent>
-            {/* @ts-ignore  */}
-            <NavMain items={data.navMain} currentRoute={currentRoute} />
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup className='mt-auto'>
-          <SidebarGroupContent>
-            <NavSecondary
-              // @ts-ignore
-              items={data.navSecondary}
-              currentRoute={currentRoute}
-            />
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <SidebarNavigation />
       </SidebarContent>
+      <SidebarFooter>
+        <SidebarUserSection />
+      </SidebarFooter>
     </Sidebar>
   );
 }

@@ -32,7 +32,7 @@ export default function Welcome() {
   useEffect(() => {
     // Check if user is authenticated
     if (user === 'userNotFound') {
-      navigate.push('/login');
+      navigate.push('/auth/login');
       return;
     }
 
@@ -49,7 +49,7 @@ export default function Welcome() {
       const companyId = user.user_metadata?.company_id;
       if (companyId) {
         // User already has a company, redirect to dashboard
-        navigate.push('/Dashboard');
+        navigate.push('/dashboard');
       } else {
         // User needs to create a company
         setLoading(false);
@@ -154,10 +154,10 @@ export default function Welcome() {
             unsubscribe.data.subscription.unsubscribe();
             // Small delay to ensure everything is settled
             setTimeout(() => {
-              navigate.push('/Dashboard');
+              navigate.push('/dashboard');
             }, 300);
           }
-        }
+        },
       );
 
       // Fallback: If auth state doesn't update within 3 seconds, navigate anyway
@@ -171,7 +171,7 @@ export default function Welcome() {
       toast.error(
         error instanceof Error
           ? `Failed to create company: ${error.message}`
-          : 'Failed to create company. Please try again.'
+          : 'Failed to create company. Please try again.',
       );
       setCreating(false);
     }

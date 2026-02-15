@@ -52,7 +52,7 @@ function Settings() {
       if (result.isConfirmed) {
         logout();
         toast.success('You have been successfully logged out.');
-        navigate.push('/login');
+        navigate.push('/auth/login');
       }
     });
   };
@@ -337,7 +337,7 @@ function Settings() {
                               {member.name
                                 .split(' ')
                                 .map((word: string) =>
-                                  word.charAt(0).toUpperCase()
+                                  word.charAt(0).toUpperCase(),
                                 )
                                 .join('')
                                 .slice(0, 2)}
@@ -356,8 +356,8 @@ function Settings() {
                               member.status === 'Owner'
                                 ? 'bg-rose-100 text-rose-600'
                                 : member.status === 'Member'
-                                ? 'bg-blue-100 text-blue-600'
-                                : 'bg-orange-100 text-orange-600'
+                                  ? 'bg-blue-100 text-blue-600'
+                                  : 'bg-orange-100 text-orange-600'
                             }`}
                           >
                             {member.status}
