@@ -1,5 +1,5 @@
 import DisplayCard from '@/Components/DisplayCards';
-import DashboardHeader from '../Components/DashboardHeader';
+
 import Link from 'next/link';
 import { useAuth } from '@/AuthProvider';
 import { useDeleteBlog, useUserBlogs, type blogType } from '@/backendProvider';
@@ -14,7 +14,7 @@ function Blogs() {
     isLoading: loading,
     refetch,
   } = useUserBlogs(
-    user === 'userNotFound' ? null : user?.user_metadata.company_id
+    user === 'userNotFound' ? null : user?.user_metadata.company_id,
   );
 
   const deleteBlogMutation = useDeleteBlog();
@@ -46,7 +46,6 @@ function Blogs() {
   };
   return (
     <div className='flex flex-col h-full'>
-      <DashboardHeader />
       <div className=''>
         {/* {Array.from({ length: 4 }).map((_, index) => (
           <DisplayCard className='col-span-1' key={index} />
@@ -59,7 +58,7 @@ function Blogs() {
             </div>
           </div>
         </DisplayCard> */}
-        <div className='flex flex-col gap-5 col-span-1'>
+        <div className='flex flex-col gap-5 col-span-1 mx-8'>
           <DisplayCard className='min-h-[500px] my-5'>
             <div className='h-full flex flex-col'>
               <div className='pt-5 pb-2 mb-3 border-b-2 border-rose-600 flex items-center justify-between'>

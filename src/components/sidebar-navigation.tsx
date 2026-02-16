@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   IconDashboard,
@@ -8,7 +8,6 @@ import {
   IconSettings,
 } from '@tabler/icons-react';
 import { NavMain } from '@/components/nav-main';
-import { NavSecondary } from '@/components/nav-secondary';
 
 // Navigation data
 const navData = {
@@ -34,13 +33,6 @@ const navData = {
       icon: IconChartBar,
     },
   ],
-  navSecondary: [
-    {
-      title: 'Settings',
-      url: '/dashboard/settings',
-      icon: IconSettings,
-    },
-  ],
 };
 
 export function SidebarNavigation() {
@@ -48,9 +40,6 @@ export function SidebarNavigation() {
     <>
       {/* Main Navigation */}
       <NavMain items={navData.navMain} />
-
-      {/* Secondary Navigation */}
-      <NavSecondary items={navData.navSecondary} />
     </>
   );
 }

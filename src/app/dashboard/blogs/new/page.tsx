@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import NewBlog from '@/Dashboard/NewBlog';
+import NewBlog from '@/app/dashboard/blogs/NewBlog';
 
 export default function NewBlogPage() {
   return <NewBlog />;

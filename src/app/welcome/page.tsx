@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import Welcome from '@/Dashboard/Welcome';
+import Welcome from './Welcome';
 
 export default function WelcomePage() {
   return <Welcome />;

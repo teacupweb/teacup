@@ -4,7 +4,6 @@ import {
   useUserInboxes,
   type inboxType,
 } from '@/backendProvider';
-import DashboardHeader from '@/Components/DashboardHeader';
 import DisplayCard from '@/Components/DisplayCards';
 import Modal, { openModal } from '@/Components/Modal';
 import Link from 'next/link';
@@ -62,7 +61,7 @@ export default function Inboxes() {
       // Close the modal
       // Close the modal
       const modal = document.getElementById(
-        'create-inbox'
+        'create-inbox',
       ) as HTMLDialogElement;
       if (modal) {
         modal.close();
@@ -80,8 +79,7 @@ export default function Inboxes() {
   };
 
   return (
-    <div className='flex flex-col h-full'>
-      <DashboardHeader />
+    <div className='flex flex-col h-full mx-8'>
       <div className=''>
         <div className='flex flex-col gap-5 col-span-1'>
           <DisplayCard className='min-h-[500px] my-5'>

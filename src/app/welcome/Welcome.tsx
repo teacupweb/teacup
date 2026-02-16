@@ -1,3 +1,4 @@
+'use  client';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/AuthProvider';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -10,7 +11,7 @@ import {
   LogOut,
   Users,
 } from 'lucide-react';
-import type { CompanyType } from '@/backendProvider';
+import { useCompany, type CompanyType } from '@/backendProvider';
 import Spinner from '@/Components/Spinner';
 import supabase from '@/supabaseClient';
 import { toast } from 'react-toastify';
@@ -23,11 +24,22 @@ export default function Welcome() {
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
+  const [referralProcessing, setReferralProcessing] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     domain: '',
     owner: '',
   });
+
+  // Move hook calls to the top level - only call useCompany if we have a valid referral company ID
+  const referralLink = searchParams.get('referral');
+  const referralCompanyId =
+    referralLink && searchParams.get('company')
+      ? Number(searchParams.get('company'))
+      : null;
+  const company = useCompany(
+    referralCompanyId && !isNaN(referralCompanyId) ? referralCompanyId : null,
+  );
 
   useEffect(() => {
     // Check if user is authenticated
@@ -36,14 +48,49 @@ export default function Welcome() {
       return;
     }
 
-    // Check for referral link in query parameters
-    const referralLink = searchParams.get('referral');
     if (referralLink) {
-      console.log('Referral link detected:', referralLink);
-      // TODO: Handle referral link logic here
-      // This could be used to add user to an existing company
-    }
+      console.log('Processing referral link:', referralLink);
+      setReferralProcessing(true);
 
+      if (
+        searchParams.get('company') &&
+        searchParams.get('owner_email') &&
+        searchParams.get('user')
+      ) {
+        // Check if company data is loaded and valid
+        if (company?.data && !company.isLoading && !company.error) {
+          console.log('Company found:', company.data);
+          try {
+            // Update user with the referred company
+            const result = updateUserCompanyInfo(company.data);
+            console.log('User updated with company:', result);
+            toast.success('Successfully joined the company!');
+
+            // Redirect to dashboard after successful referral
+            setTimeout(() => {
+              navigate.push('/dashboard');
+            }, 1000);
+          } catch (error) {
+            console.error('Error updating user with company:', error);
+            toast.error('Failed to join the company. Please try again.');
+          }
+        } else if (company?.error) {
+          console.error('Error loading company:', company.error);
+          toast.error('Invalid company referral link.');
+        } else if (company?.isLoading) {
+          // Still loading, wait for next render
+          setReferralProcessing(false);
+          return;
+        } else {
+          console.log('Company not found');
+          toast.error('Company not found.');
+        }
+      } else {
+        console.log('Invalid referral parameters');
+        toast.error('Invalid referral link.');
+      }
+      setReferralProcessing(false);
+    }
     // Check if user has company_id in metadata
     if (user && typeof user !== 'string') {
       const companyId = user.user_metadata?.company_id;
@@ -60,7 +107,16 @@ export default function Welcome() {
         }));
       }
     }
-  }, [user, navigate, searchParams]);
+    // Check for referral link in query parameters
+  }, [
+    user,
+    navigate,
+    searchParams,
+    referralLink,
+    company,
+    updateUserCompanyInfo,
+    referralProcessing,
+  ]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -177,10 +233,15 @@ export default function Welcome() {
     }
   };
 
-  if (loading) {
+  if (loading || referralProcessing) {
     return (
       <div className='min-h-screen bg-background flex items-center justify-center transition-colors'>
-        <Spinner size='lg' />
+        <div className='text-center'>
+          <Spinner size='lg' />
+          <p className='mt-4 text-muted-foreground'>
+            {referralProcessing ? 'Processing referral...' : 'Loading...'}
+          </p>
+        </div>
       </div>
     );
   }

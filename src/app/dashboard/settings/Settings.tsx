@@ -67,7 +67,7 @@ function Settings() {
 
   const handleGenerateInviteLink = () => {
     // Generate the invite link
-    const link = `https://teacupnet.netlify.app/welcome?company=${companyId}&owner_email=${ownerEmail}&user=${inviteEmail}`;
+    const link = `http://localhost:3000/welcome?company=${companyId}&owner_email=${ownerEmail}&user=${inviteEmail}&referral=true`;
     setGeneratedInviteLink(link);
 
     // Close invite modal and open link modal
@@ -277,24 +277,7 @@ function Settings() {
           </div>
 
           <div className='bg-card p-6 rounded-2xl border border-border shadow-sm relative overflow-hidden group'>
-            {/* Coming Soon Overlay */}
-            <div className='absolute inset-0 z-20 flex items-center justify-center bg-background/50 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none'>
-              <div className='bg-card/90 border border-border px-4 py-2 rounded-xl shadow-xl transform -rotate-12 scale-110'>
-                <span className='text-rose-600 font-bold uppercase tracking-widest text-sm'>
-                  Coming Soon
-                </span>
-              </div>
-            </div>
-
-            <div className='absolute inset-0 z-10 flex items-center justify-center pointer-events-none'>
-              <div className='px-3 py-1 bg-muted/80 backdrop-blur-sm border border-border rounded-lg opacity-100 group-hover:opacity-0 transition-opacity duration-300'>
-                <span className='text-[10px] font-bold uppercase tracking-tighter text-muted-foreground'>
-                  Limited Preview
-                </span>
-              </div>
-            </div>
-
-            <div className='relative z-0 opacity-40 pointer-events-none grayscale-[50%] transition-all duration-500 group-hover:blur-[1px]'>
+            <div className='relative z-0'>
               <h3 className='font-bold text-xl text-foreground mb-4 pb-2 border-b border-border/50'>
                 Team Management
               </h3>
@@ -305,7 +288,6 @@ function Settings() {
                   </label>
                   <form onSubmit={handleInviteClick} className='flex gap-2'>
                     <input
-                      disabled
                       type='email'
                       value={inviteEmail}
                       onChange={(e) => setInviteEmail(e.target.value)}
@@ -313,9 +295,8 @@ function Settings() {
                       className='flex-1 px-4 py-2 border border-border bg-card rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all text-foreground'
                     />
                     <button
-                      disabled
                       type='submit'
-                      className='bg-primary text-primary-foreground px-4 py-2 rounded-xl hover:bg-primary/90 transition-colors font-medium opacity-50'
+                      className='bg-primary text-primary-foreground px-4 py-2 rounded-xl hover:bg-primary/90 transition-colors font-medium '
                     >
                       Invite
                     </button>

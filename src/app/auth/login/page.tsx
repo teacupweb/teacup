@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import AuthPage from '@/Dashboard/Auth';
+import AuthPage from '@/app/auth/Auth';
 
 export default function LoginPage() {
   return <AuthPage isLogin={true} />;

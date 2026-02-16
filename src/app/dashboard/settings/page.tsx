@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import Settings from '@/Dashboard/Settings';
+import Settings from './Settings';
 
 export default function SettingsPage() {
   return <Settings />;

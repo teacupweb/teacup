@@ -17,7 +17,10 @@ export default function AuthPage({ isLogin }: { isLogin: boolean }) {
   });
   // const { user } = useAuth();
   const navigate = useRouter();
-  const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+  const searchParams =
+    typeof window !== 'undefined'
+      ? new URLSearchParams(window.location.search)
+      : null;
   const redirectPath = searchParams?.get('redirect') || '/';
 
   useEffect(() => {
@@ -79,7 +82,7 @@ export default function AuthPage({ isLogin }: { isLogin: boolean }) {
           <div className='p-8 space-y-6'>
             {!isLogin && (
               <div className='space-y-2'>
-              <label className='text-sm font-medium text-foreground/80 flex items-center gap-2'>
+                <label className='text-sm font-medium text-foreground/80 flex items-center gap-2'>
                   <User className='w-4 h-4 text-rose-500' />
                   Full Name
                 </label>
@@ -139,7 +142,7 @@ export default function AuthPage({ isLogin }: { isLogin: boolean }) {
 
             {!isLogin && (
               <div className='space-y-2'>
-              <label className='text-sm font-medium text-foreground/80 flex items-center gap-2'>
+                <label className='text-sm font-medium text-foreground/80 flex items-center gap-2'>
                   <Lock className='w-4 h-4 text-rose-500' />
                   Confirm Password
                 </label>
@@ -157,12 +160,14 @@ export default function AuthPage({ isLogin }: { isLogin: boolean }) {
             {isLogin && (
               <div className='flex items-center justify-between text-sm'>
                 <label className='flex items-center gap-2 cursor-pointer'>
-                    <input
-                      type='checkbox'
-                      className='w-4 h-4 text-rose-500 rounded border-border bg-muted focus:ring-rose-500'
-                    />
-                    <span className='text-muted-foreground font-medium'>Remember me</span>
-                  </label>
+                  <input
+                    type='checkbox'
+                    className='w-4 h-4 text-rose-500 rounded border-border bg-muted focus:ring-rose-500'
+                  />
+                  <span className='text-muted-foreground font-medium'>
+                    Remember me
+                  </span>
+                </label>
                 <button
                   type='button'
                   className='text-rose-500 hover:text-rose-600 font-medium'
@@ -225,7 +230,9 @@ export default function AuthPage({ isLogin }: { isLogin: boolean }) {
                 : 'Already have an account? '}
               <button
                 type='button'
-                onClick={() => navigate.push(isLogin ? '/signup' : '/login')}
+                onClick={() =>
+                  navigate.push(isLogin ? '/auth/signup' : '/auth/login')
+                }
                 className='text-rose-500 hover:text-rose-600 font-semibold'
               >
                 {isLogin ? 'Sign up' : 'Sign in'}

@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import Blogs from '@/Dashboard/Blogs';
+import Blogs from './Blogs';
 
 export default function DashboardBlogsPage() {
   return <Blogs />;
