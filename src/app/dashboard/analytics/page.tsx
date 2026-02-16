@@ -1,5 +1,3 @@
-"use client";
-
 import Analytics from '@/Dashboard/Analytics/Analytics';
 
 export default function AnalyticsPage() {

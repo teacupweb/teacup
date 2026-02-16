@@ -220,7 +220,7 @@ export default function Welcome() {
       setTimeout(() => {
         unsubscribe.data.subscription.unsubscribe();
         console.log('Timeout reached, navigating to dashboard...');
-        navigate.push('/Dashboard');
+        navigate.push('/dashboard');
       }, 3000);
     } catch (error) {
       console.error('Error creating company:', error);

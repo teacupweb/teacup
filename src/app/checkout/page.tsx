@@ -23,7 +23,7 @@ function CheckoutContent() {
   useEffect(() => {
     if (user === 'userNotFound') {
       const currentPath = window.location.pathname + window.location.search;
-      router.push(`/login?redirect=${encodeURIComponent(currentPath)}`);
+      router.push(`/auth/login?redirect=${encodeURIComponent(currentPath)}`);
     }
   }, [user, router]);
 

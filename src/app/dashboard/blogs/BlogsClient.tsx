@@ -1,28 +1,31 @@
-import DisplayCard from '@/Components/DisplayCards';
+'use client';
 
+import DisplayCard from '@/Components/DisplayCards';
 import Link from 'next/link';
 import { useAuth } from '@/AuthProvider';
-import { useDeleteBlog, useUserBlogs, type blogType } from '@/backendProvider';
+import { deleteBlog, getUserBlogs, type blogType } from '@/lib/blogs';
 import Swal from 'sweetalert2';
 import Spinner from '@/Components/Spinner';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
-function Blogs() {
+interface BlogsClientProps {
+  initialBlogs: blogType[];
+}
+
+function BlogsClient() {
   const { user } = useAuth();
-  const {
-    data,
-    isLoading: loading,
-    refetch,
-  } = useUserBlogs(
-    user === 'userNotFound' ? null : user?.user_metadata.company_id,
-  );
+  const [blogs, setBlogs] = useState<blogType[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const deleteBlogMutation = useDeleteBlog();
-
-  // Refetch data when component mounts or becomes visible
   useEffect(() => {
-    refetch();
-  }, [refetch]);
+    getUserBlogs(
+      user && typeof user !== 'string'
+        ? user.user_metadata?.company_id || ''
+        : '',
+    ).then((res) => {
+      setBlogs(res);
+    });
+  }, [user]);
 
   const handleDeleteBlog = (id: number | undefined) => async () => {
     Swal.fire({
@@ -33,31 +36,25 @@ function Blogs() {
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
       confirmButtonText: 'Yes, delete it!',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        if (id !== undefined) {
-          deleteBlogMutation.mutateAsync(id).then(() => {
-            Swal.fire('Deleted!', 'Your blog has been deleted.', 'success');
-            // refetch is handled by query invalidation in backendProvider
-          });
+    }).then(async (result) => {
+      if (result.isConfirmed && id !== undefined) {
+        try {
+          setLoading(true);
+          await deleteBlog(id);
+          setBlogs(blogs.filter((blog) => blog.id !== id));
+          Swal.fire('Deleted!', 'Your blog has been deleted.', 'success');
+        } catch (error) {
+          Swal.fire('Error!', 'Failed to delete blog.', 'error');
+        } finally {
+          setLoading(false);
         }
       }
     });
   };
+
   return (
     <div className='flex flex-col h-full'>
       <div className=''>
-        {/* {Array.from({ length: 4 }).map((_, index) => (
-          <DisplayCard className='col-span-1' key={index} />
-        ))} */}
-        {/* <DisplayCard className='col-span-3 '>
-          <div>
-
-            <div>
-              <BlogForm />
-            </div>
-          </div>
-        </DisplayCard> */}
         <div className='flex flex-col gap-5 col-span-1 mx-8'>
           <DisplayCard className='min-h-[500px] my-5'>
             <div className='h-full flex flex-col'>
@@ -79,7 +76,6 @@ function Blogs() {
                         <th scope='col' className='px-6 py-3'>
                           Blog Title
                         </th>
-
                         <th scope='col' className='px-6 py-3'>
                           <span className='sr-only'>Delete</span>
                         </th>
@@ -88,7 +84,6 @@ function Blogs() {
                         </th>
                       </tr>
                     </thead>
-
                     <tbody>
                       {loading ? (
                         <tr>
@@ -96,8 +91,8 @@ function Blogs() {
                             <Spinner className='mx-auto' />
                           </td>
                         </tr>
-                      ) : data.length > 0 ? (
-                        data.map((blog: blogType) => (
+                      ) : blogs.length > 0 ? (
+                        blogs.map((blog: blogType) => (
                           <tr
                             className='bg-card border-b border-border hover:bg-muted transition-colors'
                             key={blog.id}
@@ -108,7 +103,6 @@ function Blogs() {
                             >
                               {blog.title}
                             </th>
-
                             <td className='px-6 py-4 text-right'>
                               <button
                                 onClick={handleDeleteBlog(blog.id)}
@@ -173,12 +167,10 @@ function Blogs() {
               </div>
             </div>
           </DisplayCard>
-          {/* <DisplayCard className='col-span-2' /> */}
-          {/* <DisplayCard className='col-span-2' /> */}
         </div>
       </div>
     </div>
   );
 }
 
-export default Blogs;
+export default BlogsClient;

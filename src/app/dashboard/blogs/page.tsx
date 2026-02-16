@@ -1,7 +1,8 @@
-'use client';
+// import { getUserBlogs } from '@/lib/blogs';
+import BlogsClient from './BlogsClient';
 
-import Blogs from './Blogs';
+export default async function DashboardBlogsPage() {
+  // const blogs = await getUserBlogs(1); // You'll need to get companyId from auth context
 
-export default function DashboardBlogsPage() {
-  return <Blogs />;
+  return <BlogsClient />;
 }

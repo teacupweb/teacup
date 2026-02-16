@@ -3,7 +3,6 @@ import {
   useDeleteInboxData,
   useDeleteInbox,
 } from '@/backendProvider';
-import DashboardHeader from '@/Components/DashboardHeader';
 import DisplayCard from '@/Components/DisplayCards';
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
@@ -86,7 +85,6 @@ export default function Inbox() {
 
   return (
     <div className='flex flex-col h-full'>
-      <DashboardHeader />
       <div className=''>
         <div className='flex flex-col gap-5 col-span-1'>
           <DisplayCard className='min-h-screen my-5'>
