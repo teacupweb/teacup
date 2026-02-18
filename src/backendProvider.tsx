@@ -4,52 +4,21 @@ import {
   useQueryClient,
   useQueries,
 } from '@tanstack/react-query';
+import { 
+  CompanyData, 
+  Blog, 
+  Inbox, 
+  InboxData, 
+  Analytics,
+  ActivityDataType,
+  InfoItemType,
+  SharingMemberType,
+  CompanyType,
+  blogType,
+  inboxType
+} from '@/types/schema';
 
 const API_URL = process.env.BACKEND || 'http://localhost:8000';
-
-// Types
-export type blogType = {
-  id?: number;
-  title: string;
-  image: string;
-  data: string;
-  owner: string;
-};
-
-export type inboxType = {
-  id?: number;
-  owner: string;
-  name: string;
-};
-
-export type ActivityDataType = {
-  day: string;
-  visits: number;
-};
-
-export type InfoItemType = {
-  icon: string;
-  title: string;
-  data: string[] | number;
-  description: string;
-};
-
-export type SharingMemberType = {
-  name: string;
-  email: string;
-  status: string;
-};
-
-export type CompanyType = {
-  id?: string;
-  name: string;
-  owner: string;
-  domain: string;
-  activity_data?: ActivityDataType[];
-  info?: InfoItemType[];
-  sharing?: SharingMemberType[];
-  key: string;
-};
 
 // Helper function for fetch requests
 async function fetchApi(endpoint: string, options: RequestInit = {}) {
@@ -95,8 +64,8 @@ export function useApiMutation<T = any, V = any>(
 
 // --- Blogs ---
 
-export function useUserBlogs(companyId: number | undefined | null) {
-  return useApiQuery(['blogs', companyId], `/dashboard/blogs/${companyId}`, {
+export function useUserBlogs(companyId: string | undefined | null) {
+  return useApiQuery<Blog[]>(['blogs', companyId], `/dashboard/blogs/${companyId}`, {
     enabled: !!companyId,
   });
 }
@@ -105,51 +74,54 @@ export function useBlog(
   companyId: string | undefined | null,
   id: string | undefined,
 ) {
-  return useApiQuery(['blog', id], `/dashboard/blogs/${companyId}/${id}`, {
+  return useApiQuery<Blog>(['blog', id], `/dashboard/blogs/${companyId}/${id}`, {
     enabled: !!companyId && !!id,
   });
 }
 
 export function useCreateBlog() {
   const queryClient = useQueryClient();
-  return useApiMutation(
-    (newBlog: blogType) =>
+  return useApiMutation<Blog, Partial<Blog>>(
+    (newBlog) =>
       fetchApi('/dashboard/blogs', {
         method: 'POST',
         body: JSON.stringify(newBlog),
       }),
     (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: ['blogs', variables.owner],
-      });
+      if (variables.ownerId) {
+        queryClient.invalidateQueries({
+          queryKey: ['blogs', variables.ownerId],
+        });
+      }
     },
   );
 }
 
 export function useUpdateBlog() {
   const queryClient = useQueryClient();
-  return useApiMutation(
-    ({ id, blog }: { id: number; blog: blogType }) =>
+  return useApiMutation<Blog, { id: string; blog: Partial<Blog> }>(
+    ({ id, blog }) =>
       fetchApi(`/dashboard/blogs/${id}`, {
         method: 'PUT',
         body: JSON.stringify(blog),
       }),
     (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: ['blogs', variables.blog.owner],
-      });
+      if (variables.blog.ownerId) {
+        queryClient.invalidateQueries({
+          queryKey: ['blogs', variables.blog.ownerId],
+        });
+      }
     },
   );
 }
 
 export function useDeleteBlog() {
   const queryClient = useQueryClient();
-  return useApiMutation(
-    (id: number) =>
+  return useApiMutation<void, string>(
+    (id) =>
       fetchApi(`/dashboard/blogs/${id}`, {
         method: 'DELETE',
       }),
-
     () => {
       queryClient.invalidateQueries({ queryKey: ['blogs'] });
     },
@@ -158,32 +130,34 @@ export function useDeleteBlog() {
 
 // --- Inbox ---
 
-export function useUserInboxes(companyId: number | undefined | null) {
-  return useApiQuery(['inboxes', companyId], `/dashboard/inbox/${companyId}`, {
+export function useUserInboxes(companyId: string | undefined | null) {
+  return useApiQuery<Inbox[]>(['inboxes', companyId], `/dashboard/inbox/${companyId}`, {
     enabled: !!companyId,
   });
 }
 
 export function useCreateInbox() {
   const queryClient = useQueryClient();
-  return useApiMutation(
-    (newInbox: inboxType) =>
+  return useApiMutation<Inbox, Partial<Inbox>>(
+    (newInbox) =>
       fetchApi('/dashboard/inbox', {
         method: 'POST',
         body: JSON.stringify(newInbox),
       }),
     (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: ['inboxes', variables.owner],
-      });
+      if (variables.ownerId) {
+        queryClient.invalidateQueries({
+          queryKey: ['inboxes', variables.ownerId],
+        });
+      }
     },
   );
 }
 
 export function useDeleteInbox() {
   const queryClient = useQueryClient();
-  return useApiMutation(
-    (id: string) =>
+  return useApiMutation<void, number>(
+    (id) =>
       fetchApi(`/dashboard/inbox/${id}`, {
         method: 'DELETE',
       }),
@@ -194,15 +168,15 @@ export function useDeleteInbox() {
 }
 
 export function useInboxData(id: number | undefined) {
-  return useApiQuery(['inboxData', id], `/dashboard/inbox/data/${id}`, {
+  return useApiQuery<InboxData[]>(['inboxData', id], `/dashboard/inbox/data/${id}`, {
     enabled: !!id,
   });
 }
 
 export function useDeleteInboxData() {
   const queryClient = useQueryClient();
-  return useApiMutation(
-    (id: number) =>
+  return useApiMutation<void, number>(
+    (id) =>
       fetchApi(`/dashboard/inbox/data/${id}`, {
         method: 'DELETE',
       }),
@@ -213,7 +187,7 @@ export function useDeleteInboxData() {
 }
 
 export function useLatestMessages(
-  companyId: number | undefined | null,
+  companyId: string | undefined | null,
   limit: number = 4,
 ) {
   // 1. Fetch all inboxes for the user
@@ -221,14 +195,14 @@ export function useLatestMessages(
     useUserInboxes(companyId);
   // 2. Fetch data for each inbox
   const inboxQueries = useQueries({
-    queries: (inboxes || []).map((inbox: inboxType) => ({
+    queries: (inboxes || []).map((inbox: Inbox) => ({
       queryKey: ['inboxData', inbox.id],
       queryFn: () => fetchApi(`/dashboard/inbox/data/${inbox.id}`),
       enabled: !!inboxes,
     })),
   });
 
-  // 3. Aggregate the last message from each inbox
+  // 3. Aggregate last message from each inbox
   const messages = inboxQueries
     .map((query, index) => {
       const inbox = inboxes ? inboxes[index] : null;
@@ -242,7 +216,7 @@ export function useLatestMessages(
       // Attach inbox info if needed
       return {
         ...lastMessage,
-        inbox: inbox, // Add inbox details to the message
+        inbox: inbox, // Add inbox details to message
       };
     })
     .filter((msg) => msg !== null) // Remove nulls (empty inboxes or loading)
@@ -262,12 +236,12 @@ export function useLatestMessages(
 
 // --- Company ---
 
-export function useCompany(companyId: number | undefined | null): {
-  data: CompanyType | undefined;
+export function useCompany(companyId: string | undefined | null): {
+  data: CompanyData | undefined;
   isLoading: boolean;
   error: unknown;
 } {
-  const data = useApiQuery(
+  const data = useApiQuery<CompanyData>(
     ['company', companyId],
     `/dashboard/company/${companyId}`,
     {
@@ -275,7 +249,7 @@ export function useCompany(companyId: number | undefined | null): {
     },
   );
   return data as {
-    data: CompanyType | undefined;
+    data: CompanyData | undefined;
     isLoading: boolean;
     error: unknown;
   };
@@ -283,8 +257,8 @@ export function useCompany(companyId: number | undefined | null): {
 
 export function useCreateCompany() {
   const queryClient = useQueryClient();
-  return useApiMutation(
-    (newCompany: CompanyType) =>
+  return useApiMutation<CompanyData, Partial<CompanyData>>(
+    (newCompany) =>
       fetchApi('/dashboard/company', {
         method: 'POST',
         body: JSON.stringify(newCompany),
@@ -298,8 +272,8 @@ export function useCreateCompany() {
 
 export function useUpdateCompany() {
   const queryClient = useQueryClient();
-  return useApiMutation(
-    ({ id, company }: { id: string; company: CompanyType }) =>
+  return useApiMutation<CompanyData, { id: string; company: Partial<CompanyData> }>(
+    ({ id, company }) =>
       fetchApi(`/dashboard/company/${id}`, {
         method: 'PUT',
         body: JSON.stringify(company),
@@ -309,6 +283,7 @@ export function useUpdateCompany() {
     },
   );
 }
+
 // --- Analytics ---
 
 export type AnalyticsEvent = 'page' | 'form' | 'button';
@@ -345,18 +320,28 @@ export function useTrackAnalytics() {
   });
 }
 
-// hold my tea
+// Legacy exports for backward compatibility
+export type { 
+  ActivityDataType, 
+  InfoItemType, 
+  SharingMemberType, 
+  CompanyType, 
+  blogType, 
+  inboxType 
+};
 
-export async function useHoldMyTea(owner: number, question: string) {
-  const response = await fetch(`${API_URL}/holdmytea/ask`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ owner, question }),
-  });
-  if (!response.ok) {
-    throw new Error(`API Error: ${response.statusText}`);
-  }
-  return response.json();
-}
+// Export new schema types
+export type { 
+  CompanyData, 
+  Blog, 
+  Inbox, 
+  InboxData, 
+  Analytics,
+  User,
+  Session,
+  Account,
+  Verification,
+  AnalyticsButton,
+  AnalyticsPage,
+  AnalyticsForm
+} from '@/types/schema';

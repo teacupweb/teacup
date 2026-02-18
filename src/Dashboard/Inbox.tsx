@@ -71,7 +71,7 @@ export default function Inbox() {
       if (result.isConfirmed) {
         try {
           if (id) {
-            await deleteInboxMutation.mutateAsync(id as string);
+            await deleteInboxMutation.mutateAsync(Number(id));
             toast.success('The inbox has been deleted.');
             navigate.push('/dashboard/Inboxes');
           }

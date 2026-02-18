@@ -1,11 +1,10 @@
-"use client";
+'use client';
 
 import DisplayCard from '@/Components/DisplayCards';
 import { useCompany, useLatestMessages } from '@/backendProvider';
 import { useAuth } from '@/AuthProvider';
 import Spinner from '@/Components/Spinner';
 import { Globe, Mail, Users, FileText } from 'lucide-react';
-import HoldMyTea from '@/Components/HoldMyTea';
 import { useAnalytics } from '@/backendProvider';
 import { useMemo } from 'react';
 
@@ -21,15 +20,16 @@ function DashboardContent() {
   // Fetch all analytics categories
   const { data: pageAnalytics, isLoading: pageLoading } = useAnalytics(
     companyId,
-    'page'
+    'page',
   );
+  console.log(pageAnalytics);
   const { data: formAnalytics, isLoading: formLoading } = useAnalytics(
     companyId,
-    'form'
+    'form',
   );
   const { data: buttonAnalytics, isLoading: buttonLoading } = useAnalytics(
     companyId,
-    'button'
+    'button',
   );
 
   // Compute stats for cards
@@ -137,7 +137,7 @@ function DashboardContent() {
         rawDate: date,
       }))
       .sort(
-        (a, b) => new Date(a.rawDate).getTime() - new Date(b.rawDate).getTime()
+        (a, b) => new Date(a.rawDate).getTime() - new Date(b.rawDate).getTime(),
       );
   }, [pageAnalytics, formAnalytics]);
 
@@ -270,7 +270,7 @@ function DashboardContent() {
                               <span className='text-muted-foreground/80 text-xs font-medium bg-muted px-2 py-1 rounded'>
                                 {message.created_at
                                   ? new Date(
-                                      message.created_at
+                                      message.created_at,
                                     ).toLocaleDateString()
                                   : message.date || 'N/A'}
                               </span>
@@ -483,7 +483,7 @@ function DashboardContent() {
                           ...(activityData.length > 0
                             ? activityData
                             : [{ visits: 0 }]
-                          ).map((d: any) => d.visits)
+                          ).map((d: any) => d.visits),
                         ).toLocaleString()}
                       </span>{' '}
                       peak visits
@@ -493,8 +493,8 @@ function DashboardContent() {
                         {Math.round(
                           activityData.reduce(
                             (sum: number, day: any) => sum + day.visits,
-                            0
-                          ) / (activityData.length || 1)
+                            0,
+                          ) / (activityData.length || 1),
                         ).toLocaleString()}
                       </span>{' '}
                       avg daily
@@ -505,7 +505,6 @@ function DashboardContent() {
             </DisplayCard>
           </div>
 
-          <HoldMyTea />
         </div>
       </div>
     </div>

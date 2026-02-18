@@ -1,9 +1,25 @@
-import { getAnalytics } from '@/lib/analytics';
+'use client';
+
+import { useAuth } from '@/AuthProvider';
+import { useAnalytics } from '@/backendProvider';
 import AnalyticsClient from './AnalyticsClient';
 
-export default async function Analytics() {
-  // You'll need to get companyId from auth context
-  const analytics = await getAnalytics('1', 'page').catch(() => null);
+export default function Analytics() {
+  const { user } = useAuth();
+  const companyId = user && typeof user !== 'string' ? user.user_metadata?.company_id : null;
+  
+  // Fetch all analytics categories like dashboard does
+  const { data: pageAnalytics, isLoading: pageLoading } = useAnalytics(companyId, 'page');
+  const { data: formAnalytics, isLoading: formLoading } = useAnalytics(companyId, 'form');
+  const { data: buttonAnalytics, isLoading: buttonLoading } = useAnalytics(companyId, 'button');
 
-  return <AnalyticsClient initialAnalytics={analytics} companyId="1" />;
+  return (
+    <AnalyticsClient 
+      companyId={companyId}
+      pageAnalytics={pageAnalytics}
+      formAnalytics={formAnalytics}
+      buttonAnalytics={buttonAnalytics}
+      isLoading={pageLoading || formLoading || buttonLoading}
+    />
+  );
 }

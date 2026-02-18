@@ -3,47 +3,41 @@
 import { useState, useMemo, useEffect } from 'react';
 import ChartAreaInteractive from './Chart';
 import DisplayCard from '@/Components/DisplayCards';
-import { Layers, TrendingUp, Users, AlertCircle } from 'lucide-react';
-import { useAuth } from '@/AuthProvider';
-import { getAnalytics, type AnalyticsEvent, type AnalyticsResponse } from '@/lib/analytics';
+import { Layers, TrendingUp, Users } from 'lucide-react';
 import Spinner from '@/Components/Spinner';
 
 interface AnalyticsClientProps {
-  initialAnalytics: AnalyticsResponse | null;
   companyId: string | null;
+  pageAnalytics?: any;
+  formAnalytics?: any;
+  buttonAnalytics?: any;
+  isLoading?: boolean;
 }
 
-function AnalyticsClient({ initialAnalytics, companyId }: AnalyticsClientProps) {
-  const [analyticsResponse, setAnalyticsResponse] = useState<AnalyticsResponse | null>(initialAnalytics);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<unknown>(null);
+function AnalyticsClient({
+  companyId,
+  pageAnalytics,
+  formAnalytics,
+  buttonAnalytics,
+  isLoading: externalLoading = false,
+}: AnalyticsClientProps) {
+  const [dataType, setDataType] = useState<'pages' | 'forms' | 'buttons'>(
+    'pages',
+  );
 
-  const [dataType, setDataType] = useState<'pages' | 'forms' | 'buttons'>('pages');
-
-  const eventMap: Record<string, AnalyticsEvent> = {
-    pages: 'page',
-    forms: 'form',
-    buttons: 'button',
-  };
-
-  const fetchAnalyticsData = async () => {
-    if (!companyId) return;
-    
-    try {
-      setIsLoading(true);
-      setError(null);
-      const data = await getAnalytics(companyId, eventMap[dataType]);
-      setAnalyticsResponse(data);
-    } catch (err) {
-      setError(err);
-    } finally {
-      setIsLoading(false);
+  // Get the appropriate analytics data based on selected type
+  const analyticsResponse = useMemo(() => {
+    switch (dataType) {
+      case 'pages':
+        return pageAnalytics;
+      case 'forms':
+        return formAnalytics;
+      case 'buttons':
+        return buttonAnalytics;
+      default:
+        return pageAnalytics;
     }
-  };
-
-  useEffect(() => {
-    fetchAnalyticsData();
-  }, [companyId, dataType]);
+  }, [dataType, pageAnalytics, formAnalytics, buttonAnalytics]);
 
   const [selectedItem, setSelectedItem] = useState<string>('');
 
@@ -82,12 +76,14 @@ function AnalyticsClient({ initialAnalytics, companyId }: AnalyticsClientProps) 
 
     Object.entries(analyticsResponse.data).forEach(([key, items]) => {
       let itemPrimary = 0;
-      items.forEach((d: any) => {
-        itemPrimary += d.primary;
-        totalPrimary += d.primary;
-        totalSecondary += d.secondary;
-        count++;
-      });
+      if (Array.isArray(items)) {
+        items.forEach((d: any) => {
+          itemPrimary += d.primary;
+          totalPrimary += d.primary;
+          totalSecondary += d.secondary;
+          count++;
+        });
+      }
       if (itemPrimary > maxVal) {
         maxVal = itemPrimary;
         topItem = key;
@@ -248,20 +244,9 @@ function AnalyticsClient({ initialAnalytics, companyId }: AnalyticsClientProps) 
         </div>
 
         <div className='w-full'>
-          {isLoading ? (
+          {externalLoading ? (
             <div className='w-full h-[400px] flex items-center justify-center bg-card rounded-2xl border border-border/80'>
               <Spinner size='lg' />
-            </div>
-          ) : error ? (
-            <div className='w-full h-[400px] flex flex-col items-center justify-center bg-card rounded-2xl border border-border/80 text-destructive gap-4'>
-              <AlertCircle className='w-12 h-12' />
-              <p className='font-semibold'>Failed to load analytics data</p>
-              <button
-                onClick={fetchAnalyticsData}
-                className='px-4 py-2 bg-rose-500 text-white rounded-lg text-sm hover:bg-rose-600 transition-colors'
-              >
-                Retry
-              </button>
             </div>
           ) : options.length === 0 ? (
             <div className='w-full h-[400px] flex flex-col items-center justify-center bg-card rounded-2xl border border-border/80 text-muted-foreground gap-4'>

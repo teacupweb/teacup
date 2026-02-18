@@ -41,7 +41,7 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
     image: '',
     data: '',
     owner: company,
-  } as blogType);
+  });
 
   const [isUploading, setIsUploading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -90,7 +90,12 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
   // Update form data when blogData is fetched
   useEffect(() => {
     if (isEditMode && blogData) {
-      setFormData(blogData);
+      setFormData({
+        title: blogData.title,
+        image: blogData.image,
+        data: blogData.data,
+        owner: blogData.ownerId,
+      });
       if (blogData.image) {
         setPreviewUrl(blogData.image);
       }
@@ -214,18 +219,14 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
       if (result.isConfirmed) {
         if (isEditMode) {
           await updateBlogMutation.mutateAsync({
-            id: Number(blogId),
-            blog: submitData as blogType,
+            id: blogId!,
+            blog: submitData,
           });
-          toast.success('Article updated successfully!');
         } else {
-          await createBlogMutation.mutateAsync(submitData as blogType);
-          toast.success('Article published successfully!');
+          await createBlogMutation.mutateAsync(submitData);
         }
-        navigate.push('/dashboard/blogs');
       }
     } catch (error) {
-      console.error('Submission error:', error);
       toast.error(
         `Failed to process your request: ${
           error instanceof Error ? error.message : 'Unknown error'

@@ -2,7 +2,7 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from '@/ThemeProvider';
-import AuthProvider from '@/AuthProvider';
+import AuthProviderBetterAuth from '@/AuthProvider';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useState } from 'react';
@@ -14,12 +14,12 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <AuthProvider>
+        <AuthProviderBetterAuth>
           <TooltipProvider>
             {children}
             <ToastContainer />
           </TooltipProvider>
-        </AuthProvider>
+        </AuthProviderBetterAuth>
       </ThemeProvider>
     </QueryClientProvider>
   );

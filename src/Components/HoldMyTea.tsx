@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { BsFillCupHotFill } from 'react-icons/bs';
 import { useState } from 'react';
@@ -6,7 +6,7 @@ import Modal, { openModal, closeModal } from '@/Components/Modal';
 import { toast } from 'react-toastify';
 import AILoadingSpinner from '@/Components/AILoadingSpinner';
 import { useAuth } from '@/AuthProvider';
-import { useHoldMyTea } from '@/backendProvider';
+// import { useHoldMyTea } from '@/backendProvider';
 // import { useMutation } from '@tanstack/react-query';
 
 // const API_URL = import.meta.env.VITE_BACKEND;
@@ -36,8 +36,25 @@ export default function HoldMyTea() {
     setIsAILoading(true);
 
     try {
-      // Call the API
-      const res = await useHoldMyTea(company, prompt);
+      // Call the API - replace with actual fetch call
+      const API_URL =
+        process.env.NEXT_PUBLIC_BACKEND || 'http://localhost:8000';
+      const response = await fetch(`${API_URL}/api/hold-my-tea`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          company,
+          prompt,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to process request');
+      }
+
+      const res = await response.json();
       console.log(res);
       // Success - show success modal
       setIsAILoading(false);

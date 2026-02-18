@@ -1,4 +1,4 @@
-'use  client';
+'use client';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/AuthProvider';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -11,9 +11,12 @@ import {
   LogOut,
   Users,
 } from 'lucide-react';
-import { useCompany, type CompanyType } from '@/backendProvider';
+import {
+  useCompany,
+  type CompanyData,
+  type CompanyType,
+} from '@/backendProvider';
 import Spinner from '@/Components/Spinner';
-import supabase from '@/supabaseClient';
 import { toast } from 'react-toastify';
 
 const API_URL = process.env.NEXT_PUBLIC_BACKEND;
@@ -38,7 +41,9 @@ export default function Welcome() {
       ? Number(searchParams.get('company'))
       : null;
   const company = useCompany(
-    referralCompanyId && !isNaN(referralCompanyId) ? referralCompanyId : null,
+    referralCompanyId && !isNaN(referralCompanyId)
+      ? referralCompanyId.toString()
+      : null,
   );
 
   useEffect(() => {
@@ -91,9 +96,12 @@ export default function Welcome() {
       }
       setReferralProcessing(false);
     }
-    // Check if user has company_id in metadata
+    // Check if user has company_id stored in localStorage (Better Auth)
     if (user && typeof user !== 'string') {
-      const companyId = user.user_metadata?.company_id;
+      const companyInfo = localStorage.getItem('companyInfo');
+      const companyId = companyInfo
+        ? JSON.parse(companyInfo)?.company_id
+        : null;
       if (companyId) {
         // User already has a company, redirect to dashboard
         navigate.push('/dashboard');
@@ -172,9 +180,7 @@ export default function Welcome() {
         sharing: [
           {
             name:
-              user && typeof user !== 'string'
-                ? user.user_metadata?.name || 'Owner'
-                : 'Owner',
+              user && typeof user !== 'string' ? user.name || 'Owner' : 'Owner',
             email: formData.owner,
             status: 'Owner',
           },
@@ -201,27 +207,10 @@ export default function Welcome() {
       // Update user metadata with company_id
       await updateUserCompanyInfo(createdCompany);
 
-      // Wait for auth state to update before navigating
-      // This ensures the Dashboard will have the updated user data
-      const unsubscribe = supabase.auth.onAuthStateChange(
-        async (_event, session) => {
-          if (session?.user?.user_metadata?.company_id === createdCompany.id) {
-            console.log('Auth state updated with company_id, navigating...');
-            unsubscribe.data.subscription.unsubscribe();
-            // Small delay to ensure everything is settled
-            setTimeout(() => {
-              navigate.push('/dashboard');
-            }, 300);
-          }
-        },
-      );
-
-      // Fallback: If auth state doesn't update within 3 seconds, navigate anyway
+      // Wait a moment for state to update before navigating
       setTimeout(() => {
-        unsubscribe.data.subscription.unsubscribe();
-        console.log('Timeout reached, navigating to dashboard...');
         navigate.push('/dashboard');
-      }, 3000);
+      }, 300);
     } catch (error) {
       console.error('Error creating company:', error);
       toast.error(
@@ -325,27 +314,6 @@ export default function Welcome() {
               />
             </div>
 
-            {/* Owner Email */}
-            <div className='space-y-2'>
-              <label className='text-sm font-medium text-foreground/80 flex items-center gap-2'>
-                <Mail className='w-4 h-4 text-rose-500' />
-                Owner Email
-              </label>
-              <input
-                type='email'
-                name='owner'
-                value={formData.owner}
-                onChange={handleChange}
-                required
-                className='w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-rose-500 focus:outline-none transition-colors bg-gray-50'
-                placeholder='owner@acme.com'
-                readOnly
-              />
-              <p className='text-xs text-muted-foreground'>
-                This is automatically set to your account email
-              </p>
-            </div>
-
             {/* Submit Button */}
             <button
               type='submit'
@@ -398,7 +366,7 @@ export default function Welcome() {
           <button
             onClick={() => {
               logout();
-              navigate.push('/login');
+              navigate.push('/auth/login');
             }}
             className='text-sm text-muted-foreground hover:text-rose-500 font-medium flex items-center gap-1 transition-colors'
           >

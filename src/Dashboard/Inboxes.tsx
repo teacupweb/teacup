@@ -37,10 +37,10 @@ export default function Inboxes() {
     }
 
     try {
-      const inboxData: inboxType = {
+      const inboxData = {
         name: name,
-        owner:
-          user !== 'userNotFound' && user?.user_metadata.company_id
+        ownerId:
+          user !== 'userNotFound' && user?.user_metadata?.company_id
             ? user.user_metadata.company_id
             : '',
       };
@@ -119,7 +119,7 @@ export default function Inboxes() {
                           </td>
                         </tr>
                       ) : data.length > 0 ? (
-                        data.map((inbox: inboxType) => (
+                        data.map((inbox) => (
                           <tr
                             key={inbox.id}
                             className='bg-card border-b border-border hover:bg-muted transition-colors'

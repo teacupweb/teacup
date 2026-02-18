@@ -2,260 +2,212 @@
 
 Teacup is a 100% no-code SaaS platform for retail, ecommerce, and service businesses who want a powerful website without technical headaches. Launch a fast, professional site that boosts customer acquisition automatically.
 
+## 🎯 What Teacup Can Do
+
+Teacup is designed to be a comprehensive website management platform that enables businesses to:
+
+- **Create and Manage Websites** - Build professional websites without coding knowledge
+- **Blog Management** - Create, edit, and publish blog posts with a rich text editor
+- **Customer Communication** - Manage multiple contact inboxes to handle customer inquiries
+- **Analytics Tracking** - Monitor website performance with detailed analytics dashboards
+- **AI-Powered Assistance** - Get help with website tasks through the "Hold My Tea" AI assistant
+- **Multi-User Collaboration** - Share website access with team members
+- **Custom Domains** - Connect your own domain to your Teacup-powered website
+- **Subscription Management** - Offer monthly or lifetime subscription plans
+
+## ✅ What's Currently Implemented
+
+### Public Features (Fully Functional)
+
+- ✅ **Landing Page** - Professional homepage with hero section and call-to-action
+- ✅ **Authentication System** - Complete user registration and login via Supabase
+- ✅ **About Page** - Company information and mission statement
+- ✅ **Pricing Page** - Display of subscription plans (Monthly $40/month, Lifetime $500)
+- ✅ **Blog Listing** - Public blog posts with category filtering (demo data)
+- ✅ **Individual Blog Posts** - Full blog post view with author info (demo data)
+- ✅ **Responsive Design** - Mobile-friendly interface across all pages
+- ✅ **Theme Support** - Dark/light mode toggle
+
+### Dashboard Features (Backend-Connected)
+
+- ✅ **Main Dashboard** - Overview of company data, recent messages, and blog posts
+- ✅ **Blog Management** - Full CRUD operations for blog posts
+  - Create new blog posts with rich text editor (Quill)
+  - Edit existing blog posts
+  - Delete blog posts
+  - View all user blogs
+- ✅ **Inbox Management** - Complete inbox system
+  - Create multiple inboxes for different purposes
+  - View messages in each inbox
+  - Delete inboxes and messages
+  - Latest messages overview on dashboard
+- ✅ **Analytics Dashboard** - Track website performance
+  - Page view analytics
+  - Form submission tracking
+  - Button click tracking
+  - Interactive charts with date range filtering
+- ✅ **Company Management** - Manage company information and settings
+- ✅ **AI Assistant ("Hold My Tea")** - AI-powered help for website tasks
+- ✅ **Settings Page** - User preferences and profile management
+
+### Demo/Placeholder Features (Not Yet Connected)
+
+- ⚠️ **Contact Form** - Form UI exists but doesn't submit to backend
+- ⚠️ **Checkout Page** - Payment form UI exists but no payment processing
+- ⚠️ **Order Free Site** - Form exists but doesn't process orders
+- ⚠️ **Welcome Page** - Onboarding UI exists but limited functionality
+
 ## 🚀 Tech Stack
 
-- **Frontend**: Next.js 16 with TypeScript
-- **Styling**: TailwindCSS with custom components
-- **State Management**: React Query (@tanstack/react-query)
-- **Authentication**: Supabase Auth
-- **UI Components**: Radix UI + Lucide Icons
-- **Backend API**: Custom REST API (configured via BACKEND env var)
+### Frontend
+
+- **Framework**: Next.js 16 (App Router) with TypeScript
+- **Styling**: TailwindCSS v4 with custom components
+- **State Management**: React Query (@tanstack/react-query) for server state
+- **UI Components**:
+  - Radix UI primitives for accessibility
+  - Custom shadcn/ui inspired components
+  - Lucide React icons
+- **Rich Text Editor**: Quill for blog post creation
+- **Charts**: Recharts for analytics visualization
+- **Forms**: React Hook Form with Zod validation
+- **Notifications**: Sonner toast notifications
+
+### Backend Integration
+
+- **Authentication**: Supabase Auth (fully integrated)
+- **API**: Custom REST API (configured via BACKEND env var)
+- **Data Fetching**: React Query with automatic caching and revalidation
+
+### Development Tools
+
+- **Language**: TypeScript
+- **Linting**: ESLint
+- **Package Manager**: npm
 
 ## 📁 Project Structure
 
 ```
 src/
-├── app/                    # Next.js App Router pages
-│   ├── (auth)/            # Authentication pages
-│   ├── dashboard/         # Protected dashboard routes
-│   └── [public-routes]    # Public pages
-├── Components/            # Reusable UI components
-├── Dashboard/             # Dashboard-specific components
-├── backendProvider.tsx    # API integration layer
-└── AuthProvider.tsx       # Authentication context
+├── app/                          # Next.js App Router
+│   ├── page.tsx                 # Landing page
+│   ├── layout.tsx               # Root layout
+│   ├── providers.tsx            # React Query & Theme providers
+│   ├── auth/                    # Authentication pages
+│   │   ├── login/              # Login page
+│   │   └── signup/             # Signup page
+│   ├── dashboard/              # Protected dashboard routes
+│   │   ├── page.tsx            # Main dashboard
+│   │   ├── layout.tsx          # Dashboard layout with sidebar
+│   │   ├── analytics/          # Analytics dashboard
+│   │   ├── blogs/              # Blog management
+│   │   │   ├── new/           # Create new blog
+│   │   │   └── edit/[id]/     # Edit blog
+│   │   ├── inboxes/           # Inbox management
+│   │   │   └── [id]/          # Individual inbox view
+│   │   └── settings/          # Settings page
+│   ├── blogs/                  # Public blog pages
+│   │   ├── page.tsx           # Blog listing
+│   │   └── [id]/              # Individual blog post
+│   ├── about/                  # About page
+│   ├── contact/                # Contact page
+│   ├── pricing/                # Pricing page
+│   ├── checkout/               # Checkout page
+│   ├── order-site/             # Free site order page
+│   └── welcome/                # Welcome/onboarding page
+├── components/                  # Reusable UI components
+│   ├── ui/                     # Base UI components (buttons, cards, etc.)
+│   ├── app-sidebar.tsx         # Dashboard sidebar
+│   ├── dashboard-content.tsx   # Main dashboard content
+│   ├── data-table.tsx          # Reusable data table
+│   └── chart-area-interactive.tsx # Interactive charts
+├── Components/                  # Legacy components (mixed case)
+│   ├── Navbar.tsx              # Main navigation
+│   ├── Footer.tsx              # Page footer
+│   ├── HoldMyTea.tsx           # AI assistant component
+│   ├── Modal.tsx               # Modal component
+│   └── ThemeToggle.tsx         # Theme switcher
+├── Dashboard/                   # Dashboard-specific components
+│   ├── Dashboard.tsx           # Dashboard wrapper
+│   ├── Inboxes.tsx            # Inbox list component
+│   ├── Inbox.tsx              # Individual inbox component
+│   └── Analytics/             # Analytics components
+│       ├── Analytics.tsx      # Analytics wrapper
+│       ├── AnalyticsClient.tsx # Analytics client component
+│       └── Chart.tsx          # Chart component
+├── lib/                        # Utility libraries
+│   ├── analytics.ts           # Analytics utilities
+│   ├── blogs.ts               # Blog utilities
+│   └── utils.ts               # General utilities
+├── hooks/                      # Custom React hooks
+│   └── use-mobile.ts          # Mobile detection hook
+├── backendProvider.tsx         # API integration layer (React Query)
+├── AuthProvider.tsx            # Authentication context
+├── ThemeProvider.tsx           # Theme context
+├── supabaseClient.ts           # Supabase client configuration
+└── envData.ts                  # Environment variables
+
+public/
+├── Assets/                     # Static assets
+│   ├── icon.png               # App icon
+│   ├── icon-beside.png        # Alternative icon
+│   └── favicon.ico            # Favicon
+├── _redirects                  # Netlify redirects
+└── netlify.toml               # Netlify configuration
 ```
 
-## 🛣️ Routes Documentation
+## 🔌 Backend API Integration
 
-### Public Routes
-
-#### `/` - Homepage
-- **Description**: Landing page with hero section and call-to-action
-- **Backend Required**: ❌ No
-- **Components**: Uses `Navbar`, `Footer`
-- **Features**: 
-  - Hero section with "Get Started" button
-  - Forces light theme
-  - Links to authentication
-
-#### `/auth/login` - Login Page
-- **Description**: User authentication login
-- **Backend Required**: ✅ Yes (Supabase Auth)
-- **Components**: Uses `AuthPage` with `isLogin={true}`
-- **Features**: Email/password login, social auth options
-
-#### `/auth/signup` - Signup Page  
-- **Description**: New user registration
-- **Backend Required**: ✅ Yes (Supabase Auth)
-- **Components**: Uses `AuthPage` with `isLogin={false}`
-- **Features**: User registration, email verification
-
-#### `/blogs` - Blog Listing
-- **Description**: Public blog posts listing
-- **Backend Required**: ❌ No (uses demo data)
-- **Components**: Uses `Navbar`, `Footer`
-- **Features**: 
-  - Grid layout of blog posts
-  - Category filtering
-  - Read time indicators
-  - Demo blog data (6 posts)
-
-#### `/blogs/[id]` - Individual Blog Post
-- **Description**: Single blog post view
-- **Backend Required**: ❌ No (uses demo data)
-- **Components**: Uses `Navbar`, `Footer`
-- **Features**: 
-  - Full blog post content
-  - Author information
-  - Related posts navigation
-  - Demo content for 6 blog posts
-
-#### `/about` - About Page
-- **Description**: Company information and mission
-- **Backend Required**: ❌ No
-- **Components**: Uses `Navbar`, `Footer`
-- **Features**: Static content about Teacup
-
-#### `/contact` - Contact Page
-- **Description**: Contact form and information
-- **Backend Required**: ❌ No (form is not functional)
-- **Components**: Uses `Navbar`, `Footer`
-- **Features**: 
-  - Contact form (demo only)
-  - Contact information display
-  - Social media links
-
-#### `/pricing` - Pricing Page
-- **Description**: Subscription plans and pricing
-- **Backend Required**: ❌ No
-- **Components**: Uses `Navbar`, `Footer`
-- **Features**: 
-  - Monthly ($40/month) and Lifetime ($500 one-time) plans
-  - Feature comparison
-  - Links to checkout
-  - Free site order banner
-
-#### `/checkout` - Checkout Page
-- **Description**: Payment processing for subscriptions
-- **Backend Required**: ⚠️ Partial (user auth only)
-- **Components**: Uses `Navbar`, `Footer`
-- **Features**: 
-  - Requires authentication
-  - Plan selection from URL params
-  - Payment form (demo only - no actual processing)
-  - Order summary
-- **Backend Dependencies**:
-  - `useAuth()` for user authentication
-  - Query params: `?plan=monthly|lifetime`
-
-#### `/order-site` - Free Site Order
-- **Description**: Order a free website
-- **Backend Required**: ❌ No (form is not functional)
-- **Components**: Uses `Navbar`, `Footer`
-- **Features**: 
-  - Site details form (demo only)
-  - Industry selection
-  - Features overview
-  - Authentication is commented out (accessible to all)
-
-#### `/welcome` - Welcome Page
-- **Description**: Post-registration welcome
-- **Backend Required**: ❌ No
-- **Components**: Uses `Welcome` component
-- **Features**: Onboarding and introduction
-
-### Dashboard Routes (Protected)
-
-All dashboard routes require authentication and use the dashboard layout.
-
-#### `/dashboard` - Main Dashboard
-- **Description**: Primary dashboard interface
-- **Backend Required**: ✅ Yes
-- **Components**: Uses `Dashboard` component
-- **Backend Dependencies**:
-  - `useCompany(companyId)` - Company information
-  - `useLatestMessages(companyId)` - Recent inbox messages
-  - `useUserBlogs(companyId)` - User's blog posts
-  - `useUserInboxes(companyId)` - User's inboxes
-
-#### `/dashboard/analytics` - Analytics Dashboard
-- **Description**: Website analytics and metrics
-- **Backend Required**: ✅ Yes
-- **Components**: Uses `Analytics` component
-- **Backend Dependencies**:
-  - `useAnalytics(owner, event)` - Analytics data
-    - Event types: 'page', 'form', 'button'
-  - `useTrackAnalytics()` - Track analytics events
-- **API Endpoints**:
-  - `GET /api/analytics/${owner}?event=${event}`
-  - `POST /api/analytics`
-
-#### `/dashboard/blogs` - Blog Management
-- **Description**: Manage blog posts
-- **Backend Required**: ✅ Yes
-- **Components**: Uses `Blogs` component
-- **Backend Dependencies**:
-  - `useUserBlogs(companyId)` - Fetch user's blogs
-  - `useDeleteBlog()` - Delete blog functionality
-- **API Endpoints**:
-  - `GET /dashboard/blogs/${companyId}`
-
-#### `/dashboard/blogs/new` - Create Blog
-- **Description**: Create new blog post
-- **Backend Required**: ✅ Yes
-- **Components**: Uses `NewBlog` component
-- **Backend Dependencies**:
-  - `useCreateBlog()` - Create new blog
-- **API Endpoints**:
-  - `POST /dashboard/blogs`
-
-#### `/dashboard/blogs/edit/[id]` - Edit Blog
-- **Description**: Edit existing blog post
-- **Backend Required**: ✅ Yes
-- **Components**: Uses `NewBlog` component with `isEditMode`
-- **Backend Dependencies**:
-  - `useBlog(companyId, id)` - Fetch specific blog
-  - `useUpdateBlog()` - Update blog functionality
-- **API Endpoints**:
-  - `GET /dashboard/blogs/${companyId}/${id}`
-  - `PUT /dashboard/blogs/${id}`
-
-#### `/dashboard/inboxes` - Inbox Management
-- **Description**: Manage contact inboxes
-- **Backend Required**: ✅ Yes
-- **Components**: Uses `Inboxes` component
-- **Backend Dependencies**:
-  - `useUserInboxes(companyId)` - Fetch user's inboxes
-  - `useCreateInbox()` - Create new inbox
-  - `useDeleteInbox()` - Delete inbox
-- **API Endpoints**:
-  - `GET /dashboard/inbox/${companyId}`
-  - `POST /dashboard/inbox`
-  - `DELETE /dashboard/inbox/${id}`
-
-#### `/dashboard/inboxes/[id]` - Individual Inbox
-- **Description**: View specific inbox messages
-- **Backend Required**: ✅ Yes
-- **Components**: Uses `Inbox` component
-- **Backend Dependencies**:
-  - `useInboxData(id)` - Fetch inbox messages
-  - `useDeleteInboxData()` - Delete inbox messages
-- **API Endpoints**:
-  - `GET /dashboard/inbox/data/${id}`
-  - `DELETE /dashboard/inbox/data/${id}`
-
-#### `/dashboard/settings` - Settings
-- **Description**: User and application settings
-- **Backend Required**: ⚠️ Partial
-- **Components**: Uses `Settings` component
-- **Features**: Profile settings, preferences (backend integration may be partial)
-
-## 🔌 Backend Provider API
-
-The `backendProvider.tsx` file contains all API integration hooks using React Query.
+The [`backendProvider.tsx`](src/backendProvider.tsx:1) file contains all API integration hooks using React Query.
 
 ### API Configuration
+
 - **Base URL**: `process.env.BACKEND || 'http://localhost:8000'`
-- **Authentication**: Uses Supabase auth tokens
-- **Data Fetching**: React Query for caching and state management
+- **Authentication**: Uses Supabase auth tokens in request headers
+- **Caching**: React Query handles automatic caching and revalidation
 
 ### Available API Hooks
 
 #### Blog Management
+
 ```typescript
-useUserBlogs(companyId)           // GET /dashboard/blogs/${companyId}
-useBlog(companyId, id)           // GET /dashboard/blogs/${companyId}/${id}
-useCreateBlog()                  // POST /dashboard/blogs
-useUpdateBlog()                  // PUT /dashboard/blogs/${id}
-useDeleteBlog()                  // DELETE /dashboard/blogs/${id}
+useUserBlogs(companyId); // GET /dashboard/blogs/${companyId}
+useBlog(companyId, id); // GET /dashboard/blogs/${companyId}/${id}
+useCreateBlog(); // POST /dashboard/blogs
+useUpdateBlog(); // PUT /dashboard/blogs/${id}
+useDeleteBlog(); // DELETE /dashboard/blogs/${id}
 ```
 
 #### Inbox Management
+
 ```typescript
-useUserInboxes(companyId)        // GET /dashboard/inbox/${companyId}
-useCreateInbox()                 // POST /dashboard/inbox
-useDeleteInbox()                 // DELETE /dashboard/inbox/${id}
-useInboxData(id)                 // GET /dashboard/inbox/data/${id}
-useDeleteInboxData()             // DELETE /dashboard/inbox/data/${id}
-useLatestMessages(companyId, limit) // Aggregated latest messages
+useUserInboxes(companyId); // GET /dashboard/inbox/${companyId}
+useCreateInbox(); // POST /dashboard/inbox
+useDeleteInbox(); // DELETE /dashboard/inbox/${id}
+useInboxData(id); // GET /dashboard/inbox/data/${id}
+useDeleteInboxData(); // DELETE /dashboard/inbox/data/${id}
+useLatestMessages(companyId, limit); // Aggregated latest messages
 ```
 
 #### Company Management
+
 ```typescript
-useCompany(companyId)             // GET /dashboard/company/${companyId}
-useCreateCompany()               // POST /dashboard/company
-useUpdateCompany()               // PUT /dashboard/company/${id}
+useCompany(companyId); // GET /dashboard/company/${companyId}
+useCreateCompany(); // POST /dashboard/company
+useUpdateCompany(); // PUT /dashboard/company/${id}
 ```
 
 #### Analytics
+
 ```typescript
-useAnalytics(owner, event)       // GET /api/analytics/${owner}?event=${event}
-useTrackAnalytics()              // POST /api/analytics
+useAnalytics(owner, event); // GET /api/analytics/${owner}?event=${event}
+useTrackAnalytics(); // POST /api/analytics
 ```
 
 #### AI Assistant
+
 ```typescript
-useHoldMyTea(owner, question)    // POST /holdmytea/ask
+useHoldMyTea(owner, question); // POST /holdmytea/ask
 ```
 
 ### Data Types
@@ -285,103 +237,293 @@ export type CompanyType = {
   sharing?: SharingMemberType[];
   key: string;
 };
+
+export type ActivityDataType = {
+  day: string;
+  visits: number;
+};
+
+export type InfoItemType = {
+  icon: string;
+  title: string;
+  data: string[] | number;
+  description: string;
+};
+
+export type SharingMemberType = {
+  name: string;
+  email: string;
+  status: string;
+};
 ```
 
 ## 🏗️ Development Setup
 
-1. **Install dependencies**:
+### Prerequisites
+
+- Node.js (Latest LTS version recommended)
+- npm or yarn
+- Supabase account (for authentication)
+- Backend API server (optional for full functionality)
+
+### Installation
+
+1. **Clone the repository**:
+
+   ```bash
+   git clone <repository-url>
+   cd teacupnet
+   ```
+
+2. **Install dependencies**:
+
    ```bash
    npm install
    ```
 
-2. **Environment variables**:
+3. **Environment variables**:
+   Create a `.env.local` file in the root directory:
+
    ```env
-   BACKEND=http://localhost:8000  # Your backend API URL
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   # Backend API URL (optional - defaults to localhost:8000)
+   BACKEND=http://localhost:8000
+
+   # Supabase Configuration (required for authentication)
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_key
+   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
    ```
 
-3. **Run development server**:
+4. **Run development server**:
+
    ```bash
    npm run dev
    ```
 
-4. **Build for production**:
+   The application will be available at `http://localhost:3000`
+
+5. **Build for production**:
    ```bash
    npm run build
    npm start
    ```
 
+### Development Commands
+
+```bash
+npm run dev      # Start development server
+npm run build    # Build for production
+npm start        # Start production server
+npm run lint     # Run ESLint
+```
+
 ## 🔐 Authentication
 
-The application uses Supabase for authentication:
-- **Provider**: `AuthProvider.tsx`
-- **Protected Routes**: All `/dashboard/*` routes
-- **Auth Pages**: `/auth/login`, `/auth/signup`
-- **User State**: Managed via React Context
+The application uses Supabase for authentication with the following features:
+
+- **Email/Password Authentication** - Traditional login/signup
+- **Social Authentication** - Support for OAuth providers (configurable in Supabase)
+- **Session Management** - Automatic token refresh and session persistence
+- **Protected Routes** - All `/dashboard/*` routes require authentication
+- **Auth Context** - Global authentication state via [`AuthProvider.tsx`](src/AuthProvider.tsx:1)
+
+### Authentication Flow
+
+1. User signs up or logs in via [`/auth/login`](src/app/auth/login/page.tsx:1) or [`/auth/signup`](src/app/auth/signup/page.tsx:1)
+2. Supabase handles authentication and returns user session
+3. Session token is stored and used for API requests
+4. Protected routes check authentication status before rendering
+5. Unauthenticated users are redirected to login page
 
 ## 🎨 UI Components
 
-The application uses a custom component system built with:
-- **TailwindCSS** for styling
-- **Radix UI** for accessible primitives
-- **Lucide React** for icons
-- **shadcn/ui** inspired components
+The application uses a comprehensive component system:
 
-### Key Components
-- `Navbar` - Navigation header
-- `Footer` - Page footer
-- `ThemeToggle` - Dark/light mode toggle
-- `Modal` - Reusable modal component
-- `Spinner` - Loading states
-- `DisplayCards` - Card grid layouts
+### Base Components (shadcn/ui inspired)
 
-## 📊 Features
+- [`Button`](src/components/ui/button.tsx:1) - Various button styles and sizes
+- [`Card`](src/components/ui/card.tsx:1) - Content containers
+- [`Input`](src/components/ui/input.tsx:1) - Form inputs
+- [`Select`](src/components/ui/select.tsx:1) - Dropdown selects
+- [`Table`](src/components/ui/table.tsx:1) - Data tables
+- [`Tabs`](src/components/ui/tabs.tsx:1) - Tabbed interfaces
+- [`Modal/Dialog`](src/components/ui/drawer.tsx:1) - Modal dialogs
+- [`Tooltip`](src/components/ui/tooltip.tsx:1) - Hover tooltips
+- [`Avatar`](src/components/ui/avatar.tsx:1) - User avatars
+- [`Badge`](src/components/ui/badge.tsx:1) - Status badges
+- [`Checkbox`](src/components/ui/checkbox.tsx:1) - Checkboxes
+- [`Separator`](src/components/ui/separator.tsx:1) - Visual dividers
+- [`Skeleton`](src/components/ui/skeleton.tsx:1) - Loading skeletons
 
-### Public Features
-- Responsive design
-- Dark/light theme support
-- Blog system (demo data)
-- Contact forms (demo)
-- Pricing page
-- Free site ordering (demo)
+### Custom Components
 
-### Dashboard Features
-- Blog CRUD operations
-- Inbox management
-- Analytics dashboard
-- Company management
-- Settings management
-- AI assistant integration
+- [`Navbar`](src/Components/Navbar.tsx:1) - Main navigation header
+- [`Footer`](src/Components/Footer.tsx:1) - Page footer
+- [`ThemeToggle`](src/Components/ThemeToggle.tsx:1) - Dark/light mode switcher
+- [`HoldMyTea`](src/Components/HoldMyTea.tsx:1) - AI assistant interface
+- [`Modal`](src/Components/Modal.tsx:1) - Custom modal system
+- [`Spinner`](src/Components/Spinner.tsx:1) - Loading indicators
+- [`AILoadingSpinner`](src/Components/AILoadingSpinner.tsx:1) - AI-specific loading animation
+
+### Dashboard Components
+
+- [`app-sidebar`](src/components/app-sidebar.tsx:1) - Dashboard sidebar navigation
+- [`dashboard-content`](src/components/dashboard-content.tsx:1) - Main dashboard layout
+- [`data-table`](src/components/data-table.tsx:1) - Advanced data table with sorting/filtering
+- [`chart-area-interactive`](src/components/chart-area-interactive.tsx:1) - Interactive analytics charts
+
+## 📊 Key Features Breakdown
+
+### 1. Blog Management System
+
+- **Rich Text Editor**: Quill-based editor with formatting options
+- **Image Upload**: Support for blog post images
+- **CRUD Operations**: Create, read, update, delete blog posts
+- **Draft System**: Save drafts before publishing
+- **Category Support**: Organize blogs by categories
+- **Public View**: Separate public-facing blog pages
+
+### 2. Inbox Management
+
+- **Multiple Inboxes**: Create separate inboxes for different purposes
+- **Message Viewing**: View all messages in each inbox
+- **Message Management**: Delete individual messages or entire inboxes
+- **Dashboard Integration**: Latest messages shown on main dashboard
+- **Real-time Updates**: React Query keeps data fresh
+
+### 3. Analytics Dashboard
+
+- **Event Tracking**: Track page views, form submissions, button clicks
+- **Interactive Charts**: Recharts-powered visualizations
+- **Date Range Filtering**: View analytics for specific time periods
+- **Multiple Event Types**: Separate tracking for different event types
+- **Visual Insights**: Area charts, bar charts, and trend lines
+
+### 4. AI Assistant ("Hold My Tea")
+
+- **Natural Language Interface**: Ask questions in plain English
+- **Website Help**: Get assistance with website-related tasks
+- **Modal Interface**: Clean, focused interaction design
+- **Loading States**: Visual feedback during AI processing
+- **Success Notifications**: Confirmation when tasks complete
+
+### 5. Company Management
+
+- **Company Profiles**: Store company information
+- **Domain Management**: Connect custom domains
+- **Activity Tracking**: Monitor company activity
+- **Team Collaboration**: Share access with team members
+- **Settings Management**: Configure company preferences
 
 ## 🚀 Deployment
 
-The application is configured for deployment on Netlify (based on `.netlify/` directory presence).
+### Netlify Deployment (Recommended)
 
-### Build Configuration
-- **Framework**: Next.js
-- **Build Command**: `npm run build`
-- **Output Directory**: `.next`
-- **Node Version**: Latest LTS
+The project is pre-configured for Netlify deployment:
 
-## 📝 Notes
+1. **Connect Repository**: Link your Git repository to Netlify
+2. **Configure Build Settings**:
+   - Build command: `npm run build`
+   - Publish directory: `.next`
+   - Node version: 18.x or higher
+3. **Environment Variables**: Add all required environment variables in Netlify dashboard
+4. **Deploy**: Netlify will automatically build and deploy
 
-- Some forms are demo-only and don't connect to backend
-- Blog system uses static demo data
-- Payment processing is demo-only
-- Authentication is fully functional with Supabase
-- Dashboard features require backend API integration
-- The application uses TypeScript for type safety
+Configuration files:
+
+- [`public/_redirects`](public/_redirects:1) - Handles client-side routing
+- [`public/netlify.toml`](public/netlify.toml:1) - Netlify-specific configuration
+
+### Other Deployment Options
+
+The application can also be deployed to:
+
+- **Vercel** - Native Next.js support
+- **AWS Amplify** - Full-stack deployment
+- **Docker** - Containerized deployment
+- **Traditional Hosting** - Build and serve static files
+
+## 📝 Current Limitations & Future Enhancements
+
+### Current Limitations
+
+- Payment processing is not implemented (checkout page is UI only)
+- Contact form doesn't submit to backend
+- Free site order form is not functional
+- Some demo data is hardcoded (public blog posts)
+- Welcome page has limited functionality
+
+### Planned Enhancements
+
+- [ ] Stripe/PayPal payment integration
+- [ ] Functional contact form with email notifications
+- [ ] Website builder interface
+- [ ] Template marketplace
+- [ ] Advanced SEO tools
+- [ ] Email marketing integration
+- [ ] Custom form builder
+- [ ] E-commerce functionality
+- [ ] Multi-language support
+- [ ] Advanced analytics (conversion tracking, A/B testing)
+
+## 🔧 Configuration
+
+### Theme Configuration
+
+The application supports dark and light themes via [`ThemeProvider.tsx`](src/ThemeProvider.tsx:1). Theme preference is persisted in localStorage.
+
+### API Configuration
+
+Backend API URL is configured via environment variable:
+
+```typescript
+const API_URL = process.env.BACKEND || 'http://localhost:8000';
+```
+
+### Supabase Configuration
+
+Supabase client is configured in [`supabaseClient.ts`](src/supabaseClient.ts:1) using environment variables.
 
 ## 🤝 Contributing
 
+Contributions are welcome! Please follow these steps:
+
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+### Development Guidelines
+
+- Follow TypeScript best practices
+- Use existing component patterns
+- Write meaningful commit messages
+- Test thoroughly before submitting PR
+- Update documentation for new features
 
 ## 📄 License
 
 [Add your license information here]
+
+## 🆘 Support
+
+For support, please:
+
+- Open an issue on GitHub
+- Contact the development team
+- Check the documentation
+
+## 🙏 Acknowledgments
+
+- Built with Next.js and React
+- UI components inspired by shadcn/ui
+- Icons by Lucide and Tabler Icons
+- Authentication by Supabase
+- Charts by Recharts
+
+---
+
+**Version**: 0.0.0  
+**Last Updated**: February 2026  
+**Status**: Active Development

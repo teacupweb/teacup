@@ -1,56 +1,46 @@
 'use client';
-import './index.css';
 import React, { useState, useEffect, useContext, createContext } from 'react';
-import {
-  type Session,
-  type User,
-  type UserResponse,
-} from '@supabase/supabase-js';
-import supabase from './supabaseClient';
+import { authClient } from '@/lib/auth-client';
 import Spinner from '@/Components/Spinner';
-import type { CompanyType } from './backendProvider';
+import type { CompanyData } from '@/types/schema';
+
 interface valueType {
-  session: Session | null;
-  user: User | null | 'userNotFound';
+  session: any | null;
+  user: any | null | 'userNotFound';
   signUpUser: (
     email: string,
     password: string,
     name: string,
-  ) => Promise<UserResponse>;
+  ) => Promise<any>;
   loginUser: (email: string, password: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
-  updateUserCompanyInfo: (data: CompanyType) => Promise<void>;
+  updateUserCompanyInfo: (data: CompanyData) => Promise<void>;
   logout: () => Promise<void> | void;
 }
 
 export const authContext = createContext({} as valueType);
 export const useAuth = () => useContext(authContext);
-export default function AuthProvider({ children }: React.PropsWithChildren) {
-  const [session, setSession] = useState<Session | null>(null);
-  const [user, setUser] = useState<User | null | 'userNotFound'>(null);
+
+export default function AuthProviderBetterAuth({ children }: React.PropsWithChildren) {
+  const [session, setSession] = useState<any>(null);
+  const [user, setUser] = useState<any | null | 'userNotFound'>('userNotFound');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const getSession = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      setSession(session);
-      setUser(session?.user ?? 'userNotFound');
-      setLoading(false);
+      try {
+        const { data: sessionData } = await authClient.getSession();
+        setSession(sessionData);
+        setUser(sessionData?.user || 'userNotFound');
+      } catch (error) {
+        console.error('Error getting session:', error);
+        setUser('userNotFound');
+      } finally {
+        setLoading(false);
+      }
     };
 
     getSession();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? 'userNotFound');
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
   }, []);
 
   if (loading) {
@@ -60,78 +50,93 @@ export default function AuthProvider({ children }: React.PropsWithChildren) {
       </div>
     );
   }
+
   async function signUpUser(email: string, password: string, name: string) {
-    const { data, error } = await supabase.auth.signUp({
-      email: email,
-      password: password,
+    try {
+      const { data, error } = await authClient.signUp.email({
+        email,
+        password,
+        name,
+      });
 
-      // options: {
-      //   emailRedirectTo: 'https://example.com/welcome',
-      // },
-    });
-    const updatedUser = await supabase.auth.updateUser({
-      data: {
-        name: name,
-      },
-    });
-    // return updatedUser;
-    // console.log(data);
-    // console.log(data.session?.access_token);
-    localStorage.setItem('token', JSON.stringify(data.session?.access_token));
+      if (error) {
+        throw new Error(error.message || 'Sign up failed');
+      }
 
-    console.error(error);
-    setTimeout(() => {
-      window.location.href = '/welcome';
-    }, 200);
-    return updatedUser;
-  }
-  async function loginUser(email: string, password: string) {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    });
-    // console.log(data);
-    localStorage.setItem('token', JSON.stringify(data.session?.access_token));
-    console.error(error);
-    setTimeout(() => {
-      window.location.href = '/welcome';
-    }, 200);
-  }
-  async function signInWithGoogle(): Promise<void> {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        // have to change for local use and production use
-        // redirectTo: 'http://localhost:3000/welcome',
-        redirectTo: `https://teacup.website/welcome`,
-      },
-    });
-
-    console.error(error);
-
-    // return data;
-  }
-  async function updateUserCompanyInfo(data: CompanyType): Promise<void> {
-    // Update user metadata with company_id
-    // console.log('received data' + data.id);
-    // console.log(data);
-    const { error: updateError } = await supabase.auth.updateUser({
-      data: { company_id: data.id, owner_email: data.owner },
-    });
-    // console.log('updated user metadata with' + data.id);
-    if (updateError) {
-      console.error('Error updating user metadata:', updateError.message);
+      localStorage.setItem('token', JSON.stringify(data?.token));
+      
+      setTimeout(() => {
+        window.location.href = '/welcome';
+      }, 200);
+      
+      return data;
+    } catch (error: any) {
+      console.error('Sign up error:', error);
+      throw error;
     }
   }
-  function logout() {
-    supabase.auth.signOut();
-    setUser('userNotFound');
-    localStorage.clear();
-    // setTimeout(() => {
-    //   window.location.reload();
-    // }, 500);
-    // console.log(data);
+
+  async function loginUser(email: string, password: string) {
+    try {
+      const { data, error } = await authClient.signIn.email({
+        email,
+        password,
+      });
+
+      if (error) {
+        throw new Error(error.message || 'Login failed');
+      }
+
+      localStorage.setItem('token', JSON.stringify(data?.token));
+      
+      setTimeout(() => {
+        window.location.href = '/welcome';
+      }, 200);
+    } catch (error: any) {
+      console.error('Login error:', error);
+      throw error;
+    }
   }
+
+  async function signInWithGoogle(): Promise<void> {
+    try {
+      await authClient.signIn.social({
+        provider: 'google',
+        callbackURL: `${window.location.origin}/welcome`,
+      });
+    } catch (error: any) {
+      console.error('Google sign in error:', error);
+      throw error;
+    }
+  }
+
+  async function updateUserCompanyInfo(data: CompanyData): Promise<void> {
+    try {
+      // For now, we'll store this info in localStorage as metadata
+      // Better Auth doesn't support arbitrary metadata in the same way as Supabase
+      localStorage.setItem('companyInfo', JSON.stringify({
+        company_id: data.id,
+        owner_email: data.owner
+      }));
+      console.log('Company info stored locally:', data);
+    } catch (error: any) {
+      console.error('Error updating user metadata:', error.message);
+      throw error;
+    }
+  }
+
+  async function logout() {
+    try {
+      await authClient.signOut();
+      setUser('userNotFound');
+      localStorage.clear();
+    } catch (error) {
+      console.error('Logout error:', error);
+      setUser('userNotFound');
+      localStorage.clear();
+    }
+  }
+
   const value: valueType = {
     session,
     user,

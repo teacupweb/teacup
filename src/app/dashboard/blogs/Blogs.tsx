@@ -36,7 +36,7 @@ function Blogs() {
     }).then((result) => {
       if (result.isConfirmed) {
         if (id !== undefined) {
-          deleteBlogMutation.mutateAsync(id).then(() => {
+          deleteBlogMutation.mutateAsync(id.toString()).then(() => {
             Swal.fire('Deleted!', 'Your blog has been deleted.', 'success');
             // refetch is handled by query invalidation in backendProvider
           });
@@ -97,7 +97,7 @@ function Blogs() {
                           </td>
                         </tr>
                       ) : data.length > 0 ? (
-                        data.map((blog: blogType) => (
+                        data.map((blog) => (
                           <tr
                             className='bg-card border-b border-border hover:bg-muted transition-colors'
                             key={blog.id}
@@ -111,7 +111,7 @@ function Blogs() {
 
                             <td className='px-6 py-4 text-right'>
                               <button
-                                onClick={handleDeleteBlog(blog.id)}
+                                onClick={handleDeleteBlog(parseInt(blog.id))}
                                 className='font-medium text-red-600 hover:underline'
                               >
                                 Delete

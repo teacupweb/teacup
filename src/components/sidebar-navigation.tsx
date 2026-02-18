@@ -6,6 +6,7 @@ import {
   IconCalendar,
   IconChartBar,
   IconSettings,
+  IconEdit,
 } from '@tabler/icons-react';
 import { NavMain } from '@/components/nav-main';
 
@@ -31,6 +32,11 @@ const navData = {
       title: 'Analytics',
       url: '/dashboard/analytics',
       icon: IconChartBar,
+    },
+    {
+      title: 'Request Edit',
+      url: '/dashboard/request-edit',
+      icon: IconEdit,
     },
   ],
 };
