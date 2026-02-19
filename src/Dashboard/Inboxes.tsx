@@ -13,7 +13,7 @@ import { useEffect } from 'react';
 
 export default function Inboxes() {
   const { user } = useAuth();
-  const company_id = user !== 'userNotFound' && user?.user_metadata.company_id;
+  const company_id = user?.companyId;
   console.log(company_id);
   const { data, isLoading: loading, refetch } = useUserInboxes(company_id);
 
@@ -40,8 +40,8 @@ export default function Inboxes() {
       const inboxData = {
         name: name,
         ownerId:
-          user !== 'userNotFound' && user?.user_metadata?.company_id
-            ? user.user_metadata.company_id
+          user !== 'userNotFound' && user?.companyId
+            ? user.companyId
             : '',
       };
 
@@ -59,7 +59,6 @@ export default function Inboxes() {
       });
 
       // Close the modal
-      // Close the modal
       const modal = document.getElementById(
         'create-inbox',
       ) as HTMLDialogElement;
@@ -67,8 +66,8 @@ export default function Inboxes() {
         modal.close();
       }
 
-      // Refresh the inbox list - handled by query invalidation
-      // refetch();
+      // Refresh the inbox list
+      refetch();
 
       // Reset the form
       form.reset();
@@ -118,8 +117,8 @@ export default function Inboxes() {
                             <Spinner className='mx-auto' />
                           </td>
                         </tr>
-                      ) : data.length > 0 ? (
-                        data.map((inbox) => (
+                      ) : (data ?? []).length > 0 ? (
+                        (data ?? []).map((inbox) => (
                           <tr
                             key={inbox.id}
                             className='bg-card border-b border-border hover:bg-muted transition-colors'

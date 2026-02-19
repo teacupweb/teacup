@@ -19,7 +19,7 @@ export default function HoldMyTea() {
 
   // Get owner email from user metadata
   const company =
-    user && typeof user !== 'string' ? user.user_metadata?.company_id : null;
+    user && typeof user !== 'string' ? user.companyId : null;
 
   // Mutation for Hold My Tea API
 

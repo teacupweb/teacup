@@ -2,7 +2,10 @@ import {
   useInboxData,
   useDeleteInboxData,
   useDeleteInbox,
+  parseInboxDataField,
+  type InboxData,
 } from '@/backendProvider';
+import type { ParsedInboxData } from '@/types/schema';
 import DisplayCard from '@/Components/DisplayCards';
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
@@ -14,7 +17,7 @@ import { toast } from 'react-toastify';
 export default function Inbox() {
   const { id } = useParams();
   const navigate = useRouter();
-  const [modalData, setModalData] = useState<any>(null);
+  const [modalData, setModalData] = useState<InboxData | null>(null);
   const { data, isLoading: loading, refetch } = useInboxData(Number(id));
 
   // Refetch data when component mounts
@@ -22,9 +25,6 @@ export default function Inbox() {
     refetch();
   }, [refetch]);
 
-  // Ensure data is an array for mapping, or handle if it's a single object
-  // Based on previous code: setData(data) -> map(data => ...)
-  // It seems data is expected to be an array.
   const displayData = Array.isArray(data) ? data : data ? [data] : [];
 
   const deleteInboxDataMutation = useDeleteInboxData();
@@ -50,6 +50,7 @@ export default function Inbox() {
         try {
           await deleteInboxDataMutation.mutateAsync(Number(itemId));
           toast.success('The message has been deleted.');
+          refetch();
         } catch (error) {
           console.error('Error deleting message:', error);
           toast.error('Failed to delete message.');
@@ -119,7 +120,7 @@ export default function Inbox() {
                           </td>
                         </tr>
                       ) : displayData.length > 0 ? (
-                        displayData.map((data: any) => (
+                        displayData.map((data: InboxData) => (
                           <tr
                             key={data.id}
                             className='bg-card border-b border-border hover:bg-muted transition-colors'
@@ -128,7 +129,10 @@ export default function Inbox() {
                               scope='row'
                               className='px-6 py-4 font-medium text-foreground whitespace-nowrap'
                             >
-                              {data.data.name || data.title || 'Unknown'}
+                              {(() => {
+                                const parsedData = parseInboxDataField(data);
+                                return parsedData.name || 'Unknown';
+                              })()}
                             </th>
 
                             <td className='px-6 py-4 text-right '>
@@ -189,8 +193,9 @@ export default function Inbox() {
             Details
           </h2>
           <div className='space-y-4'>
-            {modalData?.data &&
-              Object.keys(modalData.data).map((key) => (
+            {(() => {
+              const parsedData = modalData ? parseInboxDataField(modalData) : {};
+              return Object.keys(parsedData).map((key) => (
                 <div
                   key={key}
                   className='flex border-b border-border pb-3 last:border-b-0'
@@ -199,14 +204,15 @@ export default function Inbox() {
                     {key.replace(/([A-Z])/g, ' $1').trim()}
                   </div>
                   <div className='w-2/3 text-foreground'>
-                    {modalData.data[key]}
+                    {parsedData[key]}
                   </div>
                 </div>
-              ))}
+              ));
+            })()}
           </div>
           <div className='flex justify-end mt-6'>
             <button
-              onClick={modalData ? handleDelete(modalData.id) : undefined}
+              onClick={modalData ? handleDelete(modalData.id.toString()) : undefined}
               className='px-4 py-2 text-sm font-medium text-white bg-rose-600 rounded hover:bg-rose-700 transition-colors'
             >
               Delete

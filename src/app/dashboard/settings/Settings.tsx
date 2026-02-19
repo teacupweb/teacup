@@ -1,27 +1,27 @@
 import { useAuth } from '@/AuthProvider';
 import { useRouter } from 'next/navigation';
 import { useCompany } from '@/backendProvider';
+import { authClient } from '@/lib/auth-client';
 import Swal from 'sweetalert2';
 import { toast } from 'react-toastify';
 import { useState } from 'react';
 import Spinner from '@/Components/Spinner';
 import Modal from '@/Components/Modal';
-import supabase from '@/supabaseClient';
-import { useTheme } from '@/ThemeProvider';
+import { useTheme } from 'next-themes';
+import type { User } from '@/types/schema';
 
 function Settings() {
-  const { logout, user } = useAuth();
+  const { logout, user, updateUserCompanyInfo } = useAuth();
   const navigate = useRouter();
-  const companyId =
-    user && typeof user !== 'string' ? user.user_metadata?.company_id : null;
-  const ownerEmail =
-    user && typeof user !== 'string' ? user.user_metadata?.owner_email : null;
+
+  // Derive user info directly from Better Auth user object
+  const companyId = user.companyId;
+  console.log(user);
   const { data: company, isLoading: loading } = useCompany(companyId);
   const companySecret = company?.key || 'No company secret found';
 
   // State for toggles
   const [emailNotifications, setEmailNotifications] = useState(true);
-  // const [twoFactorAuth, setTwoFactorAuth] = useState(false);
   const { theme, setTheme } = useTheme();
 
   // State for modals
@@ -34,10 +34,11 @@ function Settings() {
   // State for forms
   const [inviteEmail, setInviteEmail] = useState('');
   const [editName, setEditName] = useState('');
-  const [editEmail, setEditEmail] = useState('');
+  const [editImage, setEditImage] = useState('');
   const [generatedInviteLink, setGeneratedInviteLink] = useState('');
   const [manualCompanyId, setManualCompanyId] = useState('');
-  const [manualOwnerEmail, setManualOwnerEmail] = useState('');
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [isUpdatingCompany, setIsUpdatingCompany] = useState(false);
 
   const handleLogout = () => {
     Swal.fire({
@@ -60,17 +61,12 @@ function Settings() {
   const handleInviteClick = (e: React.FormEvent) => {
     e.preventDefault();
     if (!inviteEmail) return;
-
-    // Open the invite modal with the email
     setIsInviteModalOpen(true);
   };
 
   const handleGenerateInviteLink = () => {
-    // Generate the invite link
-    const link = `http://localhost:3000/welcome?company=${companyId}&owner_email=${ownerEmail}&user=${inviteEmail}&referral=true`;
+    const link = `${window.location.origin}/welcome?company=${companyId}&user=${inviteEmail}&referral=true`;
     setGeneratedInviteLink(link);
-
-    // Close invite modal and open link modal
     setIsInviteModalOpen(false);
     setIsInviteLinkModalOpen(true);
     setInviteEmail('');
@@ -80,41 +76,34 @@ function Settings() {
     try {
       await navigator.clipboard.writeText(generatedInviteLink);
       toast.success('Invite link copied to clipboard');
-    } catch (err) {
+    } catch {
       toast.error('Failed to copy link');
     }
   };
 
   const handleEditProfile = () => {
-    const userName =
-      user && typeof user !== 'string' ? user.user_metadata?.name || '' : '';
-    const userEmail = user && typeof user !== 'string' ? user.email || '' : '';
-
-    setEditName(userName);
-    setEditEmail(userEmail);
+    const name = user.name;
+    const image = user.image || '';
+    setEditName(name);
+    setEditImage(image);
     setIsEditProfileModalOpen(true);
   };
 
   const handleSaveProfile = async () => {
+    setIsSavingProfile(true);
     try {
-      const { error } = await supabase.auth.updateUser({
-        email: editEmail,
-        data: { name: editName },
-      });
-
-      if (error) throw error;
-
+      await authClient.updateUser({ name: editName, image: editImage });
       toast.success('Profile updated successfully');
       setIsEditProfileModalOpen(false);
-
-      // Refresh the page to show updated data
-      setTimeout(() => window.location.reload(), 2000);
+      // Better-Auth automatically updates the session, no need for manual reload
     } catch (error: any) {
       toast.error(error.message || 'Failed to update profile');
+    } finally {
+      setIsSavingProfile(false);
     }
   };
 
-  const handleLeaveCompany = () => {
+  const handleLeaveCompany = async () => {
     Swal.fire({
       title: 'Are you sure?',
       text: 'You will be removed from this company and lose access to its data!',
@@ -125,67 +114,66 @@ function Settings() {
       confirmButtonText: 'Yes, leave company!',
     }).then(async (result) => {
       if (result.isConfirmed) {
+        setIsUpdatingCompany(true);
         try {
-          // Remove company_id and owner_email from user metadata
-          const { error } = await supabase.auth.updateUser({
-            data: {
-              company_id: null,
-              owner_email: null,
-            },
+          await updateUserCompanyInfo({
+            id: '',
+            name: '',
+            ownerId: user.id,
+            createdAt: new Date(),
+            domain: '',
+            key: '',
           });
-
-          if (error) throw error;
-
-          toast.success('You have successfully left the company.');
-          // Redirect to welcome page
+          toast.success('You have successfully left company.');
           setTimeout(() => {
             window.location.href = '/welcome';
           }, 1500);
         } catch (error: any) {
           toast.error(error.message || 'Failed to leave company');
+        } finally {
+          setIsUpdatingCompany(false);
         }
       }
     });
   };
 
   const handleSetManualCompany = async () => {
+    if (!manualCompanyId.trim()) {
+      toast.error('Please enter a valid Company ID');
+      return;
+    }
+    setIsUpdatingCompany(true);
     try {
-      const { error } = await supabase.auth.updateUser({
-        data: {
-          company_id: manualCompanyId,
-          owner_email: manualOwnerEmail,
-        },
+      await updateUserCompanyInfo({
+        id: manualCompanyId,
+        name: '',
+        ownerId: user.id,
+        createdAt: new Date(),
+        domain: '',
+        key: '',
       });
-
-      if (error) throw error;
-
       toast.success('Company information has been set manually');
       setIsManualCompanyModalOpen(false);
       setManualCompanyId('');
-      setManualOwnerEmail('');
-
-      // Refresh the page to show updated data
-      setTimeout(() => window.location.reload(), 2000);
+      setTimeout(() => window.location.reload(), 1500);
     } catch (error: any) {
       toast.error(error.message || 'Failed to set company information');
+    } finally {
+      setIsUpdatingCompany(false);
     }
   };
 
   const handleOpenManualCompanyModal = () => {
     setManualCompanyId(companyId || '');
-    setManualOwnerEmail(ownerEmail || '');
     setIsManualCompanyModalOpen(true);
   };
 
-  // Get user info
-  const userName =
-    user && typeof user !== 'string'
-      ? user.user_metadata?.name || 'User'
-      : 'User';
-  const userEmail = user && typeof user !== 'string' ? user.email || '' : '';
+  // Get user info from Better Auth session
+  const userName = user.name;
+  const userEmail = user.email;
   const userInitials = userName
     .split(' ')
-    .map((word: any) => word.charAt(0).toUpperCase())
+    .map((word: string) => word.charAt(0).toUpperCase())
     .join('')
     .slice(0, 2);
 
@@ -316,16 +304,18 @@ function Settings() {
                           <div className='flex items-center gap-3'>
                             <div className='w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center text-rose-600 text-xs font-bold'>
                               {member.name
-                                .split(' ')
-                                .map((word: string) =>
-                                  word.charAt(0).toUpperCase(),
-                                )
-                                .join('')
-                                .slice(0, 2)}
+                                ? member.name
+                                    .split(' ')
+                                    .map((word: string) =>
+                                      word.charAt(0).toUpperCase(),
+                                    )
+                                    .join('')
+                                    .slice(0, 2)
+                                : 'NN'}
                             </div>
                             <div>
                               <p className='text-sm font-medium text-foreground/90'>
-                                {member.name}
+                                {member.name || 'Unknown Name'}
                               </p>
                               <p className='text-xs text-muted-foreground'>
                                 {member.email}
@@ -393,9 +383,17 @@ function Settings() {
           <div className='bg-card p-6 rounded-2xl border border-border shadow-sm'>
             <h3 className='font-bold text-xl text-foreground mb-4'>Profile</h3>
             <div className='flex flex-col items-center text-center'>
-              <div className='w-20 h-20 bg-rose-100 dark:bg-rose-900/30 rounded-full flex items-center justify-center text-rose-600 dark:text-rose-400 font-bold text-2xl mb-3'>
-                {userInitials}
-              </div>
+              {user.image ? (
+                <img 
+                  src={user.image} 
+                  alt={userName}
+                  className='w-20 h-20 rounded-full object-cover mb-3'
+                />
+              ) : (
+                <div className='w-20 h-20 bg-rose-100 dark:bg-rose-900/30 rounded-full flex items-center justify-center text-rose-600 dark:text-rose-400 font-bold text-2xl mb-3'>
+                  {userInitials}
+                </div>
+              )}
               <h4 className='font-bold text-lg text-foreground'>{userName}</h4>
               <p className='text-muted-foreground text-sm mb-1'>{userEmail}</p>
               <p className='text-muted-foreground/60 text-xs mb-4'>
@@ -423,7 +421,7 @@ function Settings() {
               Company Information
             </h3>
             <p className='text-xs text-muted-foreground mb-3'>
-              Your company identifier and owner
+              Your company identifier
             </p>
             <div className='space-y-2 mb-3'>
               <div>
@@ -433,16 +431,6 @@ function Settings() {
                 <div className='bg-muted/50 p-2 rounded-lg border border-border'>
                   <code className='text-xs text-foreground/80 font-mono break-all'>
                     {companyId || 'No company ID'}
-                  </code>
-                </div>
-              </div>
-              <div>
-                <p className='text-xs font-medium text-muted-foreground mb-1'>
-                  Owner Email
-                </p>
-                <div className='bg-muted/50 p-2 rounded-lg border border-border'>
-                  <code className='text-xs text-foreground/80 font-mono break-all'>
-                    {ownerEmail || 'Owner email not found'}
                   </code>
                 </div>
               </div>
@@ -466,9 +454,10 @@ function Settings() {
               </p>
               <button
                 onClick={handleLeaveCompany}
-                className='w-full py-2 px-4 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition-colors font-medium shadow-sm hover:shadow-md'
+                disabled={isUpdatingCompany}
+                className='w-full py-2 px-4 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition-colors font-medium shadow-sm hover:shadow-md disabled:opacity-60'
               >
-                Leave Company
+                {isUpdatingCompany ? 'Leaving...' : 'Leave Company'}
               </button>
             </div>
           )}
@@ -485,10 +474,25 @@ function Settings() {
             Edit Profile
           </h3>
           <p className='text-muted-foreground text-sm mb-6'>
-            Update your profile information
+            Update your display name and profile picture
           </p>
 
           <div className='space-y-4'>
+            <div>
+              <label className='block text-sm font-medium text-foreground/80 mb-1'>
+                Profile Image URL
+              </label>
+              <input
+                type='url'
+                value={editImage}
+                onChange={(e) => setEditImage(e.target.value)}
+                placeholder='https://example.com/image.jpg'
+                className='w-full px-4 py-2 border border-border bg-card rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all text-foreground'
+              />
+              <p className='text-xs text-muted-foreground mt-1'>
+                Enter a URL to your profile picture
+              </p>
+            </div>
             <div>
               <label className='block text-sm font-medium text-foreground/80 mb-1'>
                 Name
@@ -498,19 +502,6 @@ function Settings() {
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
                 placeholder='Your name'
-                className='w-full px-4 py-2 border border-border bg-card rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all text-foreground'
-              />
-            </div>
-
-            <div>
-              <label className='block text-sm font-medium text-foreground/80 mb-1'>
-                Email
-              </label>
-              <input
-                type='email'
-                value={editEmail}
-                onChange={(e) => setEditEmail(e.target.value)}
-                placeholder='your.email@example.com'
                 className='w-full px-4 py-2 border border-border bg-card rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all text-foreground'
               />
             </div>
@@ -525,9 +516,10 @@ function Settings() {
             </button>
             <button
               onClick={handleSaveProfile}
-              className='flex-1 py-2 px-4 bg-rose-600 text-white rounded-xl hover:bg-rose-700 transition-colors font-medium'
+              disabled={isSavingProfile}
+              className='flex-1 py-2 px-4 bg-rose-600 text-white rounded-xl hover:bg-rose-700 transition-colors font-medium disabled:opacity-60'
             >
-              Save Changes
+              {isSavingProfile ? 'Saving...' : 'Save Changes'}
             </button>
           </div>
         </div>
@@ -654,9 +646,8 @@ function Settings() {
                 <p className='text-xs text-red-700'>
                   Manually setting company information can cause serious
                   malfunctions if not done properly. Only proceed if you know
-                  the exact Company ID and Owner Email you need to set.
-                  Incorrect values may break your access to company data or
-                  cause authentication issues.
+                  the exact Company ID you need to set. Incorrect values may
+                  break your access to company data.
                 </p>
               </div>
             </div>
@@ -673,19 +664,6 @@ function Settings() {
                 onChange={(e) => setManualCompanyId(e.target.value)}
                 placeholder='Enter company ID'
                 className='w-full px-4 py-2 border border-border bg-card rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all font-mono text-sm text-foreground'
-              />
-            </div>
-
-            <div>
-              <label className='block text-sm font-medium text-foreground/80 mb-1'>
-                Owner Email
-              </label>
-              <input
-                type='email'
-                value={manualOwnerEmail}
-                onChange={(e) => setManualOwnerEmail(e.target.value)}
-                placeholder='owner@example.com'
-                className='w-full px-4 py-2 border border-border bg-card rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all text-foreground'
               />
             </div>
           </div>
@@ -707,9 +685,10 @@ function Settings() {
             </button>
             <button
               onClick={handleSetManualCompany}
-              className='flex-1 py-2 px-4 bg-amber-600 text-white rounded-xl hover:bg-amber-700 transition-colors font-medium'
+              disabled={isUpdatingCompany}
+              className='flex-1 py-2 px-4 bg-amber-600 text-white rounded-xl hover:bg-amber-700 transition-colors font-medium disabled:opacity-60'
             >
-              Set Company Info
+              {isUpdatingCompany ? 'Saving...' : 'Set Company Info'}
             </button>
           </div>
         </div>

@@ -18,14 +18,10 @@ function BlogsClient() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    getUserBlogs(
-      user && typeof user !== 'string'
-        ? user.user_metadata?.company_id || ''
-        : '',
-    ).then((res) => {
+    getUserBlogs(user.companyId).then((res) => {
       setBlogs(res);
     });
-  }, [user]);
+  }, [user.companyId]);
 
   const handleDeleteBlog = (id: number | undefined) => async () => {
     Swal.fire({

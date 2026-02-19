@@ -12,6 +12,7 @@ async function fetchApi(endpoint: string, options: RequestInit = {}) {
   const response = await fetch(`${API_URL}${endpoint}`, {
     headers: {
       'Content-Type': 'application/json',
+      credentials: 'include',
       ...options.headers,
     },
     ...options,
@@ -23,10 +24,14 @@ async function fetchApi(endpoint: string, options: RequestInit = {}) {
 }
 
 export async function getUserBlogs(companyId: number): Promise<blogType[]> {
+  console.log(companyId);
   return fetchApi(`/dashboard/blogs/${companyId}`);
 }
 
-export async function getBlog(companyId: string, id: string): Promise<blogType> {
+export async function getBlog(
+  companyId: string,
+  id: string,
+): Promise<blogType> {
   return fetchApi(`/dashboard/blogs/${companyId}/${id}`);
 }
 
@@ -37,7 +42,10 @@ export async function createBlog(blog: blogType): Promise<blogType> {
   });
 }
 
-export async function updateBlog(id: number, blog: blogType): Promise<blogType> {
+export async function updateBlog(
+  id: number,
+  blog: blogType,
+): Promise<blogType> {
   return fetchApi(`/dashboard/blogs/${id}`, {
     method: 'PUT',
     body: JSON.stringify(blog),

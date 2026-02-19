@@ -2,16 +2,12 @@
 import React, { useState, useEffect, useContext, createContext } from 'react';
 import { authClient } from '@/lib/auth-client';
 import Spinner from '@/Components/Spinner';
-import type { CompanyData } from '@/types/schema';
+import type { CompanyData, User } from '@/types/schema';
 
 interface valueType {
   session: any | null;
   user: any | null | 'userNotFound';
-  signUpUser: (
-    email: string,
-    password: string,
-    name: string,
-  ) => Promise<any>;
+  signUpUser: (email: string, password: string, name: string) => Promise<any>;
   loginUser: (email: string, password: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
   updateUserCompanyInfo: (data: CompanyData) => Promise<void>;
@@ -21,9 +17,13 @@ interface valueType {
 export const authContext = createContext({} as valueType);
 export const useAuth = () => useContext(authContext);
 
-export default function AuthProviderBetterAuth({ children }: React.PropsWithChildren) {
+export default function AuthProviderBetterAuth({
+  children,
+}: React.PropsWithChildren) {
   const [session, setSession] = useState<any>(null);
-  const [user, setUser] = useState<any | null | 'userNotFound'>('userNotFound');
+  const [user, setUser] = useState<User | null | 'userNotFound'>(
+    'userNotFound',
+  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -64,11 +64,11 @@ export default function AuthProviderBetterAuth({ children }: React.PropsWithChil
       }
 
       localStorage.setItem('token', JSON.stringify(data?.token));
-      
+
       setTimeout(() => {
         window.location.href = '/welcome';
       }, 200);
-      
+
       return data;
     } catch (error: any) {
       console.error('Sign up error:', error);
@@ -88,7 +88,7 @@ export default function AuthProviderBetterAuth({ children }: React.PropsWithChil
       }
 
       localStorage.setItem('token', JSON.stringify(data?.token));
-      
+
       setTimeout(() => {
         window.location.href = '/welcome';
       }, 200);
@@ -112,15 +112,35 @@ export default function AuthProviderBetterAuth({ children }: React.PropsWithChil
 
   async function updateUserCompanyInfo(data: CompanyData): Promise<void> {
     try {
-      // For now, we'll store this info in localStorage as metadata
-      // Better Auth doesn't support arbitrary metadata in the same way as Supabase
-      localStorage.setItem('companyInfo', JSON.stringify({
-        company_id: data.id,
-        owner_email: data.owner
-      }));
-      console.log('Company info stored locally:', data);
+      if (!user || user === 'userNotFound') {
+        throw new Error('User not found');
+      }
+      await authClient.updateUser({
+        // @ts-ignore
+        companyId: data.id,
+      });
+
+      // Immediate session refresh to get updated user data from server
+      const { data: sessionData } = await authClient.getSession();
+      if (sessionData?.user) {
+        setSession(sessionData);
+        setUser(sessionData.user as User);
+      }
+
+      console.log('Company info updated successfully:', data.id);
     } catch (error: any) {
-      console.error('Error updating user metadata:', error.message);
+      console.error('Error updating user company info:', error);
+      // Attempt to refresh session even on error to ensure consistency
+      try {
+        const { data: sessionData } = await authClient.getSession();
+        setSession(sessionData);
+        setUser((sessionData?.user as User) || 'userNotFound');
+      } catch (refreshError) {
+        console.error(
+          'Error refreshing session after update failure:',
+          refreshError,
+        );
+      }
       throw error;
     }
   }

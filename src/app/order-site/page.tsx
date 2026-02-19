@@ -15,7 +15,7 @@ export default function OrderSitePage() {
   /*
   useEffect(() => {
     if (user === 'userNotFound') {
-      router.push('/login?redirect=/order-site');
+      router.push('/auth/login?redirect=/order-site');
     }
   }, [user, router]);
 

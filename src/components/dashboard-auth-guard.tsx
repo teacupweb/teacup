@@ -1,23 +1,27 @@
-"use client";
+import { redirect } from 'next/navigation';
 
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/AuthProvider';
-import { useEffect } from 'react';
+import { headers } from 'next/headers';
+import { getSession } from 'better-auth/api';
+import { authClient } from '@/lib/auth-client';
+import Guard from '../Components/guard';
 
-export function DashboardAuthGuard({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
-  const { user } = useAuth();
+export async function DashboardAuthGuard({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const cookie = (await headers()).get('cookie');
+  const { data: session } = await authClient.getSession({
+    fetchOptions: {
+      headers: { cookie: cookie || '' },
+    },
+  });
+  const user = session?.user;
 
-  useEffect(() => {
-    if (user === 'userNotFound') {
-      router.push('/login');
-    } else if (user && typeof user !== 'string') {
-      const companyId = user.user_metadata?.company_id;
-      if (!companyId) {
-        router.push('/welcome');
-      }
-    }
-  }, [user, router]);
-
-  return <>{children}</>;
+  return (
+    <>
+      <Guard />
+      {children}
+    </>
+  );
 }

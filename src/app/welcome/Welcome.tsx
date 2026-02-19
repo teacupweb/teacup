@@ -47,83 +47,103 @@ export default function Welcome() {
   );
 
   useEffect(() => {
-    // Check if user is authenticated
-    if (user === 'userNotFound') {
-      navigate.push('/auth/login');
-      return;
-    }
+    const processAuthAndReferral = async () => {
+      // Check if user is authenticated
+      if (user === 'userNotFound') {
+        navigate.push('/auth/login');
+        return;
+      }
 
-    if (referralLink) {
-      console.log('Processing referral link:', referralLink);
-      setReferralProcessing(true);
+      if (referralLink) {
+        console.log('Processing referral link:', referralLink);
+        setReferralProcessing(true);
 
-      if (
-        searchParams.get('company') &&
-        searchParams.get('owner_email') &&
-        searchParams.get('user')
-      ) {
+        // Validate referral parameters
+        const companyId = searchParams.get('company');
+
+        const userParam = searchParams.get('user');
+
+        if (!companyId || !userParam) {
+          console.log('Invalid referral parameters');
+          toast.error('Invalid referral link. Missing required parameters.');
+          setReferralProcessing(false);
+          return;
+        }
+
+        const referralCompanyIdNum = Number(companyId);
+        if (isNaN(referralCompanyIdNum)) {
+          console.log('Invalid company ID in referral');
+          toast.error('Invalid company ID in referral link.');
+          setReferralProcessing(false);
+          return;
+        }
+
         // Check if company data is loaded and valid
         if (company?.data && !company.isLoading && !company.error) {
           console.log('Company found:', company.data);
           try {
-            // Update user with the referred company
-            const result = updateUserCompanyInfo(company.data);
-            console.log('User updated with company:', result);
-            toast.success('Successfully joined the company!');
+            // Update user with referred company
+            await updateUserCompanyInfo(company.data);
+            console.log('User updated with company:', company.data);
+            toast.success(
+              `Successfully joined "${company.data.name}"! Redirecting to dashboard...`,
+            );
 
             // Redirect to dashboard after successful referral
             setTimeout(() => {
               navigate.push('/dashboard');
-            }, 1000);
-          } catch (error) {
+            }, 1500);
+          } catch (error: any) {
             console.error('Error updating user with company:', error);
-            toast.error('Failed to join the company. Please try again.');
+            toast.error(
+              error?.message ||
+                'Failed to join company. Please try again or contact support.',
+            );
           }
         } else if (company?.error) {
           console.error('Error loading company:', company.error);
-          toast.error('Invalid company referral link.');
+          toast.error(
+            'Invalid company referral link. The company may not exist.',
+          );
         } else if (company?.isLoading) {
           // Still loading, wait for next render
           setReferralProcessing(false);
           return;
         } else {
           console.log('Company not found');
-          toast.error('Company not found.');
+          toast.error('Company not found. Please check the referral link.');
         }
-      } else {
-        console.log('Invalid referral parameters');
-        toast.error('Invalid referral link.');
+        setReferralProcessing(false);
       }
-      setReferralProcessing(false);
-    }
-    // Check if user has company_id stored in localStorage (Better Auth)
-    if (user && typeof user !== 'string') {
-      const companyInfo = localStorage.getItem('companyInfo');
-      const companyId = companyInfo
-        ? JSON.parse(companyInfo)?.company_id
-        : null;
-      if (companyId) {
-        // User already has a company, redirect to dashboard
-        navigate.push('/dashboard');
-      } else {
-        // User needs to create a company
-        setLoading(false);
-        // Pre-fill owner email with user's email
-        setFormData((prev) => ({
-          ...prev,
-          owner: user.email || '',
-        }));
+      // Check if user has company_id stored in localStorage (Better Auth)
+      if (user && typeof user !== 'string') {
+        const companyId = user.companyId;
+        if (companyId) {
+          // User already has a company, redirect to dashboard
+          navigate.push('/dashboard');
+        } else {
+          // User needs to create a company
+          setLoading(false);
+          // Pre-fill owner email with user's email
+          setFormData((prev) => ({
+            ...prev,
+            owner: user.email || '',
+          }));
+        }
       }
-    }
-    // Check for referral link in query parameters
+      // Check for referral link in query parameters
+    };
+
+    processAuthAndReferral();
   }, [
     user,
     navigate,
     searchParams,
     referralLink,
-    company,
+    company?.data,
+    company?.isLoading,
+    company?.error,
     updateUserCompanyInfo,
-    referralProcessing,
   ]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -138,54 +158,7 @@ export default function Welcome() {
       const newCompany: CompanyType = {
         name: formData.name,
         domain: formData.domain,
-        owner: formData.owner,
-        // Default activity data - all zeros for new company
-        activity_data: [
-          { day: 'Mon', visits: 0 },
-          { day: 'Tue', visits: 0 },
-          { day: 'Wed', visits: 0 },
-          { day: 'Thu', visits: 0 },
-          { day: 'Fri', visits: 0 },
-          { day: 'Sat', visits: 0 },
-          { day: 'Sun', visits: 0 },
-        ],
-        // Default info cards - starting metrics for new company
-        info: [
-          {
-            icon: 'globe',
-            title: 'Active Sites',
-            data: 0,
-            description: "Total number of websites you're managing.",
-          },
-          {
-            icon: 'mail',
-            title: 'Form Submissions',
-            data: 0,
-            description: 'Total form submissions this month.',
-          },
-          {
-            icon: 'users',
-            title: 'Team Members',
-            data: 1, // Owner is the first member
-            description: 'Active collaborators in your workspace.',
-          },
-          {
-            icon: 'file-text',
-            title: 'Total Pages',
-            data: 0,
-            description: 'Pages created across all your websites.',
-          },
-        ],
-        // Default sharing - owner is the first member
-        sharing: [
-          {
-            name:
-              user && typeof user !== 'string' ? user.name || 'Owner' : 'Owner',
-            email: formData.owner,
-            status: 'Owner',
-          },
-        ],
-        key: '', // key to be generated later in the backend
+        key: '',
       };
 
       // Manually create company using fetch
@@ -194,30 +167,41 @@ export default function Welcome() {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(newCompany),
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to create company: ${response.statusText}`);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.message ||
+            `Failed to create company: ${response.statusText}`,
+        );
       }
 
       const createdCompany = await response.json();
-      // console.log('Company created:', createdCompany);
+      console.log('Company created:', createdCompany);
 
-      // Update user metadata with company_id
+      // Update user with company info and wait for session refresh
       await updateUserCompanyInfo(createdCompany);
+
+      // Show success message with company details
+      toast.success(
+        `Successfully created "${createdCompany.name}"! Redirecting to dashboard...`,
+      );
 
       // Wait a moment for state to update before navigating
       setTimeout(() => {
         navigate.push('/dashboard');
-      }, 300);
-    } catch (error) {
+      }, 1500);
+    } catch (error: any) {
       console.error('Error creating company:', error);
       toast.error(
         error instanceof Error
           ? `Failed to create company: ${error.message}`
           : 'Failed to create company. Please try again.',
       );
+    } finally {
       setCreating(false);
     }
   };

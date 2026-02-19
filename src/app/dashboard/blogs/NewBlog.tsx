@@ -22,7 +22,7 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
   const { user } = useAuth();
   // const userEmail = user !== 'userNotFound' && user ? user.email : null;
   const company =
-    user && typeof user !== 'string' ? user.user_metadata?.company_id : null;
+    user && typeof user !== 'string' ? user.companyId : null;
 
   // Mutations
   const createBlogMutation = useCreateBlog();

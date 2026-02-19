@@ -20,7 +20,7 @@ export function SiteHeader() {
           <span className='text-muted-foreground'>
             👋 Welcome back,{' '}
             <span className='text-rose-600 uppercase font-medium'>
-              {typeof user === 'object' && user && user.user_metadata?.name}
+              {typeof user === 'object' && user && user.name}
             </span>
             !
           </span>

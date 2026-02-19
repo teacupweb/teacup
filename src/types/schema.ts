@@ -10,7 +10,6 @@ export interface User {
   updatedAt: Date;
   sessions?: Session[];
   accounts?: Account[];
-  companies?: CompanyData[];
   companyId?: String;
 }
 
@@ -80,8 +79,21 @@ export interface InboxData {
   id: number;
   inbox_id: number;
   createdAt: Date;
-  data: string;
+  data: string; // JSON string containing form data
   inbox?: Inbox;
+}
+
+// Parsed version of InboxData.data for type safety
+export interface ParsedInboxData {
+  [key: string]: any;
+  name?: string;
+  email?: string;
+  message?: string;
+}
+
+// Enhanced InboxData with parsed data
+export interface InboxDataWithParsed extends InboxData {
+  parsedData: ParsedInboxData;
 }
 
 export interface Blog {
@@ -153,20 +165,18 @@ export type SharingMemberType = {
 export type CompanyType = {
   id?: string;
   name: string;
-  owner: string;
   domain: string;
-  activity_data?: ActivityDataType[];
-  info?: InfoItemType[];
-  sharing?: SharingMemberType[];
   key: string;
+  [key: string]: any;
 };
 
 export type blogType = {
-  id?: number;
+  id?: string;
   title: string;
   image: string;
   data: string;
   owner: string;
+  [key: string]: any;
 };
 
 export type inboxType = {

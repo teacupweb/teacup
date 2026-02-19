@@ -11,7 +11,7 @@ import { useMemo } from 'react';
 function DashboardContent() {
   const { user } = useAuth();
   const companyId =
-    user && typeof user !== 'string' ? user.user_metadata?.company_id : null;
+    user && typeof user !== 'string' ? user.companyId : null;
   const { data: company, isLoading: loading } = useCompany(companyId);
 
   const { data: latestMessages, isLoading: messagesLoading } =
@@ -66,7 +66,7 @@ function DashboardContent() {
       {
         title: 'New Messages',
         description: 'Messages received in your inboxes',
-        data: latestMessages?.length || 0,
+        data: latestMessages?.length ?? 0,
         icon: 'mail',
       },
       {
@@ -245,8 +245,8 @@ function DashboardContent() {
                             <Spinner size='sm' />
                           </td>
                         </tr>
-                      ) : latestMessages.length > 0 ? (
-                        latestMessages.map((message: any, i: number) => (
+                      ) : (latestMessages ?? []).length > 0 ? (
+                        (latestMessages ?? []).map((message: any, i: number) => (
                           <tr
                             key={message.id || i}
                             className='hover:bg-muted/50 transition-all duration-300 group/row'

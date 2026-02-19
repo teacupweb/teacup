@@ -14,7 +14,7 @@ function Blogs() {
     isLoading: loading,
     refetch,
   } = useUserBlogs(
-    user === 'userNotFound' ? null : user?.user_metadata.company_id,
+    user === 'userNotFound' ? null : user?.companyId,
   );
 
   const deleteBlogMutation = useDeleteBlog();
@@ -38,7 +38,7 @@ function Blogs() {
         if (id !== undefined) {
           deleteBlogMutation.mutateAsync(id.toString()).then(() => {
             Swal.fire('Deleted!', 'Your blog has been deleted.', 'success');
-            // refetch is handled by query invalidation in backendProvider
+            refetch();
           });
         }
       }
@@ -96,8 +96,8 @@ function Blogs() {
                             <Spinner className='mx-auto' />
                           </td>
                         </tr>
-                      ) : data.length > 0 ? (
-                        data.map((blog) => (
+                      ) : (data ?? []).length > 0 ? (
+                        (data ?? []).map((blog) => (
                           <tr
                             className='bg-card border-b border-border hover:bg-muted transition-colors'
                             key={blog.id}

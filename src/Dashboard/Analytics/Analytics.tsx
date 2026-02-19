@@ -6,7 +6,7 @@ import AnalyticsClient from './AnalyticsClient';
 
 export default function Analytics() {
   const { user } = useAuth();
-  const companyId = user && typeof user !== 'string' ? user.user_metadata?.company_id : null;
+  const companyId = user && typeof user !== 'string' ? user.companyId : null;
   
   // Fetch all analytics categories like dashboard does
   const { data: pageAnalytics, isLoading: pageLoading } = useAnalytics(companyId, 'page');
