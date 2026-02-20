@@ -1,3 +1,4 @@
+'use client';
 import {
   useInboxData,
   useDeleteInboxData,
@@ -5,20 +6,18 @@ import {
   parseInboxDataField,
   type InboxData,
 } from '@/backendProvider';
-import type { ParsedInboxData } from '@/types/schema';
 import DisplayCard from '@/Components/DisplayCards';
 import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Modal, { openModal } from '@/Components/Modal';
 import Spinner from '@/Components/Spinner';
 import Swal from 'sweetalert2';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 
-export default function Inbox() {
-  const { id } = useParams();
+export default function Inbox({ id }: { id: string }) {
   const navigate = useRouter();
   const [modalData, setModalData] = useState<InboxData | null>(null);
-  const { data, isLoading: loading, refetch } = useInboxData(Number(id));
+  const { data, isLoading: loading, refetch } = useInboxData(id);
 
   // Refetch data when component mounts
   useEffect(() => {
@@ -33,7 +32,7 @@ export default function Inbox() {
   const handleDelete = (itemId: string) => async () => {
     // Close the modal if open
     const modal = document.getElementById(
-      'inbox-data-modal'
+      'inbox-data-modal',
     ) as HTMLDialogElement;
     if (modal) modal.close();
 
@@ -48,7 +47,7 @@ export default function Inbox() {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await deleteInboxDataMutation.mutateAsync(Number(itemId));
+          await deleteInboxDataMutation.mutateAsync(itemId);
           toast.success('The message has been deleted.');
           refetch();
         } catch (error) {
@@ -72,9 +71,9 @@ export default function Inbox() {
       if (result.isConfirmed) {
         try {
           if (id) {
-            await deleteInboxMutation.mutateAsync(Number(id));
+            await deleteInboxMutation.mutateAsync(id);
             toast.success('The inbox has been deleted.');
-            navigate.push('/dashboard/Inboxes');
+            navigate.push('/dashboard/inboxes');
           }
         } catch (error) {
           console.error('Error deleting inbox:', error);
@@ -194,7 +193,9 @@ export default function Inbox() {
           </h2>
           <div className='space-y-4'>
             {(() => {
-              const parsedData = modalData ? parseInboxDataField(modalData) : {};
+              const parsedData = modalData
+                ? parseInboxDataField(modalData)
+                : {};
               return Object.keys(parsedData).map((key) => (
                 <div
                   key={key}
@@ -203,16 +204,16 @@ export default function Inbox() {
                   <div className='w-1/3 text-sm font-bold text-rose-500 dark:text-rose-400 capitalize'>
                     {key.replace(/([A-Z])/g, ' $1').trim()}
                   </div>
-                  <div className='w-2/3 text-foreground'>
-                    {parsedData[key]}
-                  </div>
+                  <div className='w-2/3 text-foreground'>{parsedData[key]}</div>
                 </div>
               ));
             })()}
           </div>
           <div className='flex justify-end mt-6'>
             <button
-              onClick={modalData ? handleDelete(modalData.id.toString()) : undefined}
+              onClick={
+                modalData ? handleDelete(modalData.id.toString()) : undefined
+              }
               className='px-4 py-2 text-sm font-medium text-white bg-rose-600 rounded hover:bg-rose-700 transition-colors'
             >
               Delete

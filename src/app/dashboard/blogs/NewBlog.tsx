@@ -11,7 +11,7 @@ import {
 import { useAuth } from '@/AuthProvider';
 import { useParams, useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 
 const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
   const { cloudinaryName, cloudinaryPreset } = envData;

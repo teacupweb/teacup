@@ -1,20 +1,15 @@
 import { useAuth } from '@/AuthProvider';
-import {
-  useCreateInbox,
-  useUserInboxes,
-  type inboxType,
-} from '@/backendProvider';
+import { useCreateInbox, useUserInboxes } from '@/backendProvider';
 import DisplayCard from '@/Components/DisplayCards';
 import Modal, { openModal } from '@/Components/Modal';
 import Link from 'next/link';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 import Spinner from '@/Components/Spinner';
 import { useEffect } from 'react';
 
 export default function Inboxes() {
   const { user } = useAuth();
   const company_id = user?.companyId;
-  console.log(company_id);
   const { data, isLoading: loading, refetch } = useUserInboxes(company_id);
 
   // Refetch data when component mounts
@@ -51,12 +46,7 @@ export default function Inboxes() {
       await createInboxMutation.mutateAsync(inboxData);
 
       // Success message
-      toast.update(toastId, {
-        render: 'Inbox created successfully!',
-        type: 'success',
-        isLoading: false,
-        autoClose: 3000,
-      });
+      toast.success('Inbox created successfully!', { id: toastId });
 
       // Close the modal
       const modal = document.getElementById(

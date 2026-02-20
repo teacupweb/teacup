@@ -17,7 +17,7 @@ import {
   type CompanyType,
 } from '@/backendProvider';
 import Spinner from '@/Components/Spinner';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 
 const API_URL = process.env.NEXT_PUBLIC_BACKEND;
 

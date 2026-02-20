@@ -3,7 +3,7 @@ import { Eye, EyeOff, Mail, Lock, User, ArrowRight } from 'lucide-react';
 import { useAuth } from '@/AuthProvider';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 
 export default function AuthPage({ isLogin }: { isLogin: boolean }) {
   const { signUpUser, loginUser, user, signInWithGoogle } = useAuth();

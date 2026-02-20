@@ -1,5 +1,5 @@
-// Modal.tsx
-import React, { useEffect, useState } from "react";
+'use client';
+import React, { useEffect, useState } from 'react';
 
 // Types
 interface ModalProps {
@@ -42,7 +42,7 @@ const Modal: React.FC<ModalProps> = ({
   onClose,
   closeOnBackdrop = true,
   closeOnEscape = true,
-  className = "",
+  className = '',
 }) => {
   const [internalIsOpen, setInternalIsOpen] = useState<boolean>(false);
 
@@ -75,19 +75,19 @@ const Modal: React.FC<ModalProps> = ({
   // Handle ESC key and body scroll
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent): void => {
-      if (e.key === "Escape" && closeOnEscape && isOpen) {
+      if (e.key === 'Escape' && closeOnEscape && isOpen) {
         handleClose();
       }
     };
 
     if (isOpen) {
-      document.addEventListener("keydown", handleEscape);
-      document.body.style.overflow = "hidden";
+      document.addEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'hidden';
     }
 
     return () => {
-      document.removeEventListener("keydown", handleEscape);
-      document.body.style.overflow = "unset";
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'unset';
     };
   }, [isOpen, closeOnEscape]);
 
@@ -95,7 +95,7 @@ const Modal: React.FC<ModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[rgba(0,0,0,0.5)]"
+      className='fixed inset-0 z-50 flex items-center justify-center p-4 bg-[rgba(0,0,0,0.5)]'
       onClick={handleBackdropClick}
     >
       <div
@@ -111,28 +111,28 @@ const Modal: React.FC<ModalProps> = ({
 
         {/* Close button */}
         <button
-          className="
+          className='
             absolute top-3 right-3
             w-8 h-8 rounded-full
             flex items-center justify-center
             hover:bg-muted transition-colors
             text-muted-foreground hover:text-foreground
             z-10
-          "
+          '
           onClick={handleClose}
-          aria-label="Close modal"
+          aria-label='Close modal'
         >
           <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+            className='w-4 h-4'
+            fill='none'
+            stroke='currentColor'
+            viewBox='0 0 24 24'
           >
             <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
+              strokeLinecap='round'
+              strokeLinejoin='round'
               strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
+              d='M6 18L18 6M6 6l12 12'
             />
           </svg>
         </button>

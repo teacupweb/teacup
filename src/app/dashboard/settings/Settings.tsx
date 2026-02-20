@@ -1,9 +1,9 @@
 import { useAuth } from '@/AuthProvider';
 import { useRouter } from 'next/navigation';
-import { useCompany } from '@/backendProvider';
+import { useCompany, useCompanyUsers, useRemoveUser, useChangeUserRole, type SharingUser } from '@/backendProvider';
 import { authClient } from '@/lib/auth-client';
 import Swal from 'sweetalert2';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 import { useState } from 'react';
 import Spinner from '@/Components/Spinner';
 import Modal from '@/Components/Modal';
@@ -18,7 +18,15 @@ function Settings() {
   const companyId = user.companyId;
   console.log(user);
   const { data: company, isLoading: loading } = useCompany(companyId);
+  const { data: companyUsers, isLoading: usersLoading, refetch: refetchUsers } = useCompanyUsers(companyId);
+  const { mutateAsync: removeUser, isLoading: removingUser } = useRemoveUser();
+  const { mutateAsync: changeUserRole, isLoading: changingRole } = useChangeUserRole();
+  
   const companySecret = company?.key || 'No company secret found';
+  
+  // Check if current user is admin
+  const currentUserRole = companyUsers?.find(u => u.id === user.id)?.role || 'user';
+  const isAdmin = currentUserRole === 'admin';
 
   // State for toggles
   const [emailNotifications, setEmailNotifications] = useState(true);
@@ -168,6 +176,38 @@ function Settings() {
     setIsManualCompanyModalOpen(true);
   };
 
+  const handleRemoveUser = async (userId: string, userEmail: string) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: `Remove ${userEmail} from the company?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#e11d48',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Yes, remove!',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await removeUser({ companyId: companyId!, userId });
+          toast.success('User removed successfully');
+          refetchUsers();
+        } catch (error: any) {
+          toast.error(error.message || 'Failed to remove user');
+        }
+      }
+    });
+  };
+
+  const handleChangeRole = async (userId: string, newRole: 'user' | 'admin') => {
+    try {
+      await changeUserRole({ companyId: companyId!, userId, role: newRole });
+      toast.success(`User role changed to ${newRole}`);
+      refetchUsers();
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to change user role');
+    }
+  };
+
   // Get user info from Better Auth session
   const userName = user.name;
   const userEmail = user.email;
@@ -177,7 +217,7 @@ function Settings() {
     .join('')
     .slice(0, 2);
 
-  if (loading) {
+  if (loading || usersLoading) {
     return (
       <div className='flex flex-col w-full h-full p-6'>
         <div className='flex-1 flex items-center justify-center'>
@@ -292,47 +332,63 @@ function Settings() {
                 </div>
                 <div className='pt-2'>
                   <h4 className='text-xs font-semibold text-rose-500 uppercase tracking-wider mb-3'>
-                    Members ({company?.sharing?.length || 0})
+                    Members ({companyUsers?.length || 0})
                   </h4>
-                  {company?.sharing && company.sharing.length > 0 ? (
+                  {companyUsers && companyUsers.length > 0 ? (
                     <div className='space-y-3'>
-                      {company.sharing.map((member: any, index: number) => (
+                      {companyUsers.map((member: SharingUser, index: number) => (
                         <div
                           className='flex items-center justify-between bg-muted/50 p-3 rounded-lg'
-                          key={member.email + index}
+                          key={member.id + index}
                         >
                           <div className='flex items-center gap-3'>
                             <div className='w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center text-rose-600 text-xs font-bold'>
-                              {member.name
-                                ? member.name
-                                    .split(' ')
-                                    .map((word: string) =>
-                                      word.charAt(0).toUpperCase(),
-                                    )
-                                    .join('')
-                                    .slice(0, 2)
-                                : 'NN'}
+                              {member.email
+                                .split(' ')
+                                .map((word: string) =>
+                                  word.charAt(0).toUpperCase(),
+                                )
+                                .join('')
+                                .slice(0, 2)}
                             </div>
                             <div>
                               <p className='text-sm font-medium text-foreground/90'>
-                                {member.name || 'Unknown Name'}
+                                {member.email}
                               </p>
                               <p className='text-xs text-muted-foreground'>
-                                {member.email}
+                                {member.role}
                               </p>
                             </div>
                           </div>
-                          <span
-                            className={`text-xs font-medium px-2 py-1 rounded-full ${
-                              member.status === 'Owner'
-                                ? 'bg-rose-100 text-rose-600'
-                                : member.status === 'Member'
-                                  ? 'bg-blue-100 text-blue-600'
-                                  : 'bg-orange-100 text-orange-600'
-                            }`}
-                          >
-                            {member.status}
-                          </span>
+                          <div className='flex items-center gap-2'>
+                            <span
+                              className={`text-xs font-medium px-2 py-1 rounded-full ${
+                                member.role === 'admin'
+                                  ? 'bg-rose-100 text-rose-600'
+                                  : 'bg-blue-100 text-blue-600'
+                              }`}
+                            >
+                              {member.role}
+                            </span>
+                            {isAdmin && member.id !== user.id && (
+                              <>
+                                <button
+                                  onClick={() => handleChangeRole(member.id, member.role === 'admin' ? 'user' : 'admin')}
+                                  disabled={changingRole}
+                                  className='text-xs bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded-lg transition-colors disabled:opacity-60'
+                                >
+                                  {member.role === 'admin' ? 'Demote' : 'Promote'}
+                                </button>
+                                <button
+                                  onClick={() => handleRemoveUser(member.id, member.email)}
+                                  disabled={removingUser}
+                                  className='text-xs bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-lg transition-colors disabled:opacity-60'
+                                >
+                                  Remove
+                                </button>
+                              </>
+                            )}
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -397,7 +453,7 @@ function Settings() {
               <h4 className='font-bold text-lg text-foreground'>{userName}</h4>
               <p className='text-muted-foreground text-sm mb-1'>{userEmail}</p>
               <p className='text-muted-foreground/60 text-xs mb-4'>
-                {company?.sharing?.[0]?.status || 'Member'}
+                {currentUserRole || 'user'}
               </p>
               <div className='w-full space-y-2'>
                 <button

@@ -194,19 +194,19 @@ export function useCreateInbox() {
 }
 
 export function useDeleteInbox() {
-  return useMutate<void, number>((id) =>
+  return useMutate<void, string>((id) =>
     fetchApi(`/dashboard/inbox/${id}`, {
       method: 'DELETE',
     }),
   );
 }
 
-export function useInboxData(id: number | undefined) {
+export function useInboxData(id: string | undefined) {
   return useFetch<InboxData[]>(id ? `/dashboard/inbox/data/${id}` : null);
 }
 
 export function useDeleteInboxData() {
-  return useMutate<void, number>((id) =>
+  return useMutate<void, string>((id) =>
     fetchApi(`/dashboard/inbox/data/${id}`, {
       method: 'DELETE',
     }),
@@ -359,6 +359,37 @@ export function useTrackAnalytics() {
       method: 'POST',
       body: JSON.stringify(data),
     }),
+  );
+}
+
+// --- Sharing ---
+
+export interface SharingUser {
+  id: string;
+  email: string;
+  role: 'user' | 'admin';
+}
+
+export function useCompanyUsers(companyId: string | undefined | null) {
+  return useFetch<SharingUser[]>(companyId ? `/dashboard/sharing/${companyId}/users` : null);
+}
+
+export function useRemoveUser() {
+  return useMutate<{ success: boolean }, { companyId: string; userId: string }>(
+    ({ companyId, userId }) =>
+      fetchApi(`/dashboard/sharing/${companyId}/users/${userId}`, {
+        method: 'DELETE',
+      }),
+  );
+}
+
+export function useChangeUserRole() {
+  return useMutate<{ success: boolean }, { companyId: string; userId: string; role: 'user' | 'admin' }>(
+    ({ companyId, userId, role }) =>
+      fetchApi(`/dashboard/sharing/${companyId}/users/${userId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ role }),
+      }),
   );
 }
 

@@ -1,7 +1,6 @@
 import { ThemeProvider } from 'next-themes';
 import AuthProviderBetterAuth from '@/AuthProvider';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { Toaster } from 'sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 
 export default function Providers({ children }: { children: React.ReactNode }) {
@@ -10,7 +9,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       <AuthProviderBetterAuth>
         <TooltipProvider>
           {children}
-          <ToastContainer />
+          <Toaster position="top-center" richColors />
         </TooltipProvider>
       </AuthProviderBetterAuth>
     </ThemeProvider>

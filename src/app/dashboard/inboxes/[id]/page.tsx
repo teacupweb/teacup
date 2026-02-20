@@ -1,9 +1,11 @@
-"use client";
-
 import Inbox from '@/Dashboard/Inbox';
-import { use } from 'react';
 
-export default function InboxPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
-  return <Inbox />;
+export default async function InboxPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  console.log(id);
+  return <Inbox id={id} />;
 }
