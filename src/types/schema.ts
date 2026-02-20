@@ -143,6 +143,20 @@ export interface AnalyticsForm {
   analytics?: Analytics;
 }
 
+export interface EditRequest {
+  id: string;
+  title: string;
+  description: string;
+  date: Date;
+  status: 'pending' | 'in-progress' | 'completed';
+  createdAt: Date;
+  userId: string;
+  companyId: string;
+  updatedAt: Date;
+  user?: User;
+  company?: CompanyData;
+}
+
 // Legacy types for backward compatibility
 export type ActivityDataType = {
   day: string;

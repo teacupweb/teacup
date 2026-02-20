@@ -16,6 +16,7 @@ import {
   blogType,
   inboxType,
   User,
+  EditRequest,
 } from '@/types/schema';
 
 const API_URL = process.env.NEXT_PUBLIC_BACKEND || 'http://localhost:8000';
@@ -393,6 +394,48 @@ export function useChangeUserRole() {
   );
 }
 
+// --- Edit Requests ---
+
+export function useUserEditRequests(companyId: string | undefined | null) {
+  return useFetch<EditRequest[]>(companyId ? `/dashboard/editRequest/${companyId}` : null);
+}
+
+export function useEditRequest(
+  companyId: string | undefined | null,
+  id: string | undefined,
+) {
+  return useFetch<EditRequest>(
+    companyId && id ? `/dashboard/editRequest/${companyId}/${id}` : null,
+  );
+}
+
+export function useCreateEditRequest() {
+  return useMutate<EditRequest, Partial<EditRequest>>((newEditRequest) =>
+    fetchApi('/dashboard/editRequest', {
+      method: 'POST',
+      body: JSON.stringify(newEditRequest),
+    }),
+  );
+}
+
+export function useUpdateEditRequest() {
+  return useMutate<EditRequest, { id: string; editRequest: Partial<EditRequest> }>(
+    ({ id, editRequest }) =>
+      fetchApi(`/dashboard/editRequest/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(editRequest),
+      }),
+  );
+}
+
+export function useDeleteEditRequest() {
+  return useMutate<void, string>((id) =>
+    fetchApi(`/dashboard/editRequest/${id}`, {
+      method: 'DELETE',
+    }),
+  );
+}
+
 // Legacy exports for backward compatibility
 export type {
   ActivityDataType,
@@ -417,4 +460,5 @@ export type {
   AnalyticsButton,
   AnalyticsPage,
   AnalyticsForm,
+  EditRequest,
 } from '@/types/schema';
