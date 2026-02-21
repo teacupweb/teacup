@@ -9,7 +9,7 @@ export default function PricingPage() {
   const plans = [
     {
       name: 'Monthly',
-      price: '40',
+      price: '30',
       period: '/month',
       description: 'Perfect for small businesses looking to get started.',
       features: [

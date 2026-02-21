@@ -1,6 +1,6 @@
+'use client';
+
 import { useState, useRef, useEffect } from 'react';
-import Quill from 'quill';
-import 'quill/dist/quill.snow.css';
 import envData from '@/envData';
 import {
   useBlog,
@@ -12,6 +12,9 @@ import { useAuth } from '@/AuthProvider';
 import { useParams, useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
 import { toast } from 'sonner';
+
+// Import Quill styles normally
+import 'quill/dist/quill.snow.css';
 
 const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
   const { cloudinaryName, cloudinaryPreset } = envData;
@@ -33,8 +36,14 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
 
   // Refs for Quill
   const editorContainerRef = useRef<HTMLDivElement>(null);
-  const quillInstanceRef = useRef<Quill | null>(null);
+  const quillInstanceRef = useRef<any>(null);
   const isQuillInitialized = useRef(false);
+  const [isClient, setIsClient] = useState(false);
+
+  // Set isClient to true when component mounts
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -50,42 +59,54 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
 
   // Initialize Quill
   useEffect(() => {
-    if (editorContainerRef.current && !isQuillInitialized.current) {
-      const modules = {
-        toolbar: [
-          ['bold', 'italic', 'underline', 'strike'],
-          [{ list: 'ordered' }, { list: 'bullet' }],
-          [{ header: [1, 2, 3, 4, 5, 6, false] }],
-          ['link', 'image', 'video'],
-          [{ color: [] }, { background: [] }],
-          ['clean'],
-        ],
-      };
-
-      const quill = new Quill(editorContainerRef.current, {
-        theme: 'snow',
-        modules,
-        placeholder: 'Write your article content here...',
-      });
-
-      quillInstanceRef.current = quill;
-      isQuillInitialized.current = true;
-
-      // Handle text change
-      quill.on('text-change', () => {
-        setFormData((prev) => ({ ...prev, data: quill.root.innerHTML }));
-      });
-
-      // If we have initial data (e.g. from a re-render or if data loaded fast), set it
-      if (formData.data && formData.data !== '<p><br></p>') {
-        // Check if content is different to avoid cursor jumps or loops
-        if (quill.root.innerHTML !== formData.data) {
-          quill.setText(''); // Clear first to avoid delta errors
-          quill.clipboard.dangerouslyPasteHTML(0, formData.data);
-        }
-      }
+    if (!isClient || !editorContainerRef.current || isQuillInitialized.current) {
+      return;
     }
-  }, []); // Run once on mount
+
+    const initializeQuill = async () => {
+      try {
+        const QuillModule = await import('quill');
+        const Quill = QuillModule.default;
+        
+        const modules = {
+          toolbar: [
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ list: 'ordered' }, { list: 'bullet' }],
+            [{ header: [1, 2, 3, 4, 5, 6, false] }],
+            ['link', 'image', 'video'],
+            [{ color: [] }, { background: [] }],
+            ['clean'],
+          ],
+        };
+
+        const quill = new Quill(editorContainerRef.current!, {
+          theme: 'snow',
+          modules,
+          placeholder: 'Write your article content here...',
+        });
+
+        quillInstanceRef.current = quill;
+        isQuillInitialized.current = true;
+
+        // Handle text change
+        quill.on('text-change', () => {
+          setFormData((prev) => ({ ...prev, data: quill.root.innerHTML }));
+        });
+
+        // If we have initial data, set it
+        if (formData.data && formData.data !== '<p><br></p>') {
+          if (quill.root.innerHTML !== formData.data) {
+            quill.setText('');
+            quill.clipboard.dangerouslyPasteHTML(0, formData.data);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to initialize Quill:', error);
+      }
+    };
+
+    initializeQuill();
+  }, [isClient, formData.data]);
 
   // Update form data when blogData is fetched
   useEffect(() => {
@@ -200,7 +221,7 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
       const submitData = {
         ...formData,
         image: finalImageUrl,
-        // Ensure created_by is set if it wasn't already
+        // Ensure created_by is set if it wasn't originally
         owner: formData.owner || company,
       };
 

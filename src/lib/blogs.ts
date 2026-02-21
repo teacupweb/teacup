@@ -1,4 +1,4 @@
-const API_URL = process.env.BACKEND || 'http://localhost:8000';
+const API_URL = process.env.NEXT_PUBLIC_BACKEND || process.env.BACKEND || 'http://localhost:8000';
 
 export type blogType = {
   id?: number;

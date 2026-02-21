@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useAuth } from '@/AuthProvider';
 import { deleteBlog, getUserBlogs, type blogType } from '@/lib/blogs';
 import Swal from 'sweetalert2';
-import Spinner from '@/Components/Spinner';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useState, useEffect } from 'react';
 
 interface BlogsClientProps {
@@ -84,7 +84,15 @@ function BlogsClient() {
                       {loading ? (
                         <tr>
                           <td colSpan={3} className='py-8'>
-                            <Spinner className='mx-auto' />
+                            <div className='space-y-2'>
+                              {[...Array(5)].map((_, index) => (
+                                <div key={index} className='flex items-center space-x-4 py-2'>
+                                  <Skeleton className='h-4 w-48' />
+                                  <Skeleton className='h-4 w-32' />
+                                  <Skeleton className='h-4 w-20 ml-auto' />
+                                </div>
+                              ))}
+                            </div>
                           </td>
                         </tr>
                       ) : blogs.length > 0 ? (

@@ -1,3 +1,5 @@
+'use client';
+
 import DashboardContent from '@/components/dashboard-content';
 
 function Dashboard() {

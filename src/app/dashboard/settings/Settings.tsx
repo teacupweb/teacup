@@ -1,3 +1,5 @@
+'use client';
+
 import { useAuth } from '@/AuthProvider';
 import { useRouter } from 'next/navigation';
 import { useCompany, useCompanyUsers, useRemoveUser, useChangeUserRole, type SharingUser } from '@/backendProvider';
@@ -5,7 +7,7 @@ import { authClient } from '@/lib/auth-client';
 import Swal from 'sweetalert2';
 import { toast } from 'sonner';
 import { useState } from 'react';
-import Spinner from '@/Components/Spinner';
+import { Skeleton } from '@/components/ui/skeleton';
 import Modal from '@/Components/Modal';
 import { useTheme } from 'next-themes';
 import type { User } from '@/types/schema';
@@ -220,8 +222,13 @@ function Settings() {
   if (loading || usersLoading) {
     return (
       <div className='flex flex-col w-full h-full p-6'>
-        <div className='flex-1 flex items-center justify-center'>
-          <Spinner size='lg' />
+        <div className='flex-1 space-y-6'>
+          <Skeleton className='h-8 w-64' />
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+            <Skeleton className='h-32 w-full' />
+            <Skeleton className='h-32 w-full' />
+          </div>
+          <Skeleton className='h-64 w-full' />
         </div>
       </div>
     );

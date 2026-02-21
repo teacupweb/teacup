@@ -1,3 +1,5 @@
+'use client';
+
 import { ThemeProvider } from 'next-themes';
 import AuthProviderBetterAuth from '@/AuthProvider';
 import { Toaster } from 'sonner';

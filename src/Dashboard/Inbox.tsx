@@ -10,7 +10,7 @@ import DisplayCard from '@/Components/DisplayCards';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Modal, { openModal } from '@/Components/Modal';
-import Spinner from '@/Components/Spinner';
+import { Skeleton } from '@/components/ui/skeleton';
 import Swal from 'sweetalert2';
 import { toast } from 'sonner';
 
@@ -115,7 +115,14 @@ export default function Inbox({ id }: { id: string }) {
                       {loading ? (
                         <tr>
                           <td colSpan={2} className='py-8'>
-                            <Spinner className='mx-auto' />
+                            <div className='space-y-2'>
+                              {[...Array(5)].map((_, index) => (
+                                <div key={index} className='flex items-center space-x-4 py-2'>
+                                  <Skeleton className='h-4 w-48' />
+                                  <Skeleton className='h-4 w-12 ml-auto' />
+                                </div>
+                              ))}
+                            </div>
                           </td>
                         </tr>
                       ) : displayData.length > 0 ? (

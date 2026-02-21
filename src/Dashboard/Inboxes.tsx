@@ -4,7 +4,7 @@ import DisplayCard from '@/Components/DisplayCards';
 import Modal, { openModal } from '@/Components/Modal';
 import Link from 'next/link';
 import { toast } from 'sonner';
-import Spinner from '@/Components/Spinner';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useEffect } from 'react';
 
 export default function Inboxes() {
@@ -34,10 +34,7 @@ export default function Inboxes() {
     try {
       const inboxData = {
         name: name,
-        ownerId:
-          user !== 'userNotFound' && user?.companyId
-            ? user.companyId
-            : '',
+        ownerId: user?.companyId || '',
       };
 
       // Show loading toast
@@ -104,7 +101,18 @@ export default function Inboxes() {
                       {loading ? (
                         <tr>
                           <td colSpan={2} className='py-8'>
-                            <Spinner className='mx-auto' />
+                            <div className='space-y-2'>
+                              {[...Array(5)].map((_, index) => (
+                                <div
+                                  key={index}
+                                  className='flex items-center space-x-4 py-2'
+                                >
+                                  <Skeleton className='h-4 w-48' />
+                                  <Skeleton className='h-4 w-24' />
+                                  <Skeleton className='h-4 w-12 ml-auto' />
+                                </div>
+                              ))}
+                            </div>
                           </td>
                         </tr>
                       ) : (data ?? []).length > 0 ? (

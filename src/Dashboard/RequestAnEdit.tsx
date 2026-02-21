@@ -4,6 +4,7 @@ import DisplayCard from '@/Components/DisplayCards';
 import Modal, { openModal } from '@/Components/Modal';
 import { toast } from 'sonner';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/AuthProvider';
 import { useUserEditRequests, useCreateEditRequest, useDeleteEditRequest, type EditRequest } from '@/backendProvider';
 
@@ -53,8 +54,8 @@ export default function RequestAnEdit() {
       return;
     }
 
-    if (!user?.id || !companyId) {
-      toast.error('User or company information not available!');
+    if (!companyId) {
+      toast.error('Company information not available!');
       return;
     }
     
@@ -65,7 +66,7 @@ export default function RequestAnEdit() {
         date: new Date(),
         status: 'pending' as const,
         createdAt: new Date(),
-        userId: user.id,
+        userId: user.companyId,
         companyId,
       };
 
@@ -136,9 +137,15 @@ export default function RequestAnEdit() {
                   <TableBody>
                     {isLoading ? (
                       <TableRow>
-                        <TableCell colSpan={3} className='py-16'>
-                          <div className='flex items-center justify-center'>
-                            <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-rose-600'></div>
+                        <TableCell colSpan={3} className='py-8'>
+                          <div className='space-y-2'>
+                            {[...Array(5)].map((_, index) => (
+                              <div key={index} className='flex items-center space-x-4 py-2'>
+                                <Skeleton className='h-4 w-24' />
+                                <Skeleton className='h-4 w-48' />
+                                <Skeleton className='h-4 w-32 ml-auto' />
+                              </div>
+                            ))}
                           </div>
                         </TableCell>
                       </TableRow>

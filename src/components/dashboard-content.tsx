@@ -3,7 +3,7 @@
 import DisplayCard from '@/Components/DisplayCards';
 import { useCompany, useLatestMessages } from '@/backendProvider';
 import { useAuth } from '@/AuthProvider';
-import Spinner from '@/Components/Spinner';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Globe, Mail, Users, FileText } from 'lucide-react';
 import { useAnalytics } from '@/backendProvider';
 import { useMemo } from 'react';
@@ -144,8 +144,52 @@ function DashboardContent() {
   // Show loading state
   if (loading || pageLoading || formLoading || buttonLoading || !company) {
     return (
-      <div className='flex-1 flex items-center justify-center'>
-        <Spinner size='lg' />
+      <div className='flex-1 p-2 sm:p-4 md:p-6 w-full h-full max-w-7xl mx-auto'>
+        <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 w-full h-full auto-rows-min'>
+          {/* Stats Cards Skeleton */}
+          <div className='col-span-1 md:col-span-2 xl:col-span-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6'>
+            {[...Array(4)].map((_, index) => (
+              <div key={index} className='col-span-1 bg-card dark:bg-card/50 text-card-foreground rounded-2xl border border-border/80 shadow-sm p-4 sm:p-5 md:p-6 w-full'>
+                <div className='space-y-3'>
+                  <Skeleton className='h-4 w-24' />
+                  <Skeleton className='h-3 w-32' />
+                  <Skeleton className='h-8 w-16' />
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          {/* Messages Table Skeleton */}
+          <div className='col-span-1 md:col-span-2 xl:col-span-2 row-span-1 lg:row-span-2 bg-card rounded-2xl border border-border/80 shadow-sm p-6 w-full h-full min-h-[400px]'>
+            <div className='space-y-4'>
+              <Skeleton className='h-6 w-32' />
+              <Skeleton className='h-4 w-48' />
+              <div className='space-y-2'>
+                {[...Array(5)].map((_, index) => (
+                  <div key={index} className='flex items-center space-x-4 py-2'>
+                    <Skeleton className='h-4 w-24' />
+                    <Skeleton className='h-4 w-20 hidden sm:block' />
+                    <Skeleton className='h-4 w-16 hidden md:block' />
+                    <Skeleton className='h-4 w-12 ml-auto' />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          
+          {/* Chart Skeleton */}
+          <div className='col-span-1 md:col-span-2 xl:col-span-2 row-span-1 lg:row-span-2 bg-card border border-border/80 rounded-2xl shadow-sm p-6 w-full h-full min-h-[400px]'>
+            <div className='space-y-4'>
+              <Skeleton className='h-6 w-40' />
+              <Skeleton className='h-4 w-32' />
+              <Skeleton className='h-64 w-full' />
+              <div className='flex justify-between'>
+                <Skeleton className='h-4 w-24' />
+                <Skeleton className='h-4 w-32' />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -241,8 +285,17 @@ function DashboardContent() {
                     <tbody className='divide-y divide-border/50'>
                       {messagesLoading ? (
                         <tr>
-                          <td colSpan={4} className='py-8 text-center'>
-                            <Spinner size='sm' />
+                          <td colSpan={4} className='py-8'>
+                            <div className='space-y-2'>
+                              {[...Array(3)].map((_, index) => (
+                                <div key={index} className='flex items-center space-x-4 py-2'>
+                                  <Skeleton className='h-4 w-24' />
+                                  <Skeleton className='h-4 w-20 hidden sm:block' />
+                                  <Skeleton className='h-4 w-16 hidden md:block' />
+                                  <Skeleton className='h-4 w-12 ml-auto' />
+                                </div>
+                              ))}
+                            </div>
                           </td>
                         </tr>
                       ) : (latestMessages ?? []).length > 0 ? (

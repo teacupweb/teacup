@@ -14,7 +14,7 @@ function CheckoutContent() {
   const plan = searchParams.get('plan') || 'monthly';
 
   const planDetails: Record<string, { name: string; price: string; period: string }> = {
-    monthly: { name: 'Monthly Plan', price: '40', period: '/month' },
+    monthly: { name: 'Monthly Plan', price: '30', period: '/month' },
     lifetime: { name: 'Lifetime Access', price: '500', period: ' one-time' },
   };
 
@@ -77,7 +77,7 @@ function CheckoutContent() {
             <div className='bg-card border border-border rounded-3xl p-8'>
               <h2 className='text-xl font-bold mb-6 flex items-center gap-2'>
                 <User className='w-5 h-5 text-rose-600' />
-                Billing Information
+                Contact Information
               </h2>
               
               <div className='grid md:grid-cols-2 gap-6'>
@@ -99,57 +99,53 @@ function CheckoutContent() {
                   />
                 </div>
               </div>
-            </div>
-
-            <div className='bg-card border border-border rounded-3xl p-8'>
-              <h2 className='text-xl font-bold mb-6 flex items-center gap-2'>
-                <CreditCard className='w-5 h-5 text-rose-600' />
-                Payment Method
-              </h2>
-              
-              <div className='space-y-6'>
-                <div className='space-y-2'>
-                  <label className='text-sm font-medium'>Card Number</label>
-                  <div className='relative'>
-                    <input 
-                      type='text' 
-                      placeholder='0000 0000 0000 0000'
-                      className='w-full px-4 py-3 rounded-xl border border-border bg-background focus:border-rose-500 focus:outline-none transition-colors pr-12'
-                    />
-                    <CreditCard className='absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground w-5 h-5' />
-                  </div>
-                </div>
-                
-                <div className='grid grid-cols-2 gap-6'>
-                  <div className='space-y-2'>
-                    <label className='text-sm font-medium'>Expiry Date</label>
-                    <input 
-                      type='text' 
-                      placeholder='MM / YY'
-                      className='w-full px-4 py-3 rounded-xl border border-border bg-background focus:border-rose-500 focus:outline-none transition-colors'
-                    />
-                  </div>
-                  <div className='space-y-2'>
-                    <label className='text-sm font-medium'>CVC</label>
-                    <input 
-                      type='text' 
-                      placeholder='123'
-                      className='w-full px-4 py-3 rounded-xl border border-border bg-background focus:border-rose-500 focus:outline-none transition-colors'
-                    />
-                  </div>
-                </div>
-              </div>
               
               <button 
-                className='w-full mt-10 bg-linear-to-r from-rose-500 to-rose-600 text-white py-4 rounded-2xl font-bold text-lg hover:from-rose-600 hover:to-rose-700 transition-all shadow-lg shadow-rose-500/20 flex items-center justify-center gap-2 group'
-                onClick={() => alert('This is a demo checkout page. No payment was processed.')}
+                className='w-full mt-8 bg-linear-to-r from-rose-500 to-rose-600 text-white py-4 rounded-2xl font-bold text-lg hover:from-rose-600 hover:to-rose-700 transition-all shadow-lg shadow-rose-500/20 flex items-center justify-center gap-2 group'
+                onClick={async () => {
+                  const nameInput = document.querySelector('input[type="text"]') as HTMLInputElement;
+                  const emailInput = document.querySelector('input[type="email"]') as HTMLInputElement;
+                  
+                  if (!nameInput?.value || !emailInput?.value) {
+                    alert('Please fill in all required fields');
+                    return;
+                  }
+
+                  try {
+                    const response = await fetch('/api/orders', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({
+                        name: nameInput.value,
+                        email: emailInput.value,
+                        plan: plan,
+                        price: selectedPlan.price,
+                      }),
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                      alert('Order placed successfully! We will contact you soon.');
+                      // You could redirect to a success page here
+                      // router.push('/order-success');
+                    } else {
+                      alert(result.message || 'Failed to place order');
+                    }
+                  } catch (error) {
+                    console.error('Error placing order:', error);
+                    alert('An error occurred while placing your order');
+                  }
+                }}
               >
-                Complete Payment ${selectedPlan.price}
+                Complete Purchase ${selectedPlan.price}
                 <ArrowRight className='w-5 h-5 group-hover:translate-x-1 transition-transform' />
               </button>
               
               <p className='text-center text-xs text-muted-foreground mt-4 italic'>
-                By clicking "Complete Payment", you agree to our terms of service.
+                By clicking "Complete Purchase", you agree to our terms of service.
               </p>
             </div>
           </div>

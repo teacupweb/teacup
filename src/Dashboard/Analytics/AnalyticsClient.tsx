@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect } from 'react';
 import ChartAreaInteractive from './Chart';
 import DisplayCard from '@/Components/DisplayCards';
 import { Layers, TrendingUp, Users } from 'lucide-react';
-import Spinner from '@/Components/Spinner';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface AnalyticsClientProps {
   companyId: string | null;
@@ -245,8 +245,16 @@ function AnalyticsClient({
 
         <div className='w-full'>
           {externalLoading ? (
-            <div className='w-full h-[400px] flex items-center justify-center bg-card rounded-2xl border border-border/80'>
-              <Spinner size='lg' />
+            <div className='w-full h-[400px] bg-card rounded-2xl border border-border/80 p-6'>
+              <div className='space-y-4 h-full'>
+                <Skeleton className='h-6 w-40' />
+                <Skeleton className='h-4 w-32' />
+                <Skeleton className='h-64 w-full' />
+                <div className='flex justify-between'>
+                  <Skeleton className='h-4 w-24' />
+                  <Skeleton className='h-4 w-32' />
+                </div>
+              </div>
             </div>
           ) : options.length === 0 ? (
             <div className='w-full h-[400px] flex flex-col items-center justify-center bg-card rounded-2xl border border-border/80 text-muted-foreground gap-4'>

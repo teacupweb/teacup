@@ -36,7 +36,7 @@ export default function Home() {
               business. No coding, no staff, no stress – just results.
             </p>
             <div className='flex gap-2 items-center justify-center'>
-              <Link href='/login'>
+              <Link href='/auth/login'>
                 <button className='bg-rose-600 cursor-pointer text-white px-6 py-3 rounded-2xl text-lg hover:bg-rose-700 transition'>
                   Get Started
                 </button>

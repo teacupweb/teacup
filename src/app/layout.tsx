@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Outfit, Ubuntu } from 'next/font/google';
 import '@/index.css';
 import Providers from './providers';
+import GlobalEventListeners from '@/components/global-event-listeners';
 
 const outfit = Outfit({
   subsets: ['latin'],
@@ -27,6 +28,7 @@ export default function RootLayout({
   return (
     <html lang='en' suppressHydrationWarning>
       <body className={`${outfit.variable} ${ubuntu.variable} antialiased`}>
+        <GlobalEventListeners />
         <Providers>{children}</Providers>
       </body>
     </html>
