@@ -19,7 +19,7 @@ import {
   EditRequest,
 } from '@/types/schema';
 
-const API_URL = process.env.NEXT_PUBLIC_BACKEND || process.env.BACKEND || 'http://localhost:8000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND || process.env.BACKEND || 'http://localhost:8000';
 
 // Helper function for fetch requests
 async function fetchApi(endpoint: string, options: RequestInit = {}) {

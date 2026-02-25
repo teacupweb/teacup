@@ -49,7 +49,7 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
     title: '',
     image: '',
     data: '',
-    owner: company,
+    ownerId: company,
   });
 
   const [isUploading, setIsUploading] = useState(false);
@@ -115,7 +115,7 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
         title: blogData.title,
         image: blogData.image,
         data: blogData.data,
-        owner: blogData.ownerId,
+        ownerId: blogData.ownerId,
       });
       if (blogData.image) {
         setPreviewUrl(blogData.image);
@@ -222,7 +222,7 @@ const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
         ...formData,
         image: finalImageUrl,
         // Ensure created_by is set if it wasn't originally
-        owner: formData.owner || company,
+        ownerId: formData.ownerId || company,
       };
 
       const result = await Swal.fire({
