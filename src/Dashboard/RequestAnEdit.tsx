@@ -66,7 +66,7 @@ export default function RequestAnEdit() {
         date: new Date(),
         status: 'pending' as const,
         createdAt: new Date(),
-        userId: user.companyId,
+        userId: user.id,
         companyId,
       };
 
