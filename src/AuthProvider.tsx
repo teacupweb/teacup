@@ -9,7 +9,7 @@ interface valueType {
   user: any | null | 'userNotFound';
   signUpUser: (email: string, password: string, name: string) => Promise<any>;
   loginUser: (email: string, password: string) => Promise<void>;
-  signInWithGoogle: () => Promise<void>;
+  // signInWithGoogle: () => Promise<void>;
   updateUserCompanyInfo: (data: CompanyData) => Promise<void>;
   logout: () => Promise<void> | void;
 }
@@ -98,17 +98,17 @@ export default function AuthProviderBetterAuth({
     }
   }
 
-  async function signInWithGoogle(): Promise<void> {
-    try {
-      await authClient.signIn.social({
-        provider: 'google',
-        callbackURL: `${window.location.origin}/welcome`,
-      });
-    } catch (error: any) {
-      console.error('Google sign in error:', error);
-      throw error;
-    }
-  }
+  // async function signInWithGoogle(): Promise<void> {
+  //   try {
+  //     await authClient.signIn.social({
+  //       provider: 'google',
+  //       callbackURL: `${window.location.origin}/welcome`,
+  //     });
+  //   } catch (error: any) {
+  //     console.error('Google sign in error:', error);
+  //     throw error;
+  //   }
+  // }
 
   async function updateUserCompanyInfo(data: CompanyData): Promise<void> {
     try {
@@ -162,7 +162,7 @@ export default function AuthProviderBetterAuth({
     user,
     signUpUser,
     loginUser,
-    signInWithGoogle,
+    // signInWithGoogle,
     updateUserCompanyInfo,
     logout,
   };

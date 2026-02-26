@@ -6,7 +6,8 @@ import Link from 'next/link';
 import { toast } from 'sonner';
 
 export default function AuthPage({ isLogin }: { isLogin: boolean }) {
-  const { signUpUser, loginUser, user, signInWithGoogle } = useAuth();
+  // const { signUpUser, loginUser, user, signInWithGoogle } = useAuth();
+  const { signUpUser, loginUser, user } = useAuth();
   // const [isLogin, setIsLogin] = useState(initialIsLogin);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -185,7 +186,7 @@ export default function AuthPage({ isLogin }: { isLogin: boolean }) {
               <ArrowRight className='w-5 h-5 group-hover:translate-x-1 transition-transform' />
             </button>
 
-            <div className='relative'>
+            {/* <div className='relative'>
               <div className='absolute inset-0 flex items-center'>
                 <div className='w-full border-t border-gray-200'></div>
               </div>
@@ -222,7 +223,7 @@ export default function AuthPage({ isLogin }: { isLogin: boolean }) {
               <span className='font-medium text-foreground/80 group-hover:text-foreground transition-colors'>
                 Continue with Google
               </span>
-            </button>
+            </button> */}
 
             <p className='text-center text-sm text-muted-foreground'>
               {isLogin

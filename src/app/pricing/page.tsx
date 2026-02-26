@@ -20,24 +20,8 @@ export default function PricingPage() {
         'No-code website builder',
       ],
       buttonText: 'Buy Monthly',
-      href: '/checkout?plan=monthly',
+      href: '/payment?plan=monthly',
       highlight: false,
-    },
-    {
-      name: 'Lifetime',
-      price: '500',
-      period: ' one-time',
-      description: 'The ultimate choice for long-term growth and savings.',
-      features: [
-        'Everything in Monthly',
-        'Lifetime access',
-        'No monthly fees ever',
-        'Early access to new features',
-        'Dedicated account manager',
-      ],
-      buttonText: 'Buy Lifetime',
-      href: '/checkout?plan=lifetime',
-      highlight: true,
     },
   ];
 
@@ -54,7 +38,7 @@ export default function PricingPage() {
             </p>
           </div>
 
-          <div className='grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-20'>
+          <div className='grid grid-cols-1 gap-8 max-w-xl mx-auto mb-20'>
             {plans.map((plan) => (
               <div
                 key={plan.name}
