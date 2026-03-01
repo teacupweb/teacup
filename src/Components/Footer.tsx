@@ -1,4 +1,5 @@
 import { FaEnvelope, FaFacebook, FaInstagram, FaPhone } from 'react-icons/fa';
+import Link from 'next/link';
 import Logo from './logo';
 
 function Footer() {
@@ -17,9 +18,16 @@ function Footer() {
         </div>
         <div className=' border-white border-b-4 h-2 w-full my-3 mt-5'></div>
         <div className='text-white flex justify-between items-center flex-col lg:flex-row w-full'>
-          <span className='text-xs sm:text-lg'>
-            &copy; All rights reserved, Teacup 2026
-          </span>
+          <div className='flex flex-col items-center lg:items-start gap-2'>
+            <span className='text-xs sm:text-lg'>
+              &copy; All rights reserved, Teacup 2026
+            </span>
+            <div className='flex gap-4 text-sm'>
+              <Link className='hover:underline' href='/terms'>
+                Terms &amp; Conditions
+              </Link>
+            </div>
+          </div>
           <div className='flex gap-4 text-3xl '>
             {/* Social Media Icons */}
             <a href='#'>
