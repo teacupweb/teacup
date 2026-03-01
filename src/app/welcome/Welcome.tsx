@@ -158,7 +158,7 @@ export default function Welcome() {
       const newCompany: CompanyType = {
         name: formData.name,
         domain: formData.domain,
-        key: '',
+        key: '', // Will be generated server-side
       };
 
       // Manually create company using fetch

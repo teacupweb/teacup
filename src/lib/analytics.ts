@@ -17,17 +17,31 @@ export interface AnalyticsResponse {
 }
 
 async function fetchApi(endpoint: string, options: RequestInit = {}) {
-  const response = await fetch(`${API_URL}${endpoint}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-    ...options,
-  });
-  if (!response.ok) {
-    throw new Error(`API Error: ${response.statusText}`);
+  try {
+    const response = await fetch(`${API_URL}${endpoint}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+      ...options,
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorText}`);
+    }
+    
+    // Handle empty responses
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      return null;
+    }
+    
+    return response.json();
+  } catch (error) {
+    console.error(`Fetch error for ${endpoint}:`, error);
+    throw error;
   }
-  return response.json();
 }
 
 export async function getAnalytics(owner: string, event: AnalyticsEvent): Promise<AnalyticsResponse> {

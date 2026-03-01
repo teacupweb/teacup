@@ -1,29 +1,43 @@
 const API_URL = process.env.NEXT_PUBLIC_BACKEND || process.env.BACKEND || 'http://localhost:8000';
 
 export type blogType = {
-  id?: number;
+  id?: string;
   title: string;
   image: string;
   data: string;
-  owner: string;
+  ownerId: string;
 };
 
 async function fetchApi(endpoint: string, options: RequestInit = {}) {
-  const response = await fetch(`${API_URL}${endpoint}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      credentials: 'include',
-      ...options.headers,
-    },
-    ...options,
-  });
-  if (!response.ok) {
-    throw new Error(`API Error: ${response.statusText}`);
+  try {
+    const response = await fetch(`${API_URL}${endpoint}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        credentials: 'include',
+        ...options.headers,
+      },
+      ...options,
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorText}`);
+    }
+    
+    // Handle empty responses
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      return null;
+    }
+    
+    return response.json();
+  } catch (error) {
+    console.error(`Fetch error for ${endpoint}:`, error);
+    throw error;
   }
-  return response.json();
 }
 
-export async function getUserBlogs(companyId: number): Promise<blogType[]> {
+export async function getUserBlogs(companyId: string): Promise<blogType[]> {
   console.log(companyId);
   return fetchApi(`/dashboard/blogs/${companyId}`);
 }
@@ -43,7 +57,7 @@ export async function createBlog(blog: blogType): Promise<blogType> {
 }
 
 export async function updateBlog(
-  id: number,
+  id: string,
   blog: blogType,
 ): Promise<blogType> {
   return fetchApi(`/dashboard/blogs/${id}`, {
@@ -52,7 +66,7 @@ export async function updateBlog(
   });
 }
 
-export async function deleteBlog(id: number): Promise<void> {
+export async function deleteBlog(id: string): Promise<void> {
   return fetchApi(`/dashboard/blogs/${id}`, {
     method: 'DELETE',
   });

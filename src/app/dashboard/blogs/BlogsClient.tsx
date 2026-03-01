@@ -23,7 +23,7 @@ function BlogsClient() {
     });
   }, [user.companyId]);
 
-  const handleDeleteBlog = (id: number | undefined) => async () => {
+  const handleDeleteBlog = (id: string | undefined) => async () => {
     Swal.fire({
       title: 'Are you sure?',
       text: "You won't be able to revert this!",
@@ -86,7 +86,10 @@ function BlogsClient() {
                           <td colSpan={3} className='py-8'>
                             <div className='space-y-2'>
                               {[...Array(5)].map((_, index) => (
-                                <div key={index} className='flex items-center space-x-4 py-2'>
+                                <div
+                                  key={index}
+                                  className='flex items-center space-x-4 py-2'
+                                >
                                   <Skeleton className='h-4 w-48' />
                                   <Skeleton className='h-4 w-32' />
                                   <Skeleton className='h-4 w-20 ml-auto' />

@@ -10,7 +10,7 @@ export interface User {
   updatedAt: Date;
   sessions?: Session[];
   accounts?: Account[];
-  companyId?: String;
+  companyId?: string;
 }
 
 export interface Session {
@@ -68,7 +68,7 @@ export interface CompanyData {
 }
 
 export interface Inbox {
-  id: number;
+  id: string;
   name: string;
   ownerId: string;
   owner?: CompanyData;
@@ -76,8 +76,8 @@ export interface Inbox {
 }
 
 export interface InboxData {
-  id: number;
-  inbox_id: number;
+  id: string;
+  inbox_id: string;
   createdAt: Date;
   data: string; // JSON string containing form data
   inbox?: Inbox;
@@ -189,12 +189,12 @@ export type blogType = {
   title: string;
   image: string;
   data: string;
-  owner: string;
+  ownerId: string;
   [key: string]: any;
 };
 
 export type inboxType = {
-  id?: number;
-  owner: string;
+  id?: string;
+  ownerId: string;
   name: string;
 };

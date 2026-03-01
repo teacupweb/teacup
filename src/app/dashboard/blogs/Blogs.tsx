@@ -26,7 +26,7 @@ function Blogs() {
     refetch();
   }, [refetch]);
 
-  const handleDeleteBlog = (id: number | undefined) => async () => {
+  const handleDeleteBlog = (id: string | undefined) => async () => {
     Swal.fire({
       title: 'Are you sure?',
       text: "You won't be able to revert this!",
@@ -38,7 +38,7 @@ function Blogs() {
     }).then((result) => {
       if (result.isConfirmed) {
         if (id !== undefined) {
-          deleteBlogMutation.mutateAsync(id.toString()).then(() => {
+          deleteBlogMutation.mutateAsync(id).then(() => {
             Swal.fire('Deleted!', 'Your blog has been deleted.', 'success');
             refetch();
           });
@@ -121,7 +121,7 @@ function Blogs() {
 
                             <td className='px-6 py-4 text-right'>
                               <button
-                                onClick={handleDeleteBlog(parseInt(blog.id))}
+                                onClick={handleDeleteBlog(blog.id)}
                                 className='font-medium text-red-600 hover:underline'
                               >
                                 Delete
