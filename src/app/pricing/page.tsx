@@ -9,7 +9,7 @@ export default function PricingPage() {
   const plans = [
     {
       name: 'Monthly',
-      price: '30',
+      price: '50',
       period: '/month',
       description: 'Perfect for small businesses looking to get started.',
       features: [
@@ -29,12 +29,15 @@ export default function PricingPage() {
     <div className='bg-background text-foreground min-h-screen'>
       <div className='mx-auto container'>
         <Navbar />
-        
+
         <div className='py-20 px-4'>
           <div className='max-w-4xl mx-auto text-center mb-10'>
-            <h1 className='text-5xl ubuntu-font mb-6'>Simple, Transparent Pricing</h1>
+            <h1 className='text-5xl ubuntu-font mb-6'>
+              Simple, Transparent Pricing
+            </h1>
             <p className='text-xl text-muted-foreground mb-16'>
-              Choose the plan that fits your business needs. No hidden fees, just pure value.
+              Choose the plan that fits your business needs. No hidden fees,
+              just pure value.
             </p>
           </div>
 
@@ -53,14 +56,16 @@ export default function PricingPage() {
                     Most Popular
                   </span>
                 )}
-                
+
                 <div className='mb-8'>
                   <h3 className='text-2xl font-bold mb-2'>{plan.name}</h3>
                   <div className='flex items-baseline gap-1'>
                     <span className='text-4xl font-bold'>${plan.price}</span>
                     <span className='text-muted-foreground'>{plan.period}</span>
                   </div>
-                  <p className='mt-4 text-muted-foreground'>{plan.description}</p>
+                  <p className='mt-4 text-muted-foreground'>
+                    {plan.description}
+                  </p>
                 </div>
 
                 <ul className='space-y-4 mb-8 flex-grow'>
@@ -90,7 +95,6 @@ export default function PricingPage() {
           </div>
 
           {/* Banner for new users at bottom */}
-          
         </div>
       </div>
       <Footer />

@@ -455,7 +455,6 @@ The application can also be deployed to:
 
 ### Planned Enhancements
 
-- [ ] Stripe/PayPal payment integration
 - [ ] Functional contact form with email notifications
 - [ ] Website builder interface
 - [ ] Template marketplace

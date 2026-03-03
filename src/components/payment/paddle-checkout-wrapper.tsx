@@ -2,37 +2,36 @@
 
 import { useState } from 'react';
 import { Button } from '../ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { toast } from 'sonner';
 
-interface CheckoutItem {
+interface PaddleCheckoutItem {
   priceId: string;
-  name: string;
-  description?: string;
-  price: number;
   quantity?: number;
-  currency?: string;
-  images?: string[];
+  name?: string;
+  price?: number;
 }
 
-interface CheckoutFormProps {
-  items: CheckoutItem[];
-  onSuccess?: (sessionId: string) => void;
+interface PaddleCheckoutWrapperProps {
+  items: PaddleCheckoutItem[];
+  customerEmail?: string;
+  customerName?: string;
+  onSuccess?: (checkoutId: string) => void;
   onError?: (error: any) => void;
 }
 
-export function CheckoutForm({ items, onSuccess, onError }: CheckoutFormProps) {
+export function PaddleCheckoutWrapper({
+  items,
+  customerEmail: propEmail,
+  customerName: propName,
+  onSuccess,
+  onError
+}: PaddleCheckoutWrapperProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const [customerEmail, setCustomerEmail] = useState('');
-  const [customerName, setCustomerName] = useState('');
-
-  const calculateTotal = () => {
-    return items.reduce((total, item) => {
-      return total + (item.price * (item.quantity || 1));
-    }, 0);
-  };
+  const [customerEmail, setCustomerEmail] = useState(propEmail || '');
+  const [customerName, setCustomerName] = useState(propName || '');
 
   const handleCheckout = async () => {
     if (!customerEmail) {
@@ -126,21 +125,15 @@ export function CheckoutForm({ items, onSuccess, onError }: CheckoutFormProps) {
           <h3 className="font-semibold">Order Summary</h3>
           {items.map((item, index) => (
             <div key={index} className="flex justify-between text-sm">
-              <span>{item.name} x {item.quantity || 1}</span>
-              <span>${(item.price * (item.quantity || 1)).toFixed(2)}</span>
+              <span>{item.name || `Item ${index + 1}`} x {item.quantity || 1}</span>
+              <span>${(item.price || 0).toFixed(2)}</span>
             </div>
           ))}
-          <div className="border-t pt-2 mt-2">
-            <div className="flex justify-between font-semibold">
-              <span>Total</span>
-              <span>${calculateTotal().toFixed(2)}</span>
-            </div>
-          </div>
         </div>
 
         <Button
           onClick={handleCheckout}
-          disabled={isLoading || !customerEmail}
+          disabled={isLoading || !customerEmail || !customerName}
           className="w-full"
         >
           {isLoading ? 'Processing...' : 'Proceed to Payment'}

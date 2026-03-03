@@ -50,7 +50,7 @@ function CancelContent() {
 
         <div className="space-y-4">
           <Button asChild className="w-full">
-            <a href="/payment/stripe">Try Again</a>
+            <a href="/payment/paddle">Try Again</a>
           </Button>
           <Button variant="outline" asChild className="w-full">
             <a href="/">Return Home</a>
