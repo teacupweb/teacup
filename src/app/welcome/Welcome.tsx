@@ -55,7 +55,7 @@ export default function Welcome() {
       }
 
       if (referralLink) {
-        console.log('Processing referral link:', referralLink);
+        // console.log('Processing referral link:', referralLink);
         setReferralProcessing(true);
 
         // Validate referral parameters
@@ -64,7 +64,7 @@ export default function Welcome() {
         const userParam = searchParams.get('user');
 
         if (!companyId || !userParam) {
-          console.log('Invalid referral parameters');
+          // console.log('Invalid referral parameters');
           toast.error('Invalid referral link. Missing required parameters.');
           setReferralProcessing(false);
           return;
@@ -72,7 +72,7 @@ export default function Welcome() {
 
         const referralCompanyIdNum = Number(companyId);
         if (isNaN(referralCompanyIdNum)) {
-          console.log('Invalid company ID in referral');
+          // console.log('Invalid company ID in referral');
           toast.error('Invalid company ID in referral link.');
           setReferralProcessing(false);
           return;
@@ -80,11 +80,11 @@ export default function Welcome() {
 
         // Check if company data is loaded and valid
         if (company?.data && !company.isLoading && !company.error) {
-          console.log('Company found:', company.data);
+          // console.log('Company found:', company.data);
           try {
             // Update user with referred company
             await updateUserCompanyInfo(company.data);
-            console.log('User updated with company:', company.data);
+            // console.log('User updated with company:', company.data);
             toast.success(
               `Successfully joined "${company.data.name}"! Redirecting to dashboard...`,
             );
@@ -94,14 +94,14 @@ export default function Welcome() {
               navigate.push('/dashboard');
             }, 1500);
           } catch (error: any) {
-            console.error('Error updating user with company:', error);
+            // console.error('Error updating user with company:', error);
             toast.error(
               error?.message ||
                 'Failed to join company. Please try again or contact support.',
             );
           }
         } else if (company?.error) {
-          console.error('Error loading company:', company.error);
+          // console.error('Error loading company:', company.error);
           toast.error(
             'Invalid company referral link. The company may not exist.',
           );
@@ -110,7 +110,7 @@ export default function Welcome() {
           setReferralProcessing(false);
           return;
         } else {
-          console.log('Company not found');
+          // console.log('Company not found');
           toast.error('Company not found. Please check the referral link.');
         }
         setReferralProcessing(false);
@@ -180,7 +180,7 @@ export default function Welcome() {
       }
 
       const createdCompany = await response.json();
-      console.log('Company created:', createdCompany);
+      // console.log('Company created:', createdCompany);
 
       // Update user with company info and wait for session refresh
       await updateUserCompanyInfo(createdCompany);
@@ -195,7 +195,7 @@ export default function Welcome() {
         navigate.push('/dashboard');
       }, 1500);
     } catch (error: any) {
-      console.error('Error creating company:', error);
+      // console.error('Error creating company:', error);
       toast.error(
         error instanceof Error
           ? `Failed to create company: ${error.message}`

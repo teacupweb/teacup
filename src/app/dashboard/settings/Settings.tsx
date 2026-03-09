@@ -18,7 +18,7 @@ function Settings() {
 
   // Derive user info directly from Better Auth user object
   const companyId = user.companyId;
-  console.log(user);
+  // console.log(user);
   const { data: company, isLoading: loading } = useCompany(companyId);
   const { data: companyUsers, isLoading: usersLoading, refetch: refetchUsers } = useCompanyUsers(companyId);
   const { mutateAsync: removeUser, isLoading: removingUser } = useRemoveUser();

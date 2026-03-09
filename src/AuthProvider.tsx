@@ -127,7 +127,7 @@ export default function AuthProviderBetterAuth({
         setUser(sessionData.user as User);
       }
 
-      console.log('Company info updated successfully:', data.id);
+      // console.log('Company info updated successfully:', data.id);
     } catch (error: any) {
       console.error('Error updating user company info:', error);
       // Attempt to refresh session even on error to ensure consistency

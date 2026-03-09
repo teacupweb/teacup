@@ -1,160 +1,124 @@
 "use client";
 
-import Navbar from '@/Components/Navbar';
-import Footer from '@/Components/Footer';
+import Navbar from "@/Components/Navbar";
+import Footer from "@/Components/Footer";
+import { Card, CardContent } from "@/components/ui/card";
+import { Mail, Phone, Clock, MessageSquare, Send } from "lucide-react";
 
 export default function ContactPage() {
   return (
-    <div>
-      <div className='mx-auto container'>
+    <div className="bg-background text-foreground transition-colors duration-300">
+      <div className="mx-auto container">
         <Navbar />
-        <div className='min-h-[70vh] py-12 px-4'>
-          <div className='max-w-4xl mx-auto'>
-            <h1 className='text-5xl ubuntu-font mb-8 text-center'>
-              Contact Us
-            </h1>
+        <div className="min-h-[70vh] py-12 px-4">
+          <div className="max-w-5xl mx-auto space-y-12">
+            {/* Header */}
+            <header className="space-y-4 text-center">
+              <h1 className="text-5xl ubuntu-font">Contact Us</h1>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Have questions? We&apos;re here to help. Reach out to us and
+                we&apos;ll respond as soon as possible.
+              </p>
+            </header>
 
-            <div className='grid md:grid-cols-2 gap-12'>
-              {/* Contact Form */}
-              <div>
-                <h2 className='text-3xl ubuntu-font mb-6'>
-                  Send us a Message
-                </h2>
-                <form className='space-y-4'>
-                  <div>
-                    <label
-                      htmlFor='name'
-                      className='block text-sm font-medium mb-2'
-                    >
-                      Name
-                    </label>
-                    <input
-                      type='text'
-                      id='name'
-                      className='w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent bg-background text-foreground'
-                      placeholder='Your name'
-                    />
+            {/* Contact Cards */}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Email Card */}
+              <Card className="group">
+                <CardContent className="pt-6 space-y-4">
+                  <div className="w-12 h-12 rounded-full bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <Mail className="w-6 h-6 text-rose-600 dark:text-rose-400" />
                   </div>
-
                   <div>
-                    <label
-                      htmlFor='email'
-                      className='block text-sm font-medium mb-2'
-                    >
-                      Email
-                    </label>
-                    <input
-                      type='email'
-                      id='email'
-                      className='w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent bg-background text-foreground'
-                      placeholder='your.email@example.com'
-                    />
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor='subject'
-                      className='block text-sm font-medium mb-2'
-                    >
-                      Subject
-                    </label>
-                    <input
-                      type='text'
-                      id='subject'
-                      className='w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent bg-background text-foreground'
-                      placeholder='How can we help?'
-                    />
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor='message'
-                      className='block text-sm font-medium mb-2'
-                    >
-                      Message
-                    </label>
-                    <textarea
-                      id='message'
-                      rows={5}
-                      className='w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent bg-background text-foreground'
-                      placeholder='Tell us more about your inquiry...'
-                    ></textarea>
-                  </div>
-
-                  <button
-                    type='submit'
-                    className='w-full bg-rose-600 text-white px-6 py-3 rounded-lg hover:bg-rose-700 transition font-medium'
-                  >
-                    Send Message
-                  </button>
-                </form>
-              </div>
-
-              {/* Contact Information */}
-              <div>
-                <h2 className='text-3xl ubuntu-font mb-6'>
-                  Get in Touch
-                </h2>
-                <div className='space-y-6'>
-                  <div>
-                    <h3 className='text-xl font-semibold mb-2'>
-                      Email
-                    </h3>
-                    <p className='text-muted-foreground'>support@teacup.com</p>
-                    <p className='text-muted-foreground'>sales@teacup.com</p>
-                  </div>
-
-                  <div>
-                    <h3 className='text-xl font-semibold mb-2'>
-                      Phone
-                    </h3>
-                    <p className='text-muted-foreground'>+1 (555) 123-4567</p>
-                    <p className='text-muted-foreground'>Mon-Fri, 9am-6pm EST</p>
-                  </div>
-
-                  <div>
-                    <h3 className='text-xl font-semibold mb-2'>
-                      Office
-                    </h3>
-                    <p className='text-muted-foreground'>
-                      123 Tech Street
-                      <br />
-                      Suite 456
-                      <br />
-                      San Francisco, CA 94102
-                      <br />
-                      United States
+                    <h3 className="text-lg font-semibold mb-1">Email</h3>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      We&apos;ll respond within 24 hours
                     </p>
-                  </div>
-
-                  <div>
-                    <h3 className='text-xl font-semibold mb-2'>
-                      Social Media
-                    </h3>
-                    <div className='flex gap-4'>
+                    <div className="space-y-1">
                       <a
-                        href='#'
-                        className='text-rose-600 hover:text-rose-700 transition'
+                        href="mailto:support@teacup.com"
+                        className="block text-rose-600 hover:underline text-sm"
                       >
-                        Twitter
+                        support@teacup.com
                       </a>
                       <a
-                        href='#'
-                        className='text-rose-600 hover:text-rose-700 transition'
+                        href="mailto:sales@teacup.com"
+                        className="block text-rose-600 hover:underline text-sm"
                       >
-                        LinkedIn
-                      </a>
-                      <a
-                        href='#'
-                        className='text-rose-600 hover:text-rose-700 transition'
-                      >
-                        Facebook
+                        sales@teacup.com
                       </a>
                     </div>
                   </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
+
+              {/* Phone Card */}
+              <Card className="group">
+                <CardContent className="pt-6 space-y-4">
+                  <div className="w-12 h-12 rounded-full bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <Phone className="w-6 h-6 text-rose-600 dark:text-rose-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold mb-1">Phone</h3>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Mon-Fri, 9am-6pm EST
+                    </p>
+                    <a
+                      href="tel:+15551234567"
+                      className="text-rose-600 hover:underline text-sm"
+                    >
+                      +880 167 8060 430
+                    </a>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Response Time Card */}
+              <Card className="group">
+                <CardContent className="pt-6 space-y-4">
+                  <div className="w-12 h-12 rounded-full bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <Clock className="w-6 h-6 text-rose-600 dark:text-rose-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold mb-1">
+                      Response Time
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Average response time
+                    </p>
+                    <p className="text-rose-600 font-medium text-sm">
+                      Within 24 hours
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
+
+            {/* CTA Section */}
+            <Card className="bg-gradient-to-r from-rose-50 to-orange-50 dark:from-rose-950/30 dark:to-orange-950/30 border-rose-200 dark:border-rose-800">
+              <CardContent className="py-10 px-6 text-center space-y-4">
+                <div className="w-14 h-14 rounded-full bg-white dark:bg-rose-900/50 flex items-center justify-center mx-auto shadow-md">
+                  <MessageSquare className="w-7 h-7 text-rose-600 dark:text-rose-400" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-semibold mb-2">
+                    Ready to Get Started?
+                  </h2>
+                  <p className="text-muted-foreground max-w-xl mx-auto mb-4">
+                    Whether you have a question about features, pricing, or
+                    anything else, our team is ready to answer all your
+                    questions.
+                  </p>
+                  <a
+                    href="mailto:support@teacup.com"
+                    className="inline-flex items-center gap-2 bg-rose-600 hover:bg-rose-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-300"
+                  >
+                    <Send className="w-4 h-4" />
+                    Send us a Message
+                  </a>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>

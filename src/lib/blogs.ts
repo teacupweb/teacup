@@ -38,7 +38,7 @@ async function fetchApi(endpoint: string, options: RequestInit = {}) {
 }
 
 export async function getUserBlogs(companyId: string): Promise<blogType[]> {
-  console.log(companyId);
+  // console.log(companyId);
   return fetchApi(`/dashboard/blogs/${companyId}`);
 }
 

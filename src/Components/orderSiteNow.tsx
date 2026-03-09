@@ -7,7 +7,7 @@ function OrderSiteNow(props: Props) {
   const {} = props;
 
   return (
-    <div className='bg-linear-to-r from-rose-500 to-rose-600 rounded-2xl p-6 text-white text-left md:flex items-center justify-between gap-6 shadow-xl shadow-rose-500/20 max-w-3xl mx-auto'>
+    <div className='bg-rose-600 rounded-2xl p-6 text-white text-left md:flex items-center justify-between gap-6 shadow-xl shadow-rose-500/20 max-w-3xl mx-auto'>
       <div className='flex items-center gap-4 mb-4 md:mb-0'>
         <div className='bg-white/20 p-3 rounded-xl'>
           <svg

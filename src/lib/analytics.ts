@@ -55,10 +55,3 @@ export async function getAnalytics(
 ): Promise<AnalyticsResponse> {
   return fetchApi(`/api/analytics/${owner}?event=${event}`);
 }
-
-export async function trackAnalytics(data: any): Promise<any> {
-  return fetchApi("/api/analytics", {
-    method: "POST",
-    body: JSON.stringify(data),
-  });
-}

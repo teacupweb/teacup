@@ -18,7 +18,7 @@ import 'quill/dist/quill.snow.css';
 
 const NewBlog = ({ isEditMode }: { isEditMode?: boolean }) => {
   const { cloudinaryName, cloudinaryPreset } = envData;
-  console.log(cloudinaryPreset);
+  // console.log(cloudinaryPreset);
   const navigate = useRouter();
   const { id } = useParams();
   const blogId = typeof id === 'string' ? id : undefined;

@@ -4,23 +4,18 @@ import Navbar from '@/Components/Navbar';
 import Footer from '@/Components/Footer';
 import Link from 'next/link';
 import { Check } from 'lucide-react';
+import { PRICING, DEFAULT_PLAN } from '@/lib/config';
 
 export default function PricingPage() {
   const plans = [
     {
       name: 'Monthly',
-      price: '50',
+      price: PRICING.DEFAULT_PRICE,
       period: '/month',
       description: 'Perfect for small businesses looking to get started.',
-      features: [
-        'Unlimited products',
-        'Custom domain support',
-        '24/7 Priority support',
-        'Advanced analytics',
-        'No-code website builder',
-      ],
+      features: DEFAULT_PLAN.features,
       buttonText: 'Buy Monthly',
-      href: '/payment?plan=monthly',
+      href: '/payment',
       highlight: false,
     },
   ];

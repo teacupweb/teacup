@@ -6,6 +6,6 @@ export default async function InboxPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  console.log(id);
+  // console.log(id);
   return <Inbox id={id} />;
 }

@@ -55,7 +55,7 @@ export default function HoldMyTea() {
       }
 
       const res = await response.json();
-      console.log(res);
+      // console.log(res);
       // Success - show success modal
       setIsAILoading(false);
       setPrompt('');
@@ -75,14 +75,14 @@ export default function HoldMyTea() {
 
       {/* EPIC MAGIC CTA BANNER */}
       <div className='col-span-1 md:col-span-2 lg:col-span-2'>
-        <div className='w-full rounded-2xl bg-gradient-to-br from-rose-600 to-rose-900 p-4 sm:p-6 md:p-8 text-white shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-[1.02]'>
+        <div className='w-full rounded-2xl bg-rose-600 p-4 sm:p-6 md:p-8 text-white shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-[1.02]'>
           <div className='flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6'>
             <div className='flex flex-col sm:flex-row items-center gap-4 sm:gap-6 w-full'>
               <div className='p-3 sm:p-4 text-4xl sm:text-5xl bg-card/20 rounded-2xl backdrop-blur-sm'>
                 <BsFillCupHotFill className='text-3xl sm:text-4xl text-white' />
               </div>
               <div className='max-w-md text-center sm:text-left'>
-                <h3 className='text-2xl sm:text-3xl font-bold mb-2 sm:mb-3 bg-gradient-to-r ubuntu-font from-white to-rose-100 bg-clip-text text-transparent'>
+                <h3 className='text-2xl sm:text-3xl font-bold mb-2 sm:mb-3 text-white ubuntu-font'>
                   Hold My Tea
                 </h3>
                 <p className='text-base sm:text-lg text-white/90 mb-4 sm:mb-6 leading-relaxed'>
@@ -107,11 +107,11 @@ export default function HoldMyTea() {
           {/* Header with gradient */}
           <div className='mb-6'>
             <div className='flex items-center gap-4 mb-4'>
-              <div className='p-3 bg-gradient-to-br from-rose-500 to-rose-600 rounded-xl'>
+              <div className='p-3 bg-rose-600 rounded-xl'>
                 <BsFillCupHotFill className='text-3xl text-white' />
               </div>
               <div>
-                <h2 className='text-3xl font-bold bg-gradient-to-r from-rose-600 to-rose-800 bg-clip-text text-transparent ubuntu-font'>
+                <h2 className='text-3xl font-bold text-rose-600 ubuntu-font'>
                   Hold My Tea ☕
                 </h2>
                 <p className='text-muted-foreground text-sm mt-1'>
@@ -119,7 +119,7 @@ export default function HoldMyTea() {
                 </p>
               </div>
             </div>
-            <div className='h-1 w-20 bg-gradient-to-r from-rose-500 to-rose-600 rounded-full' />
+            <div className='h-1 w-20 bg-rose-600 rounded-full' />
           </div>
 
           {/* Description */}
@@ -153,7 +153,7 @@ export default function HoldMyTea() {
             <button
               type='submit'
               disabled={!prompt.trim()}
-              className='w-full px-6 py-4 text-lg font-bold text-white bg-gradient-to-r from-rose-600 to-rose-700 rounded-xl hover:from-rose-700 hover:to-rose-800 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-lg hover:shadow-xl'
+              className='w-full px-6 py-4 text-lg font-bold text-white bg-rose-600 rounded-xl hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-lg hover:shadow-xl'
             >
               ✨ Let the Magic Begin
             </button>
@@ -176,7 +176,7 @@ export default function HoldMyTea() {
         <div className='p-8 text-center'>
           {/* Animated success icon */}
           <div className='mb-6 relative'>
-            <div className='w-24 h-24 mx-auto bg-gradient-to-br from-rose-500 to-rose-600 rounded-full flex items-center justify-center animate-bounce-once'>
+            <div className='w-24 h-24 mx-auto bg-rose-600 rounded-full flex items-center justify-center animate-bounce-once'>
               <svg
                 className='w-12 h-12 text-white'
                 fill='none'
@@ -203,7 +203,7 @@ export default function HoldMyTea() {
           </div>
 
           {/* Success message */}
-          <h3 className='text-3xl font-bold bg-gradient-to-r from-rose-600 to-rose-800 bg-clip-text text-transparent mb-3 ubuntu-font'>
+          <h3 className='text-3xl font-bold text-rose-600 mb-3 ubuntu-font'>
             Magic Complete! ✨
           </h3>
           <p className='text-muted-foreground text-lg mb-6'>
@@ -214,7 +214,7 @@ export default function HoldMyTea() {
           {/* Action button */}
           <button
             onClick={() => setShowSuccessModal(false)}
-            className='px-8 py-3 bg-gradient-to-r from-rose-600 to-rose-700 text-white rounded-xl font-bold hover:from-rose-700 hover:to-rose-800 transition-all duration-300 transform hover:scale-105 shadow-lg'
+            className='px-8 py-3 bg-rose-600 text-white rounded-xl font-bold hover:bg-rose-700 transition-all duration-300 transform hover:scale-105 shadow-lg'
           >
             Awesome!
           </button>

@@ -4,7 +4,7 @@ import React from 'react';
 
 function Guard() {
   const { user } = useAuth();
-  console.log(user);
+  // console.log(user);
   if (!user) {
     window.location.href = '/auth/login';
   } else if (!user.companyId) {

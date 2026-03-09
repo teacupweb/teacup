@@ -22,7 +22,7 @@ function DashboardContent() {
     companyId,
     'page',
   );
-  console.log(pageAnalytics);
+  // console.log(pageAnalytics);
   const { data: formAnalytics, isLoading: formLoading } = useAnalytics(
     companyId,
     'form',
