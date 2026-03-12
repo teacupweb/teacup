@@ -93,37 +93,50 @@ function PaymentContent() {
   const onSubmit = async (data: PaymentFormData) => {
     setIsLoading(true);
 
-    // Implement your own payment logic here
-    console.log('Payment submitted:', {
-      data,
-      total,
-    });
-    fetch(`${process.env.NEXT_PUBLIC_BACKEND}/payment/checkout`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        ...data,
-        total,
-      }),
-    }).then((res) => {
-      console.log(res);
-    });
-    // .then((res) => res.json())
-    // .then((response) => {
-    //   console.log('Payment API response:', response);
-    //   toast.success('Payment successful! Implement your own success logic.');
-    // })
-    // .catch((error) => {
-    //   console.error('Payment API error:', error);
-    //   toast.error('Payment failed. Please try again.');
-    // })
-    // .finally(() => {
-    //   setIsLoading(false);
-    // });
+    try {
+      console.log('Creating checkout session...');
 
-    setIsLoading(false);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND}/payment/checkout`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: data.email,
+            name: data.name,
+            successUrl: `${window.location.origin}/payment/success`,
+            cancelUrl: `${window.location.origin}/pricing`,
+          }),
+        },
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Failed to create checkout');
+      }
+
+      console.log('Checkout created:', result);
+      toast.success('Redirecting to payment...');
+
+      // Redirect to Polar checkout URL
+      if (result.url) {
+        window.location.href = result.url;
+      } else {
+        throw new Error('No checkout URL received');
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : 'Payment failed. Please try again.',
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
