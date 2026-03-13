@@ -7,6 +7,7 @@ import { deleteBlog, getUserBlogs, type blogType } from '@/lib/blogs';
 import Swal from 'sweetalert2';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface BlogsClientProps {
   initialBlogs: blogType[];
@@ -14,14 +15,41 @@ interface BlogsClientProps {
 
 function BlogsClient() {
   const { user } = useAuth();
+  const router = useRouter();
   const [blogs, setBlogs] = useState<blogType[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    getUserBlogs(user.companyId).then((res) => {
-      setBlogs(res);
-    });
-  }, [user.companyId]);
+    async function fetchBlogs() {
+      if (!user || user === 'userNotFound' || !user.companyId) {
+        setError('User not authenticated');
+        return;
+      }
+
+      try {
+        setLoading(true);
+        setError(null);
+        const res = await getUserBlogs();
+        setBlogs(res);
+      } catch (err: any) {
+        console.error('Failed to fetch blogs:', err);
+        if (err.message?.includes('Unauthorized') || err.message?.includes('401')) {
+          setError('Session expired. Please log in again.');
+          // Optionally redirect to login after a delay
+          setTimeout(() => {
+            router.push('/login');
+          }, 2000);
+        } else {
+          setError(err.message || 'Failed to fetch blogs');
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchBlogs();
+  }, [user, router]);
 
   const handleDeleteBlog = (id: string | undefined) => async () => {
     Swal.fire({
@@ -81,7 +109,45 @@ function BlogsClient() {
                       </tr>
                     </thead>
                     <tbody>
-                      {loading ? (
+                      {error ? (
+                        <tr>
+                          <td colSpan={3} className='py-16 text-center'>
+                            <div className='flex flex-col items-center gap-4'>
+                              <div className='w-20 h-20 bg-red-100 rounded-full flex items-center justify-center'>
+                                <svg
+                                  className='w-10 h-10 text-red-500'
+                                  fill='none'
+                                  stroke='currentColor'
+                                  viewBox='0 0 24 24'
+                                >
+                                  <path
+                                    strokeLinecap='round'
+                                    strokeLinejoin='round'
+                                    strokeWidth={2}
+                                    d='M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
+                                  />
+                                </svg>
+                              </div>
+                              <div>
+                                <p className='text-foreground font-semibold text-lg mb-1'>
+                                  Failed to load blogs
+                                </p>
+                                <p className='text-muted-foreground text-sm'>
+                                  {error}
+                                </p>
+                              </div>
+                              {!error.includes('Session expired') && (
+                                <button
+                                  onClick={() => window.location.reload()}
+                                  className='mt-2 bg-rose-600 text-white px-6 py-2 rounded-xl hover:bg-rose-700 transition font-medium'
+                                >
+                                  Retry
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ) : loading ? (
                         <tr>
                           <td colSpan={3} className='py-8'>
                             <div className='space-y-2'>

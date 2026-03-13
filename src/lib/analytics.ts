@@ -1,9 +1,9 @@
 const API_URL =
   process.env.NEXT_PUBLIC_BACKEND ||
   process.env.BACKEND ||
-  "http://localhost:8000";
+  'http://localhost:8000';
 
-export type AnalyticsEvent = "page" | "form" | "button";
+export type AnalyticsEvent = 'page' | 'form' | 'button';
 
 export interface AnalyticsDataPoint {
   date: string;
@@ -23,7 +23,7 @@ async function fetchApi(endpoint: string, options: RequestInit = {}) {
   try {
     const response = await fetch(`${API_URL}${endpoint}`, {
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         ...options.headers,
       },
       ...options,
@@ -37,8 +37,8 @@ async function fetchApi(endpoint: string, options: RequestInit = {}) {
     }
 
     // Handle empty responses
-    const contentType = response.headers.get("content-type");
-    if (!contentType || !contentType.includes("application/json")) {
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
       return null;
     }
 
@@ -53,5 +53,5 @@ export async function getAnalytics(
   owner: string,
   event: AnalyticsEvent,
 ): Promise<AnalyticsResponse> {
-  return fetchApi(`/api/analytics/${owner}?event=${event}`);
+  return fetchApi(`/analytics/${owner}?event=${event}`);
 }

@@ -103,9 +103,15 @@ function PaymentContent() {
           headers: {
             'Content-Type': 'application/json',
           },
+          credentials: 'include',
           body: JSON.stringify({
+            // Send all customer info
             email: data.email,
             name: data.name,
+            address: data.address,
+            city: data.city,
+            postalCode: data.postalCode,
+            country: data.country,
             successUrl: `${window.location.origin}/payment/success`,
             cancelUrl: `${window.location.origin}/pricing`,
           }),

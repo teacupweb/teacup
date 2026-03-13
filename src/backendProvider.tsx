@@ -1,12 +1,10 @@
-"use client";
-import { useState, useEffect, useCallback, useRef } from "react";
+'use client';
+import { useState, useEffect, useCallback } from 'react';
 import {
   useQuery,
   useMutation,
   useQueryClient,
-  QueryClient,
-} from "@tanstack/react-query";
-import { authClient } from "@/lib/auth-client";
+} from '@tanstack/react-query';
 import {
   CompanyData,
   Blog,
@@ -21,13 +19,13 @@ import {
   blogType,
   inboxType,
   EditRequest,
-} from "@/types/schema";
+} from '@/types/schema';
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ||
   process.env.NEXT_PUBLIC_BACKEND ||
   process.env.BACKEND ||
-  "http://localhost:8000";
+  'http://localhost:8000';
 
 // --- In-Memory Caching with TTL ---
 const CACHE_TTL = 30 * 1000; // 30 seconds for general data
@@ -80,24 +78,42 @@ async function fetchApi(
     try {
       const response = await fetch(`${API_URL}${endpoint}`, {
         headers: {
-          "Content-Type": "application/json",
-          credentials: "include",
+          'Content-Type': 'application/json',
           ...options.headers,
         },
+        credentials: 'include', // Ensure session cookies are sent
         ...options,
       });
 
+      // Handle 401 Unauthorized specifically
+      if (response.status === 401) {
+        const errorData = await response.text();
+        console.error('[API 401] Unauthorized request:', {
+          url: `${API_URL}${endpoint}`,
+          endpoint,
+          error: errorData,
+        });
+        throw new Error('Unauthorized: Please log in again');
+      }
+
       if (!response.ok) {
         const errorText = await response.text();
+        console.error('[API Error] Response error:', {
+          url: `${API_URL}${endpoint}`,
+          endpoint,
+          status: response.status,
+          statusText: response.statusText,
+          error: errorText,
+        });
         throw new Error(
           `API Error: ${response.status} ${response.statusText} - ${errorText}`,
         );
       }
 
       // Handle empty responses
-      const contentType = response.headers.get("content-type");
+      const contentType = response.headers.get('content-type');
       let result: any;
-      if (!contentType || !contentType.includes("application/json")) {
+      if (!contentType || !contentType.includes('application/json')) {
         result = null;
       } else {
         result = await response.json();
@@ -153,12 +169,12 @@ const DEFAULT_QUERY_OPTIONS = {
 // --- Data transformation utilities for schema compatibility ---
 export function parseInboxDataField(inboxData: InboxData): ParsedInboxData {
   try {
-    if (typeof inboxData?.data === "string") {
+    if (typeof inboxData?.data === 'string') {
       return JSON.parse(inboxData.data);
     }
     return inboxData?.data || {};
   } catch (error) {
-    console.error("Error parsing inbox data:", error);
+    console.error('Error parsing inbox data:', error);
     return {};
   }
 }
@@ -191,7 +207,6 @@ export function useFetch<T = any>(
   error: Error | null;
   refetch: () => void;
 } {
-  const queryClient = useQueryClient();
   const enabled = options?.enabled !== false && endpoint !== null;
 
   const { data, isLoading, error, refetch } = useQuery<T | null, Error>({
@@ -213,7 +228,11 @@ export function useFetch<T = any>(
   return {
     data: data ?? undefined,
     isLoading,
-    error: error ? (error instanceof Error ? error : new Error(String(error))) : null,
+    error: error
+      ? error instanceof Error
+        ? error
+        : new Error(String(error))
+      : null,
     refetch: wrappedRefetch,
   };
 }
@@ -231,11 +250,11 @@ export function useMutate<T = any, V = any>(
   isLoading: boolean;
   error: Error | null;
 } {
-  const { mutateAsync: rqMutateAsync, isPending, error } = useMutation<
-    T,
-    Error,
-    V
-  >({
+  const {
+    mutateAsync: rqMutateAsync,
+    isPending,
+    error,
+  } = useMutation<T, Error, V>({
     mutationFn,
     onSuccess: options?.onSuccess,
     onMutate: options?.onMutate,
@@ -245,38 +264,44 @@ export function useMutate<T = any, V = any>(
   return {
     mutateAsync: rqMutateAsync,
     isLoading: isPending,
-    error: error ? (error instanceof Error ? error : new Error(String(error))) : null,
+    error: error
+      ? error instanceof Error
+        ? error
+        : new Error(String(error))
+      : null,
   };
 }
 
 // --- Blogs ---
 
-export function useUserBlogs(companyId: string | undefined | null) {
-  return useFetch<Blog[]>(
-    companyId ? `/dashboard/blogs/${companyId}` : null,
-  );
+export function useUserBlogs(companyId?: string | undefined | null) {
+  // companyId is now ignored as it's handled by the session
+  return useFetch<Blog[]>('/dashboard/blogs');
 }
 
 export function useBlog(
-  companyId: string | undefined | null,
+  _companyId: string | undefined | null,
   id: string | undefined,
 ) {
-  return useFetch<Blog>(
-    companyId && id ? `/dashboard/blogs/${companyId}/${id}` : null,
-  );
+  return useFetch<Blog>(id ? `/dashboard/blogs/${id}` : null);
 }
 
 export function useCreateBlog() {
   const queryClient = useQueryClient();
   return useMutate<Blog, Partial<Blog>>(
     (newBlog) =>
-      fetchApi("/dashboard/blogs", {
-        method: "POST",
-        body: JSON.stringify(newBlog),
-      }, CACHE_TTL, true), // Skip cache for mutations
+      fetchApi(
+        '/dashboard/blogs',
+        {
+          method: 'POST',
+          body: JSON.stringify(newBlog),
+        },
+        CACHE_TTL,
+        true,
+      ), // Skip cache for mutations
     {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["/dashboard/blogs/"] });
+        queryClient.invalidateQueries({ queryKey: ['/dashboard/blogs'] });
       },
     },
   );
@@ -286,14 +311,19 @@ export function useUpdateBlog() {
   const queryClient = useQueryClient();
   return useMutate<Blog, { id: string; blog: Partial<Blog> }>(
     ({ id, blog }) =>
-      fetchApi(`/dashboard/blogs/${id}`, {
-        method: "PUT",
-        body: JSON.stringify(blog),
-      }, CACHE_TTL, true),
+      fetchApi(
+        `/dashboard/blogs/${id}`,
+        {
+          method: 'PUT',
+          body: JSON.stringify(blog),
+        },
+        CACHE_TTL,
+        true,
+      ),
     {
       onSuccess: (_, { id }) => {
         queryClient.invalidateQueries({ queryKey: [`/dashboard/blogs/${id}`] });
-        queryClient.invalidateQueries({ queryKey: ["/dashboard/blogs/"] });
+        queryClient.invalidateQueries({ queryKey: ['/dashboard/blogs'] });
       },
     },
   );
@@ -303,13 +333,18 @@ export function useDeleteBlog() {
   const queryClient = useQueryClient();
   return useMutate<void, string>(
     (id) =>
-      fetchApi(`/dashboard/blogs/${id}`, {
-        method: "DELETE",
-      }, CACHE_TTL, true),
+      fetchApi(
+        `/dashboard/blogs/${id}`,
+        {
+          method: 'DELETE',
+        },
+        CACHE_TTL,
+        true,
+      ),
     {
       onSuccess: (_, id) => {
         queryClient.invalidateQueries({ queryKey: [`/dashboard/blogs/${id}`] });
-        queryClient.invalidateQueries({ queryKey: ["/dashboard/blogs/"] });
+        queryClient.invalidateQueries({ queryKey: ['/dashboard/blogs'] });
       },
     },
   );
@@ -317,23 +352,26 @@ export function useDeleteBlog() {
 
 // --- Inbox ---
 
-export function useUserInboxes(companyId: string | undefined | null) {
-  return useFetch<Inbox[]>(
-    companyId ? `/dashboard/inbox/${companyId}` : null,
-  );
+export function useUserInboxes(_companyId?: string | undefined | null) {
+  return useFetch<Inbox[]>('/dashboard/inbox');
 }
 
 export function useCreateInbox() {
   const queryClient = useQueryClient();
   return useMutate<Inbox, Partial<Inbox>>(
     (newInbox) =>
-      fetchApi("/dashboard/inbox", {
-        method: "POST",
-        body: JSON.stringify(newInbox),
-      }, CACHE_TTL, true),
+      fetchApi(
+        '/dashboard/inbox',
+        {
+          method: 'POST',
+          body: JSON.stringify(newInbox),
+        },
+        CACHE_TTL,
+        true,
+      ),
     {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["/dashboard/inbox/"] });
+        queryClient.invalidateQueries({ queryKey: ['/dashboard/inbox'] });
       },
     },
   );
@@ -343,44 +381,52 @@ export function useDeleteInbox() {
   const queryClient = useQueryClient();
   return useMutate<void, string>(
     (id) =>
-      fetchApi(`/dashboard/inbox/${id}`, {
-        method: "DELETE",
-      }, CACHE_TTL, true),
+      fetchApi(
+        `/dashboard/inbox/${id}`,
+        {
+          method: 'DELETE',
+        },
+        CACHE_TTL,
+        true,
+      ),
     {
       onSuccess: (_, id) => {
         queryClient.invalidateQueries({ queryKey: [`/dashboard/inbox/${id}`] });
-        queryClient.invalidateQueries({ queryKey: ["/dashboard/inbox/"] });
+        queryClient.invalidateQueries({ queryKey: ['/dashboard/inbox'] });
       },
     },
   );
 }
 
 export function useInboxData(id: string | undefined) {
-  return useFetch<InboxData[]>(
-    id ? `/dashboard/inbox/data/${id}` : null,
-  );
+  return useFetch<InboxData[]>(id ? `/dashboard/inbox/${id}` : null);
 }
 
 export function useDeleteInboxData() {
   const queryClient = useQueryClient();
   return useMutate<void, string>(
     (id) =>
-      fetchApi(`/dashboard/inbox/data/${id}`, {
-        method: "DELETE",
-      }, CACHE_TTL, true),
+      fetchApi(
+        `/dashboard/inbox/data/${id}`,
+        {
+          method: 'DELETE',
+        },
+        CACHE_TTL,
+        true,
+      ),
     {
       onSuccess: (_, id) => {
-        queryClient.invalidateQueries({ queryKey: [`/dashboard/inbox/data/${id}`] });
+        queryClient.invalidateQueries({
+          queryKey: [`/dashboard/inbox/${id}`],
+        });
       },
     },
   );
 }
 
 // --- Optimized useLatestMessages Hook ---
-// Early limiting: fetch only last 2 messages per inbox
-// Shorter TTL: 10 seconds for real-time data
 export function useLatestMessages(
-  companyId: string | undefined | null,
+  _companyId?: string | undefined | null,
   limit: number = 4,
 ): {
   data: any[];
@@ -393,7 +439,7 @@ export function useLatestMessages(
     isLoading: inboxesLoading,
     error: inboxesError,
     refetch: refetchInboxes,
-  } = useUserInboxes(companyId);
+  } = useUserInboxes();
 
   const [messages, setMessages] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -414,21 +460,19 @@ export function useLatestMessages(
     setIsLoading(true);
     setError(null);
 
-    // OPTIMIZATION: Fetch only last 2 messages per inbox instead of all
     const EARLY_LIMIT = 2;
 
     Promise.all(
       inboxes.map((inbox: Inbox) =>
         fetchApi(
-          `/dashboard/inbox/data/${inbox.id}`,
+          `/dashboard/inbox/${inbox.id}`,
           {},
-          SHORT_CACHE_TTL, // Use shorter TTL for real-time data
+          SHORT_CACHE_TTL,
         )
           .then((data: InboxData[]) => {
             if (!Array.isArray(data) || data.length === 0) {
               return { inbox, data: [] };
             }
-            // Early limit: only get last EARLY_LIMIT messages
             const limitedData = data.slice(-EARLY_LIMIT);
             return { inbox, data: limitedData };
           })
@@ -476,28 +520,26 @@ export function useLatestMessages(
 
 // --- Company ---
 
-export function useCompany(companyId: string | undefined | null): {
-  data: CompanyData | undefined;
-  isLoading: boolean;
-  error: Error | null;
-  refetch: () => void;
-} {
-  return useFetch<CompanyData>(
-    companyId ? `/dashboard/company/${companyId}` : null,
-  );
+export function useCompany(_companyId?: string | undefined | null) {
+  return useFetch<CompanyData>('/dashboard/company');
 }
 
 export function useCreateCompany() {
   const queryClient = useQueryClient();
   return useMutate<CompanyData, Partial<CompanyData>>(
     (newCompany) =>
-      fetchApi("/dashboard/company", {
-        method: "POST",
-        body: JSON.stringify(newCompany),
-      }, CACHE_TTL, true),
+      fetchApi(
+        '/dashboard/company',
+        {
+          method: 'POST',
+          body: JSON.stringify(newCompany),
+        },
+        CACHE_TTL,
+        true,
+      ),
     {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["/dashboard/company/"] });
+        queryClient.invalidateQueries({ queryKey: ['/dashboard/company'] });
       },
     },
   );
@@ -505,16 +547,20 @@ export function useCreateCompany() {
 
 export function useUpdateCompany() {
   const queryClient = useQueryClient();
-  return useMutate<CompanyData, { id: string; company: Partial<CompanyData> }>(
-    ({ id, company }) =>
-      fetchApi(`/dashboard/company/${id}`, {
-        method: "PUT",
-        body: JSON.stringify(company),
-      }, CACHE_TTL, true),
+  return useMutate<CompanyData, { id?: string; company: Partial<CompanyData> }>(
+    ({ company }) =>
+      fetchApi(
+        '/dashboard/company',
+        {
+          method: 'PUT',
+          body: JSON.stringify(company),
+        },
+        CACHE_TTL,
+        true,
+      ),
     {
-      onSuccess: (_, { id }) => {
-        queryClient.invalidateQueries({ queryKey: [`/dashboard/company/${id}`] });
-        queryClient.invalidateQueries({ queryKey: ["/dashboard/company/"] });
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['/dashboard/company'] });
       },
     },
   );
@@ -522,7 +568,7 @@ export function useUpdateCompany() {
 
 // --- Analytics ---
 
-export type AnalyticsEvent = "page" | "form" | "button";
+export type AnalyticsEvent = 'page' | 'form' | 'button';
 
 export interface AnalyticsDataPoint {
   date: string;
@@ -543,17 +589,21 @@ export function useAnalytics(
   event: AnalyticsEvent,
 ) {
   return useFetch<AnalyticsResponse>(
-    owner && event ? `/api/analytics/${owner}?event=${event}` : null,
+    owner && event ? `/analytics/${owner}?event=${event}` : null,
   );
 }
 
 export function useTrackAnalytics() {
-  return useMutate<any, any>(
-    (data) =>
-      fetchApi("/api/analytics", {
-        method: "POST",
+  return useMutate<any, any>((data) =>
+    fetchApi(
+      '/analytics',
+      {
+        method: 'POST',
         body: JSON.stringify(data),
-      }, CACHE_TTL, true),
+      },
+      CACHE_TTL,
+      true,
+    ),
   );
 }
 
@@ -562,26 +612,29 @@ export function useTrackAnalytics() {
 export interface SharingUser {
   id: string;
   email: string;
-  role: "user" | "admin";
+  role: 'user' | 'admin';
 }
 
-export function useCompanyUsers(companyId: string | undefined | null) {
-  return useFetch<SharingUser[]>(
-    companyId ? `/dashboard/sharing/${companyId}/users` : null,
-  );
+export function useCompanyUsers(_companyId?: string | undefined | null) {
+  return useFetch<SharingUser[]>('/dashboard/sharing/users');
 }
 
 export function useRemoveUser() {
   const queryClient = useQueryClient();
-  return useMutate<{ success: boolean }, { companyId: string; userId: string }>(
-    ({ companyId, userId }) =>
-      fetchApi(`/dashboard/sharing/${companyId}/users/${userId}`, {
-        method: "DELETE",
-      }, CACHE_TTL, true),
+  return useMutate<{ success: boolean }, { userId: string }>(
+    ({ userId }) =>
+      fetchApi(
+        `/dashboard/sharing/users/${userId}`,
+        {
+          method: 'DELETE',
+        },
+        CACHE_TTL,
+        true,
+      ),
     {
-      onSuccess: (_, { companyId }) => {
+      onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: [`/dashboard/sharing/${companyId}/users`],
+          queryKey: ['/dashboard/sharing/users'],
         });
       },
     },
@@ -592,17 +645,22 @@ export function useChangeUserRole() {
   const queryClient = useQueryClient();
   return useMutate<
     { success: boolean },
-    { companyId: string; userId: string; role: "user" | "admin" }
+    { userId: string; role: 'user' | 'admin' }
   >(
-    ({ companyId, userId, role }) =>
-      fetchApi(`/dashboard/sharing/${companyId}/users/${userId}`, {
-        method: "PATCH",
-        body: JSON.stringify({ role }),
-      }, CACHE_TTL, true),
+    ({ userId, role }) =>
+      fetchApi(
+        `/dashboard/sharing/users/${userId}`,
+        {
+          method: 'PATCH',
+          body: JSON.stringify({ role }),
+        },
+        CACHE_TTL,
+        true,
+      ),
     {
-      onSuccess: (_, { companyId }) => {
+      onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: [`/dashboard/sharing/${companyId}/users`],
+          queryKey: ['/dashboard/sharing/users'],
         });
       },
     },
@@ -611,32 +669,35 @@ export function useChangeUserRole() {
 
 // --- Edit Requests ---
 
-export function useUserEditRequests(companyId: string | undefined | null) {
-  return useFetch<EditRequest[]>(
-    companyId ? `/dashboard/editRequest/${companyId}` : null,
-  );
+export function useUserEditRequests(_companyId?: string | undefined | null) {
+  return useFetch<EditRequest[]>('/dashboard/editRequest');
 }
 
 export function useEditRequest(
-  companyId: string | undefined | null,
+  _companyId: string | undefined | null,
   id: string | undefined,
 ) {
-  return useFetch<EditRequest>(
-    companyId && id ? `/dashboard/editRequest/${companyId}/${id}` : null,
-  );
+  return useFetch<EditRequest>(id ? `/dashboard/editRequest/${id}` : null);
 }
 
 export function useCreateEditRequest() {
   const queryClient = useQueryClient();
   return useMutate<EditRequest, Partial<EditRequest>>(
     (newEditRequest) =>
-      fetchApi("/dashboard/editRequest", {
-        method: "POST",
-        body: JSON.stringify(newEditRequest),
-      }, CACHE_TTL, true),
+      fetchApi(
+        '/dashboard/editRequest',
+        {
+          method: 'POST',
+          body: JSON.stringify(newEditRequest),
+        },
+        CACHE_TTL,
+        true,
+      ),
     {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["/dashboard/editRequest/"] });
+        queryClient.invalidateQueries({
+          queryKey: ['/dashboard/editRequest'],
+        });
       },
     },
   );
@@ -649,17 +710,22 @@ export function useUpdateEditRequest() {
     { id: string; editRequest: Partial<EditRequest> }
   >(
     ({ id, editRequest }) =>
-      fetchApi(`/dashboard/editRequest/${id}`, {
-        method: "PUT",
-        body: JSON.stringify(editRequest),
-      }, CACHE_TTL, true),
+      fetchApi(
+        `/dashboard/editRequest/${id}`,
+        {
+          method: 'PUT',
+          body: JSON.stringify(editRequest),
+        },
+        CACHE_TTL,
+        true,
+      ),
     {
       onSuccess: (_, { id }) => {
         queryClient.invalidateQueries({
           queryKey: [`/dashboard/editRequest/${id}`],
         });
         queryClient.invalidateQueries({
-          queryKey: ["/dashboard/editRequest/"],
+          queryKey: ['/dashboard/editRequest'],
         });
       },
     },
@@ -670,16 +736,21 @@ export function useDeleteEditRequest() {
   const queryClient = useQueryClient();
   return useMutate<void, string>(
     (id) =>
-      fetchApi(`/dashboard/editRequest/${id}`, {
-        method: "DELETE",
-      }, CACHE_TTL, true),
+      fetchApi(
+        `/dashboard/editRequest/${id}`,
+        {
+          method: 'DELETE',
+        },
+        CACHE_TTL,
+        true,
+      ),
     {
       onSuccess: (_, id) => {
         queryClient.invalidateQueries({
           queryKey: [`/dashboard/editRequest/${id}`],
         });
         queryClient.invalidateQueries({
-          queryKey: ["/dashboard/editRequest/"],
+          queryKey: ['/dashboard/editRequest'],
         });
       },
     },
@@ -711,7 +782,7 @@ export type {
   AnalyticsPage,
   AnalyticsForm,
   EditRequest,
-} from "@/types/schema";
+} from '@/types/schema';
 
-// Export utilities (invalidateCache is already exported inline)
+// Export utilities
 export { responseCache, pendingRequests };
