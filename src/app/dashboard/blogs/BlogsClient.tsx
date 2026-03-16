@@ -34,11 +34,14 @@ function BlogsClient() {
         setBlogs(res);
       } catch (err: any) {
         console.error('Failed to fetch blogs:', err);
-        if (err.message?.includes('Unauthorized') || err.message?.includes('401')) {
+        if (
+          err.message?.includes('Unauthorized') ||
+          err.message?.includes('401')
+        ) {
           setError('Session expired. Please log in again.');
           // Optionally redirect to login after a delay
           setTimeout(() => {
-            router.push('/login');
+            router.push('/auth/login');
           }, 2000);
         } else {
           setError(err.message || 'Failed to fetch blogs');
