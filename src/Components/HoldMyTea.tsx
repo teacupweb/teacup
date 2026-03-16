@@ -18,8 +18,7 @@ export default function HoldMyTea() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   // Get owner email from user metadata
-  const company =
-    user && typeof user !== 'string' ? user.companyId : null;
+  const company = user && typeof user !== 'string' ? user.companyId : null;
 
   // Mutation for Hold My Tea API
 
@@ -39,7 +38,7 @@ export default function HoldMyTea() {
       // Call the API - replace with actual fetch call
       const API_URL =
         process.env.NEXT_PUBLIC_BACKEND || 'http://localhost:8000';
-      const response = await fetch(`${API_URL}/api/hold-my-tea`, {
+      const response = await fetch(`${API_URL}/api/v1/hold-my-tea`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

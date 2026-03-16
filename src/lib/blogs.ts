@@ -1,8 +1,14 @@
-const API_URL =
-  process.env.NEXT_PUBLIC_BACKEND ||
-  process.env.NEXT_PUBLIC_API_URL ||
-  process.env.BACKEND ||
-  'http://localhost:8000/api/v1';
+const getBackendUrl = () => {
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BACKEND ||
+    process.env.NEXT_PUBLIC_API_URL ||
+    process.env.BACKEND ||
+    'http://localhost:8000';
+  // Ensure the base URL ends with /api/v1
+  return baseUrl.endsWith('/api/v1') ? baseUrl : `${baseUrl}/api/v1`;
+};
+
+const API_URL = getBackendUrl();
 
 export type blogType = {
   id?: string;
@@ -14,7 +20,7 @@ export type blogType = {
 
 async function fetchApi(endpoint: string, options: RequestInit = {}) {
   const url = `${API_URL}${endpoint}`;
-  
+
   try {
     const response = await fetch(url, {
       headers: {
@@ -68,9 +74,7 @@ export async function getUserBlogs(): Promise<blogType[]> {
   return fetchApi(`/dashboard/blogs`);
 }
 
-export async function getBlog(
-  id: string,
-): Promise<blogType> {
+export async function getBlog(id: string): Promise<blogType> {
   return fetchApi(`/dashboard/blogs/${id}`);
 }
 

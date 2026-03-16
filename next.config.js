@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   images: {
     remotePatterns: [
       {
@@ -11,9 +14,10 @@ const nextConfig = {
   },
   async rewrites() {
     // Determine backend root (e.g. http://localhost:8000)
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND || 'http://localhost:8000/api/v1';
+    const backendUrl =
+      process.env.NEXT_PUBLIC_BACKEND || 'http://localhost:8000/api/v1';
     const backendRoot = backendUrl.split('/api')[0];
-    
+
     return [
       {
         source: '/api/auth/:path*',

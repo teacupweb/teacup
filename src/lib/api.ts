@@ -1,4 +1,18 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+const getApiBaseUrl = () => {
+  // Server-side: use environment variable or default to localhost
+  if (typeof window === 'undefined') {
+    // Use SERVER_BACKEND_URL for server-side (set in Vercel environment variables)
+    // Falls back to NEXT_PUBLIC_BACKEND for compatibility, then localhost
+    const baseUrl =
+      process.env.SERVER_BACKEND_URL ||
+      process.env.NEXT_PUBLIC_BACKEND ||
+      'http://localhost:8000';
+    // Ensure the base URL ends with /api/v1 for server-side calls
+    return baseUrl.endsWith('/api/v1') ? baseUrl : `${baseUrl}/api/v1`;
+  }
+  // Client-side: always use relative URL to go through Next.js rewrites
+  return '/api/v1';
+};
 
 export interface DashboardAccessStatus {
   hasOrder: boolean;
@@ -16,7 +30,10 @@ export interface DashboardAccessStatus {
   } | null;
 }
 
-export async function getDashboardAccessStatus(cookie?: string): Promise<DashboardAccessStatus> {
+export async function getDashboardAccessStatus(
+  cookie?: string,
+): Promise<DashboardAccessStatus> {
+  const isServer = typeof window === 'undefined';
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
   };
@@ -26,10 +43,10 @@ export async function getDashboardAccessStatus(cookie?: string): Promise<Dashboa
     headers['cookie'] = cookie;
   }
 
-  const response = await fetch(`${API_BASE_URL}/orders/dashboard-access`, {
+  const response = await fetch(`${getApiBaseUrl()}/orders/dashboard-access`, {
     method: 'GET',
     headers,
-    credentials: 'include', // Important for both client and server (if node-fetch supports it)
+    credentials: isServer ? 'same-origin' : 'include',
   });
 
   if (!response.ok) {

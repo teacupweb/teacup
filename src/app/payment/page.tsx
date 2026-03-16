@@ -97,7 +97,7 @@ function PaymentContent() {
       console.log('Creating checkout session...');
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND}/payment/checkout`,
+        `${process.env.NEXT_PUBLIC_BACKEND}/api/v1/payment/checkout`,
         {
           method: 'POST',
           headers: {

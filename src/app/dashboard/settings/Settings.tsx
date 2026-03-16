@@ -2,7 +2,13 @@
 
 import { useAuth } from '@/AuthProvider';
 import { useRouter } from 'next/navigation';
-import { useCompany, useCompanyUsers, useRemoveUser, useChangeUserRole, type SharingUser } from '@/backendProvider';
+import {
+  useCompany,
+  useCompanyUsers,
+  useRemoveUser,
+  useChangeUserRole,
+  type SharingUser,
+} from '@/backendProvider';
 import { authClient } from '@/lib/auth-client';
 import Swal from 'sweetalert2';
 import { toast } from 'sonner';
@@ -20,14 +26,20 @@ function Settings() {
   const companyId = user.companyId;
   // console.log(user);
   const { data: company, isLoading: loading } = useCompany(companyId);
-  const { data: companyUsers, isLoading: usersLoading, refetch: refetchUsers } = useCompanyUsers(companyId);
+  const {
+    data: companyUsers,
+    isLoading: usersLoading,
+    refetch: refetchUsers,
+  } = useCompanyUsers(companyId);
   const { mutateAsync: removeUser, isLoading: removingUser } = useRemoveUser();
-  const { mutateAsync: changeUserRole, isLoading: changingRole } = useChangeUserRole();
-  
+  const { mutateAsync: changeUserRole, isLoading: changingRole } =
+    useChangeUserRole();
+
   const companySecret = company?.key || 'No company secret found';
-  
+
   // Check if current user is admin
-  const currentUserRole = companyUsers?.find(u => u.id === user.id)?.role || 'user';
+  const currentUserRole =
+    companyUsers?.find((u) => u.id === user.id)?.role || 'user';
   const isAdmin = currentUserRole === 'admin';
 
   // State for toggles
@@ -190,7 +202,7 @@ function Settings() {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await removeUser({ companyId: companyId!, userId });
+          await removeUser({ userId });
           toast.success('User removed successfully');
           refetchUsers();
         } catch (error: any) {
@@ -200,9 +212,12 @@ function Settings() {
     });
   };
 
-  const handleChangeRole = async (userId: string, newRole: 'user' | 'admin') => {
+  const handleChangeRole = async (
+    userId: string,
+    newRole: 'user' | 'admin',
+  ) => {
     try {
-      await changeUserRole({ companyId: companyId!, userId, role: newRole });
+      await changeUserRole({ userId, role: newRole });
       toast.success(`User role changed to ${newRole}`);
       refetchUsers();
     } catch (error: any) {
@@ -343,61 +358,74 @@ function Settings() {
                   </h4>
                   {companyUsers && companyUsers.length > 0 ? (
                     <div className='space-y-3'>
-                      {companyUsers.map((member: SharingUser, index: number) => (
-                        <div
-                          className='flex items-center justify-between bg-muted/50 p-3 rounded-lg'
-                          key={member.id + index}
-                        >
-                          <div className='flex items-center gap-3'>
-                            <div className='w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center text-rose-600 text-xs font-bold'>
-                              {member.email
-                                .split(' ')
-                                .map((word: string) =>
-                                  word.charAt(0).toUpperCase(),
-                                )
-                                .join('')
-                                .slice(0, 2)}
+                      {companyUsers.map(
+                        (member: SharingUser, index: number) => (
+                          <div
+                            className='flex items-center justify-between bg-muted/50 p-3 rounded-lg'
+                            key={member.id + index}
+                          >
+                            <div className='flex items-center gap-3'>
+                              <div className='w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center text-rose-600 text-xs font-bold'>
+                                {member.email
+                                  .split(' ')
+                                  .map((word: string) =>
+                                    word.charAt(0).toUpperCase(),
+                                  )
+                                  .join('')
+                                  .slice(0, 2)}
+                              </div>
+                              <div>
+                                <p className='text-sm font-medium text-foreground/90'>
+                                  {member.email}
+                                </p>
+                                <p className='text-xs text-muted-foreground'>
+                                  {member.role}
+                                </p>
+                              </div>
                             </div>
-                            <div>
-                              <p className='text-sm font-medium text-foreground/90'>
-                                {member.email}
-                              </p>
-                              <p className='text-xs text-muted-foreground'>
+                            <div className='flex items-center gap-2'>
+                              <span
+                                className={`text-xs font-medium px-2 py-1 rounded-full ${
+                                  member.role === 'admin'
+                                    ? 'bg-rose-100 text-rose-600'
+                                    : 'bg-blue-100 text-blue-600'
+                                }`}
+                              >
                                 {member.role}
-                              </p>
+                              </span>
+                              {isAdmin && member.id !== user.id && (
+                                <>
+                                  <button
+                                    onClick={() =>
+                                      handleChangeRole(
+                                        member.id,
+                                        member.role === 'admin'
+                                          ? 'user'
+                                          : 'admin',
+                                      )
+                                    }
+                                    disabled={changingRole}
+                                    className='text-xs bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded-lg transition-colors disabled:opacity-60'
+                                  >
+                                    {member.role === 'admin'
+                                      ? 'Demote'
+                                      : 'Promote'}
+                                  </button>
+                                  <button
+                                    onClick={() =>
+                                      handleRemoveUser(member.id, member.email)
+                                    }
+                                    disabled={removingUser}
+                                    className='text-xs bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-lg transition-colors disabled:opacity-60'
+                                  >
+                                    Remove
+                                  </button>
+                                </>
+                              )}
                             </div>
                           </div>
-                          <div className='flex items-center gap-2'>
-                            <span
-                              className={`text-xs font-medium px-2 py-1 rounded-full ${
-                                member.role === 'admin'
-                                  ? 'bg-rose-100 text-rose-600'
-                                  : 'bg-blue-100 text-blue-600'
-                              }`}
-                            >
-                              {member.role}
-                            </span>
-                            {isAdmin && member.id !== user.id && (
-                              <>
-                                <button
-                                  onClick={() => handleChangeRole(member.id, member.role === 'admin' ? 'user' : 'admin')}
-                                  disabled={changingRole}
-                                  className='text-xs bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded-lg transition-colors disabled:opacity-60'
-                                >
-                                  {member.role === 'admin' ? 'Demote' : 'Promote'}
-                                </button>
-                                <button
-                                  onClick={() => handleRemoveUser(member.id, member.email)}
-                                  disabled={removingUser}
-                                  className='text-xs bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-lg transition-colors disabled:opacity-60'
-                                >
-                                  Remove
-                                </button>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      ))}
+                        ),
+                      )}
                     </div>
                   ) : (
                     <p className='text-sm text-muted-foreground text-center py-4'>
@@ -447,8 +475,8 @@ function Settings() {
             <h3 className='font-bold text-xl text-foreground mb-4'>Profile</h3>
             <div className='flex flex-col items-center text-center'>
               {user.image ? (
-                <img 
-                  src={user.image} 
+                <img
+                  src={user.image}
                   alt={userName}
                   className='w-20 h-20 rounded-full object-cover mb-3'
                 />

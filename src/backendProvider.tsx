@@ -1,10 +1,6 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   CompanyData,
   Blog,
@@ -21,11 +17,7 @@ import {
   EditRequest,
 } from '@/types/schema';
 
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ||
-  process.env.NEXT_PUBLIC_BACKEND ||
-  process.env.BACKEND ||
-  'http://localhost:8000';
+const API_URL = '/api/v1';
 
 // --- In-Memory Caching with TTL ---
 const CACHE_TTL = 30 * 1000; // 30 seconds for general data
@@ -464,11 +456,7 @@ export function useLatestMessages(
 
     Promise.all(
       inboxes.map((inbox: Inbox) =>
-        fetchApi(
-          `/dashboard/inbox/${inbox.id}`,
-          {},
-          SHORT_CACHE_TTL,
-        )
+        fetchApi(`/dashboard/inbox/${inbox.id}`, {}, SHORT_CACHE_TTL)
           .then((data: InboxData[]) => {
             if (!Array.isArray(data) || data.length === 0) {
               return { inbox, data: [] };
@@ -596,7 +584,7 @@ export function useAnalytics(
 export function useTrackAnalytics() {
   return useMutate<any, any>((data) =>
     fetchApi(
-      '/analytics',
+      '/api/v1/analytics',
       {
         method: 'POST',
         body: JSON.stringify(data),

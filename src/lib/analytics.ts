@@ -1,7 +1,13 @@
-const API_URL =
-  process.env.NEXT_PUBLIC_BACKEND ||
-  process.env.BACKEND ||
-  'http://localhost:8000';
+const getBackendUrl = () => {
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BACKEND ||
+    process.env.BACKEND ||
+    'http://localhost:8000';
+  // Ensure the base URL ends with /api/v1
+  return baseUrl.endsWith('/api/v1') ? baseUrl : `${baseUrl}/api/v1`;
+};
+
+const API_URL = getBackendUrl();
 
 export type AnalyticsEvent = 'page' | 'form' | 'button';
 
