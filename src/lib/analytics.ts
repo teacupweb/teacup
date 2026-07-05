@@ -32,6 +32,8 @@ async function fetchApi(endpoint: string, options: RequestInit = {}) {
         'Content-Type': 'application/json',
         ...options.headers,
       },
+      // Analytics endpoints now require an authenticated session on the backend.
+      credentials: 'include',
       ...options,
     });
 
