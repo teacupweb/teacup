@@ -198,3 +198,129 @@ export type inboxType = {
   ownerId: string;
   name: string;
 };
+
+// --- Teacup-dash merge: Leads / Appointments / Testimonials / Activity ---
+
+export type LeadStatus =
+  | 'NEW'
+  | 'CONTACTED'
+  | 'QUALIFIED'
+  | 'CLOSED_WON'
+  | 'CLOSED_LOST'
+  | 'SPAM';
+
+export type LeadNote = {
+  id: string;
+  leadId: string;
+  authorId: string;
+  author?: { id: string; name: string };
+  body: string;
+  createdAt: string;
+};
+
+export type Lead = {
+  id: string;
+  ownerId: string;
+  type: 'CONTACT' | 'QUOTE' | 'CONSULTATION' | 'OTHER';
+  status: LeadStatus;
+  name: string;
+  email: string;
+  phone: string | null;
+  message: string;
+  fields: Record<string, unknown> | null;
+  source: string | null;
+  utm: Record<string, string> | null;
+  assignedToId: string | null;
+  assignedTo?: { id: string; name: string; email: string } | null;
+  readAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  notes?: LeadNote[];
+  appointments?: Appointment[];
+  _count?: { notes: number };
+};
+
+export type LeadListResponse = {
+  leads: Lead[];
+  nextCursor: string | null;
+  counts: Partial<Record<LeadStatus, number>>;
+  unread: number;
+};
+
+export type ApptStatus =
+  | 'PENDING'
+  | 'CONFIRMED'
+  | 'COMPLETED'
+  | 'CANCELLED'
+  | 'NO_SHOW';
+
+export type Appointment = {
+  id: string;
+  ownerId: string;
+  leadId: string | null;
+  lead?: { id: string; name: string; status: LeadStatus } | null;
+  service: string | null;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string | null;
+  startsAt: string;
+  endsAt: string;
+  status: ApptStatus;
+  notes: string | null;
+  cancelReason: string | null;
+  createdAt: string;
+};
+
+export type AppointmentSettingsType = {
+  id?: string;
+  timezone: string;
+  slotMinutes: number;
+  bufferMinutes: number;
+  minNoticeHours: number;
+  hours: Record<string, { start: string; end: string }[]>;
+};
+
+export type ApprovalStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
+
+export type Testimonial = {
+  id: string;
+  ownerId: string;
+  authorName: string;
+  company: string | null;
+  role: string | null;
+  rating: number | null;
+  body: string;
+  avatarUrl: string | null;
+  featured: boolean;
+  status: ApprovalStatus;
+  source: string | null;
+  sortOrder: number;
+  createdAt: string;
+};
+
+export type HeadTagKind = 'META' | 'LINK' | 'SCRIPT' | 'STYLE' | 'NOSCRIPT';
+
+export type HeadTag = {
+  id: string;
+  ownerId: string;
+  kind: HeadTagKind;
+  label: string | null;
+  attributes: Record<string, string> | null;
+  content: string | null;
+  enabled: boolean;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ActivityLogEntry = {
+  id: string;
+  ownerId: string;
+  actorId: string | null;
+  actor?: { id: string; name: string } | null;
+  action: string;
+  entityType: string;
+  entityId: string;
+  diff: { before?: Record<string, unknown>; after?: Record<string, unknown> } | null;
+  createdAt: string;
+};

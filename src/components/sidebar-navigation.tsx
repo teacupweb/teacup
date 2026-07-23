@@ -7,6 +7,11 @@ import {
   IconChartBar,
   IconSettings,
   IconEdit,
+  IconUsers,
+  IconCalendarEvent,
+  IconMessageStar,
+  IconHistory,
+  IconCode,
 } from '@tabler/icons-react';
 import { NavMain } from '@/components/nav-main';
 
@@ -17,6 +22,21 @@ const navData = {
       title: 'Dashboard',
       url: '/dashboard',
       icon: IconDashboard,
+    },
+    {
+      title: 'Leads',
+      url: '/dashboard/leads',
+      icon: IconUsers,
+    },
+    {
+      title: 'Appointments',
+      url: '/dashboard/appointments',
+      icon: IconCalendarEvent,
+    },
+    {
+      title: 'Testimonials',
+      url: '/dashboard/testimonials',
+      icon: IconMessageStar,
     },
     {
       title: 'inboxes',
@@ -32,6 +52,16 @@ const navData = {
       title: 'Analytics',
       url: '/dashboard/analytics',
       icon: IconChartBar,
+    },
+    {
+      title: 'Activity',
+      url: '/dashboard/activity',
+      icon: IconHistory,
+    },
+    {
+      title: 'Head Tags',
+      url: '/dashboard/head-tags',
+      icon: IconCode,
     },
     {
       title: 'Request Edit',

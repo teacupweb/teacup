@@ -77,28 +77,32 @@ async function fetchApi(
         ...options,
       });
 
-      // Handle 401 Unauthorized specifically
-      if (response.status === 401) {
-        const errorData = await response.text();
-        console.error('[API 401] Unauthorized request:', {
-          url: `${API_URL}${endpoint}`,
-          endpoint,
-          error: errorData,
-        });
-        throw new Error('Unauthorized: Please log in again');
-      }
-
       if (!response.ok) {
         const errorText = await response.text();
+        const status = response.status;
+
+        if (status === 401 || status === 403) {
+          console.error(`[API ${status}] ${response.statusText}:`, {
+            url: `${API_URL}${endpoint}`,
+            endpoint,
+            status,
+            statusText: response.statusText,
+            error: errorText,
+          });
+          throw new Error(
+            `Unauthorized: ${status} ${response.statusText} - ${errorText}`,
+          );
+        }
+
         console.error('[API Error] Response error:', {
           url: `${API_URL}${endpoint}`,
           endpoint,
-          status: response.status,
+          status,
           statusText: response.statusText,
           error: errorText,
         });
         throw new Error(
-          `API Error: ${response.status} ${response.statusText} - ${errorText}`,
+          `API Error: ${status} ${response.statusText} - ${errorText}`,
         );
       }
 
@@ -118,8 +122,13 @@ async function fetchApi(
 
       return result;
     } catch (error) {
-      // Retry with exponential backoff
-      if (retryCount < maxRetries) {
+      // Don't retry on auth/permission errors
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const isAuthError =
+        errorMessage.startsWith('Unauthorized:') ||
+        errorMessage.startsWith('Forbidden:');
+
+      if (!isAuthError && retryCount < maxRetries) {
         const delay = baseDelay * Math.pow(2, retryCount);
         await new Promise((resolve) => setTimeout(resolve, delay));
         return executeWithRetry(retryCount + 1);
@@ -600,6 +609,7 @@ export function useTrackAnalytics() {
 export interface SharingUser {
   id: string;
   email: string;
+  name?: string;
   role: 'user' | 'admin';
 }
 
@@ -742,6 +752,337 @@ export function useDeleteEditRequest() {
         });
       },
     },
+  );
+}
+
+// --- Leads (teacup-dash merge) ---
+
+export function useLeads(params?: { status?: string; q?: string }) {
+  const search = new URLSearchParams();
+  if (params?.status) search.set('status', params.status);
+  if (params?.q) search.set('q', params.q);
+  const qs = search.toString();
+  return useFetch<import('@/types/schema').LeadListResponse>(
+    `/dashboard/leads${qs ? `?${qs}` : ''}`,
+    { staleTime: SHORT_CACHE_TTL },
+  );
+}
+
+export function useLead(id: string | null) {
+  return useFetch<import('@/types/schema').Lead>(
+    id ? `/dashboard/leads/${id}` : null,
+    { staleTime: SHORT_CACHE_TTL },
+  );
+}
+
+function invalidateLeads(queryClient: ReturnType<typeof useQueryClient>) {
+  invalidateCache('/dashboard/leads');
+  queryClient.invalidateQueries({
+    predicate: (q) => String(q.queryKey[0] ?? '').startsWith('/dashboard/leads'),
+  });
+}
+
+export function useMarkLeadRead() {
+  const queryClient = useQueryClient();
+  return useMutate<void, string>(
+    (id) =>
+      fetchApi(`/dashboard/leads/${id}/read`, { method: 'POST' }, CACHE_TTL, true),
+    { onSuccess: () => invalidateLeads(queryClient) },
+  );
+}
+
+export function useUpdateLeadStatus() {
+  const queryClient = useQueryClient();
+  return useMutate<import('@/types/schema').Lead, { id: string; status: string }>(
+    ({ id, status }) =>
+      fetchApi(
+        `/dashboard/leads/${id}/status`,
+        { method: 'PATCH', body: JSON.stringify({ status }) },
+        CACHE_TTL,
+        true,
+      ),
+    { onSuccess: () => invalidateLeads(queryClient) },
+  );
+}
+
+export function useAssignLead() {
+  const queryClient = useQueryClient();
+  return useMutate<
+    import('@/types/schema').Lead,
+    { id: string; userId: string | null }
+  >(
+    ({ id, userId }) =>
+      fetchApi(
+        `/dashboard/leads/${id}/assign`,
+        { method: 'PATCH', body: JSON.stringify({ userId }) },
+        CACHE_TTL,
+        true,
+      ),
+    { onSuccess: () => invalidateLeads(queryClient) },
+  );
+}
+
+export function useAddLeadNote() {
+  const queryClient = useQueryClient();
+  return useMutate<import('@/types/schema').LeadNote, { id: string; body: string }>(
+    ({ id, body }) =>
+      fetchApi(
+        `/dashboard/leads/${id}/notes`,
+        { method: 'POST', body: JSON.stringify({ body }) },
+        CACHE_TTL,
+        true,
+      ),
+    { onSuccess: () => invalidateLeads(queryClient) },
+  );
+}
+
+export function useConvertLead() {
+  const queryClient = useQueryClient();
+  return useMutate<import('@/types/schema').Appointment, string>(
+    (id) =>
+      fetchApi(`/dashboard/leads/${id}/convert`, { method: 'POST' }, CACHE_TTL, true),
+    {
+      onSuccess: () => {
+        invalidateLeads(queryClient);
+        invalidateCache('/dashboard/appointments');
+        queryClient.invalidateQueries({
+          predicate: (q) =>
+            String(q.queryKey[0] ?? '').startsWith('/dashboard/appointments'),
+        });
+      },
+    },
+  );
+}
+
+// --- Appointments (teacup-dash merge) ---
+
+export function useAppointments(params?: { status?: string }) {
+  const qs = params?.status ? `?status=${params.status}` : '';
+  return useFetch<import('@/types/schema').Appointment[]>(
+    `/dashboard/appointments${qs}`,
+    { staleTime: SHORT_CACHE_TTL },
+  );
+}
+
+function invalidateAppointments(queryClient: ReturnType<typeof useQueryClient>) {
+  invalidateCache('/dashboard/appointments');
+  queryClient.invalidateQueries({
+    predicate: (q) =>
+      String(q.queryKey[0] ?? '').startsWith('/dashboard/appointments'),
+  });
+}
+
+export function useCreateAppointment() {
+  const queryClient = useQueryClient();
+  return useMutate<
+    import('@/types/schema').Appointment,
+    Partial<import('@/types/schema').Appointment>
+  >(
+    (appt) =>
+      fetchApi(
+        '/dashboard/appointments',
+        { method: 'POST', body: JSON.stringify(appt) },
+        CACHE_TTL,
+        true,
+      ),
+    { onSuccess: () => invalidateAppointments(queryClient) },
+  );
+}
+
+export function useUpdateAppointmentStatus() {
+  const queryClient = useQueryClient();
+  return useMutate<
+    import('@/types/schema').Appointment,
+    { id: string; status: string; cancelReason?: string }
+  >(
+    ({ id, ...body }) =>
+      fetchApi(
+        `/dashboard/appointments/${id}/status`,
+        { method: 'PATCH', body: JSON.stringify(body) },
+        CACHE_TTL,
+        true,
+      ),
+    { onSuccess: () => invalidateAppointments(queryClient) },
+  );
+}
+
+export function useRescheduleAppointment() {
+  const queryClient = useQueryClient();
+  return useMutate<
+    import('@/types/schema').Appointment,
+    { id: string; startsAt: string; endsAt: string }
+  >(
+    ({ id, ...body }) =>
+      fetchApi(
+        `/dashboard/appointments/${id}/reschedule`,
+        { method: 'PATCH', body: JSON.stringify(body) },
+        CACHE_TTL,
+        true,
+      ),
+    { onSuccess: () => invalidateAppointments(queryClient) },
+  );
+}
+
+export function useAppointmentSettings() {
+  return useFetch<import('@/types/schema').AppointmentSettingsType | null>(
+    '/dashboard/appointments/settings',
+  );
+}
+
+export function useSaveAppointmentSettings() {
+  const queryClient = useQueryClient();
+  return useMutate<
+    import('@/types/schema').AppointmentSettingsType,
+    import('@/types/schema').AppointmentSettingsType
+  >(
+    (settings) =>
+      fetchApi(
+        '/dashboard/appointments/settings',
+        { method: 'PUT', body: JSON.stringify(settings) },
+        CACHE_TTL,
+        true,
+      ),
+    { onSuccess: () => invalidateAppointments(queryClient) },
+  );
+}
+
+// --- Testimonials (teacup-dash merge) ---
+
+export function useTestimonials(status?: string) {
+  const qs = status ? `?status=${status}` : '';
+  return useFetch<{
+    testimonials: import('@/types/schema').Testimonial[];
+    pending: number;
+  }>(`/dashboard/testimonials${qs}`, { staleTime: SHORT_CACHE_TTL });
+}
+
+function invalidateTestimonials(queryClient: ReturnType<typeof useQueryClient>) {
+  invalidateCache('/dashboard/testimonials');
+  queryClient.invalidateQueries({
+    predicate: (q) =>
+      String(q.queryKey[0] ?? '').startsWith('/dashboard/testimonials'),
+  });
+}
+
+export function useCreateTestimonial() {
+  const queryClient = useQueryClient();
+  return useMutate<
+    import('@/types/schema').Testimonial,
+    Partial<import('@/types/schema').Testimonial>
+  >(
+    (t) =>
+      fetchApi(
+        '/dashboard/testimonials',
+        { method: 'POST', body: JSON.stringify(t) },
+        CACHE_TTL,
+        true,
+      ),
+    { onSuccess: () => invalidateTestimonials(queryClient) },
+  );
+}
+
+export function useUpdateTestimonial() {
+  const queryClient = useQueryClient();
+  return useMutate<
+    import('@/types/schema').Testimonial,
+    { id: string; status?: string; featured?: boolean; sortOrder?: number }
+  >(
+    ({ id, ...body }) =>
+      fetchApi(
+        `/dashboard/testimonials/${id}`,
+        { method: 'PATCH', body: JSON.stringify(body) },
+        CACHE_TTL,
+        true,
+      ),
+    { onSuccess: () => invalidateTestimonials(queryClient) },
+  );
+}
+
+export function useDeleteTestimonial() {
+  const queryClient = useQueryClient();
+  return useMutate<void, string>(
+    (id) =>
+      fetchApi(
+        `/dashboard/testimonials/${id}`,
+        { method: 'DELETE' },
+        CACHE_TTL,
+        true,
+      ),
+    { onSuccess: () => invalidateTestimonials(queryClient) },
+  );
+}
+
+// --- Activity log (teacup-dash merge) ---
+
+export function useActivityLog(entityType?: string) {
+  const qs = entityType ? `?entityType=${entityType}` : '';
+  return useFetch<{
+    entries: import('@/types/schema').ActivityLogEntry[];
+    nextCursor: string | null;
+  }>(`/dashboard/activity${qs}`, { staleTime: SHORT_CACHE_TTL });
+}
+
+// --- Head Tags (custom <head> meta/link/script/style injection) ---
+
+export function useHeadTags() {
+  return useFetch<{
+    headTags: import('@/types/schema').HeadTag[];
+  }>('/dashboard/head-tags', { staleTime: SHORT_CACHE_TTL });
+}
+
+function invalidateHeadTags(queryClient: ReturnType<typeof useQueryClient>) {
+  invalidateCache('/dashboard/head-tags');
+  queryClient.invalidateQueries({
+    predicate: (q) =>
+      String(q.queryKey[0] ?? '').startsWith('/dashboard/head-tags'),
+  });
+}
+
+export function useCreateHeadTag() {
+  const queryClient = useQueryClient();
+  return useMutate<
+    import('@/types/schema').HeadTag,
+    Partial<import('@/types/schema').HeadTag>
+  >(
+    (t) =>
+      fetchApi(
+        '/dashboard/head-tags',
+        { method: 'POST', body: JSON.stringify(t) },
+        CACHE_TTL,
+        true,
+      ),
+    { onSuccess: () => invalidateHeadTags(queryClient) },
+  );
+}
+
+export function useUpdateHeadTag() {
+  const queryClient = useQueryClient();
+  return useMutate<
+    import('@/types/schema').HeadTag,
+    { id: string } & Partial<import('@/types/schema').HeadTag>
+  >(
+    ({ id, ...body }) =>
+      fetchApi(
+        `/dashboard/head-tags/${id}`,
+        { method: 'PATCH', body: JSON.stringify(body) },
+        CACHE_TTL,
+        true,
+      ),
+    { onSuccess: () => invalidateHeadTags(queryClient) },
+  );
+}
+
+export function useDeleteHeadTag() {
+  const queryClient = useQueryClient();
+  return useMutate<void, string>(
+    (id) =>
+      fetchApi(
+        `/dashboard/head-tags/${id}`,
+        { method: 'DELETE' },
+        CACHE_TTL,
+        true,
+      ),
+    { onSuccess: () => invalidateHeadTags(queryClient) },
   );
 }
 

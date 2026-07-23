@@ -1,5 +1,5 @@
 import { headers } from 'next/headers';
-import { authClient } from '@/lib/auth-client';
+import { redirect } from 'next/navigation';
 import { getDashboardAccessStatus } from '@/lib/api';
 import Guard from '../Components/guard';
 import DashboardAccessGuard from './dashboard-access-guard';
@@ -10,29 +10,10 @@ export async function DashboardAuthGuard({
   children: React.ReactNode;
 }) {
   const cookie = (await headers()).get('cookie');
-  
-  // Get session to check if user is authenticated
-  const { data: session } = await authClient.getSession({
-    fetchOptions: {
-      headers: { cookie: cookie || '' },
-    },
-  });
-  
-  // If no session, let the client-side Guard handle redirect to login
-  if (!session?.user) {
-    return (
-      <>
-        <Guard />
-        {children}
-      </>
-    );
-  }
 
-  // Get dashboard access status from backend
   try {
     const accessStatus = await getDashboardAccessStatus(cookie || undefined);
-    
-    // If user can access dashboard, render normally
+
     if (accessStatus.canAccessDashboard) {
       return (
         <>
@@ -42,7 +23,6 @@ export async function DashboardAuthGuard({
       );
     }
 
-    // Otherwise, show the access guard which will redirect appropriately
     return (
       <DashboardAccessGuard
         hasOrder={accessStatus.hasOrder}
@@ -53,9 +33,11 @@ export async function DashboardAuthGuard({
       </DashboardAccessGuard>
     );
   } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (message === 'Unauthorized') {
+      redirect('/auth/login');
+    }
     console.error('Error checking dashboard access:', error);
-    // Fail secure: Don't grant access on error
-    // Show loading state while preventing access
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
         <div className="text-center">
