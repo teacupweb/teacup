@@ -15,15 +15,8 @@ const getApiBaseUrl = () => {
 };
 
 export interface DashboardAccessStatus {
-  hasOrder: boolean;
-  hasCompletedOrder: boolean;
-  hasWebsite: boolean;
+  admitStatus: 'true' | 'false' | 'pending';
   canAccessDashboard: boolean;
-  order: {
-    id: string;
-    orderStatus: 'pending' | 'completed' | 'cancelled';
-    status: 'pending' | 'running' | 'cancelled';
-  } | null;
   company: {
     id: string;
     name: string;

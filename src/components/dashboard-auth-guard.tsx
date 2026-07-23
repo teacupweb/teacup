@@ -24,11 +24,7 @@ export async function DashboardAuthGuard({
     }
 
     return (
-      <DashboardAccessGuard
-        hasOrder={accessStatus.hasOrder}
-        hasCompletedOrder={accessStatus.hasCompletedOrder}
-        hasWebsite={accessStatus.hasWebsite}
-      >
+      <DashboardAccessGuard admitStatus={accessStatus.admitStatus}>
         {children}
       </DashboardAccessGuard>
     );

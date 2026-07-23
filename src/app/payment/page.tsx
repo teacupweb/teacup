@@ -20,7 +20,9 @@ import {
   User,
   Mail,
   MapPin,
+  Clock,
 } from 'lucide-react';
+import { getDashboardAccessStatus } from '@/lib/api';
 
 const paymentSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -37,6 +39,9 @@ function PaymentContent() {
   const { user } = useAuth();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [admitStatus, setAdmitStatus] = useState<
+    'true' | 'false' | 'pending' | null
+  >(null);
 
   const {
     register,
@@ -67,6 +72,19 @@ function PaymentContent() {
   }, [user, router]);
 
   useEffect(() => {
+    if (!user || user === 'userNotFound') return;
+
+    getDashboardAccessStatus()
+      .then((status) => {
+        setAdmitStatus(status.admitStatus);
+        if (status.canAccessDashboard) {
+          router.replace('/dashboard');
+        }
+      })
+      .catch((e) => console.error('Failed to fetch admit status', e));
+  }, [user, router]);
+
+  useEffect(() => {
     // Pre-fill user data if logged in
     if (user && user !== 'userNotFound') {
       reset({
@@ -85,6 +103,22 @@ function PaymentContent() {
       <div className='flex items-center justify-center min-h-[60vh]'>
         <div className='animate-pulse text-xl font-medium text-rose-600'>
           Redirecting to login...
+        </div>
+      </div>
+    );
+  }
+
+  if (admitStatus === 'pending') {
+    return (
+      <div className='flex items-center justify-center min-h-[60vh]'>
+        <div className='max-w-md text-center bg-card border border-border p-8 rounded-3xl'>
+          <Clock className='w-12 h-12 text-rose-600 mx-auto mb-4' />
+          <h1 className='text-2xl font-bold mb-2'>Payment received</h1>
+          <p className='text-muted-foreground'>
+            Your payment has been confirmed and your account is pending
+            activation. We're setting up your dashboard access — you'll get
+            an email as soon as it's ready.
+          </p>
         </div>
       </div>
     );
