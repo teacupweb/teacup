@@ -12,6 +12,7 @@ import {
   IconMessageStar,
   IconHistory,
   IconCode,
+  IconPlugConnected,
 } from '@tabler/icons-react';
 import { NavMain } from '@/components/nav-main';
 
@@ -62,6 +63,11 @@ const navData = {
       title: 'Head Tags',
       url: '/dashboard/head-tags',
       icon: IconCode,
+    },
+    {
+      title: 'Connect',
+      url: '/dashboard/connect',
+      icon: IconPlugConnected,
     },
     {
       title: 'Request Edit',
