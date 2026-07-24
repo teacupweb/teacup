@@ -13,16 +13,16 @@ import {
 } from 'lucide-react';
 import {
   useCompany,
+  useCreateCompany,
   type CompanyData,
   type CompanyType,
 } from '@/backendProvider';
 import Spinner from '@/Components/Spinner';
 import { toast } from 'sonner';
 
-const API_URL = process.env.NEXT_PUBLIC_BACKEND;
-
 export default function Welcome() {
   const { user, updateUserCompanyInfo, logout } = useAuth();
+  const createCompany = useCreateCompany();
   const navigate = useRouter();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(true);
@@ -161,25 +161,7 @@ export default function Welcome() {
         key: '', // Will be generated server-side
       };
 
-      // Manually create company using fetch
-      const response = await fetch(`${API_URL}/dashboard/company`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(newCompany),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(
-          errorData.message ||
-            `Failed to create company: ${response.statusText}`,
-        );
-      }
-
-      const createdCompany = await response.json();
+      const createdCompany = await createCompany.mutateAsync(newCompany);
       // console.log('Company created:', createdCompany);
 
       // Update user with company info and wait for session refresh
